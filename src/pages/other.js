@@ -157,6 +157,7 @@ const about = {
 
 <h2>Who maintains the site</h2>
 <p>${AUTHOR.name}, a full-stack developer. I build and maintain Ruler Square’s calculators, their formulas and the explanations on each page.</p>
+<p>This is not my first calculator site. I also build and run <a href="https://salariile.ro/despre" rel="me">salariile.ro</a>, an independent open-source salary and tax calculator for Romania, which has been live and maintained through a full year of legislative changes. The habits on this site — publishing the formula, naming the source for every figure, and logging corrections in public instead of editing them away — came from that one.</p>
 <p>You can check who I am: <a href="${AUTHOR.sameAs[0]}" rel="me nofollow">LinkedIn</a>, <a href="${AUTHOR.sameAs[1]}" rel="me nofollow">GitHub</a>, <a href="${AUTHOR.sameAs[2]}" rel="me nofollow">dev.to</a>. The <a href="https://github.com/xsagul/rulersquare">site’s source code</a> is public, so you can inspect the arithmetic.</p>
 
 <h2>Why the site exists</h2>

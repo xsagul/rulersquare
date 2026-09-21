@@ -14,11 +14,14 @@ const AUTHOR = {
   jobTitle: "Full-stack developer",
   url: "https://rulersquare.com/about/",
   description:
-    "Builds and maintains Ruler Square’s material, project cost and US pay calculators.",
+    "Builds and maintains Ruler Square’s material, project cost and US pay calculators, and salariile.ro, an independent Romanian salary calculator.",
   sameAs: [
     "https://www.linkedin.com/in/%C8%99tiuriuc-sorin-marian/",
     "https://github.com/xsagul",
     "https://dev.to/sorin_stiuriuc",
+    // Same Person @id on a site with its own published methodology and source
+    // code. The reciprocal sameAs there is what makes the pair verifiable.
+    "https://salariile.ro/despre",
   ],
 };
 
