@@ -5,7 +5,7 @@ function dim(label, name, defUnit, hint = "") {
   return `<div class="field">
   <label class="label" for="f-${name}">${label}${hint ? ` <span class="hint">${hint}</span>` : ""}</label>
   <div class="combo">
-    <input id="f-${name}" type="number" inputmode="decimal" min="0" step="any" name="${name}" value="">
+    <input id="f-${name}" type="number" inputmode="decimal" min="0.001" max="10000000" step="any" name="${name}" value="" required>
     <select name="${name}Unit" aria-label="${label} units">
       ${units.map(([v, t]) => `<option value="${v}"${v === defUnit ? " selected" : ""}>${t}</option>`).join("")}
     </select>
@@ -15,7 +15,7 @@ function dim(label, name, defUnit, hint = "") {
 function one(label, name, value, unit, hint = "") {
   return `<div class="field">
   <label class="label" for="f-${name}">${label}${hint ? ` <span class="hint">${hint}</span>` : ""}</label>
-  <div class="unit"><input id="f-${name}" type="number" inputmode="decimal" min="0" step="any" name="${name}" value="${value}"><em>${unit}</em></div>
+  <div class="unit"><input id="f-${name}" type="number" inputmode="decimal" min="${name === "qty" ? 1 : 0}" max="${name === "waste" ? 50 : 10000000}" step="${name === "qty" ? 1 : "any"}" name="${name}" value="${value}"${name === "price" ? "" : " required"}><em>${unit}</em></div>
 </div>`;
 }
 const table = (head, rows) => `<div class="table-wrap"><table>
@@ -35,11 +35,11 @@ const faq = [
   ["How do I calculate concrete for a round column or tube?",
    "Multiply π × radius² × height, with everything in feet. For a 12 inch tube that is 4 feet tall: 3.1416 × 0.5² × 4 = 3.14 cubic feet, or about 0.12 cubic yards."],
   ["How much does a yard of concrete cost?",
-   "Ready-mix concrete runs roughly $140 to $190 per cubic yard for the material in 2026, before delivery. Short-load fees for orders under about 3 yards add $50 to $150, and fuel or environmental surcharges are common. Bagged concrete works out far more expensive per yard — around $250 to $300 once you have bought 45 bags of 80 lb mix."],
+   "The linked concrete cost guide uses a published $160–$195-per-yard starting range for ready-mix material. Delivery, short-load fees, tax and installation may be separate. Get a quote for the selected mix and location; the calculator does not assume a material price."],
   ["How long does concrete take to cure?",
-   "You can usually walk on a slab after 24 to 48 hours and drive a car on it after 7 days. Full design strength takes 28 days, which is the standard the mix is specified against. Keep the surface damp for the first week in hot weather — concrete that dries too fast is permanently weaker than concrete that cures slowly."],
+   "Strength develops over time and depends on the mix, temperature and curing. A 28-day strength rating is not a universal permission to load a slab earlier. Follow the mix maker’s curing instructions and the contractor’s schedule for foot or vehicle traffic."],
   ["Do I need rebar or wire mesh in a slab?",
-   "For a 4 inch patio or sidewalk, fibre mesh in the mix or a layer of welded wire is usually enough to control cracking. Driveways and anything carrying vehicle loads are normally reinforced with #3 or #4 rebar on 18 to 24 inch centres. Reinforcement does not stop concrete cracking — it holds the crack tight once it happens."],
+   "Use the project’s approved reinforcement plan. Fibers, welded wire and reinforcing bars are not automatically interchangeable. Loads, soil, slab thickness, joints and local requirements affect the design; this calculator only estimates concrete volume."],
 ];
 
 module.exports = {
@@ -47,7 +47,7 @@ module.exports = {
   title: "Concrete Calculator – Cubic Yards, Bags & Cost | Ruler Square",
   description: "Free concrete calculator for slabs, footings, columns and round pads. Get cubic yards, how many 40, 50, 60 or 80 lb bags you need, and the cost.",
   crumbs: "Concrete Calculator",
-  lastmod: "2026-09-21",
+  lastmod: "2026-09-22",
   schema: [
     {
       "@context": "https://schema.org",
@@ -79,25 +79,6 @@ module.exports = {
 <p class="lede">Enter your dimensions to see how many cubic yards of concrete you need, how many bags to buy, and what it will cost.</p>
 
 <form class="calc" id="concrete-form" novalidate>
-  <div class="calc-results" aria-live="polite">
-    <p class="empty-state" id="r-empty">Enter your dimensions above and press <b>Calculate</b>.</p>
-    <div id="r-out" hidden>
-    <p class="big">Concrete needed<strong><span id="r-yd3">0</span> yd³</strong></p>
-    <ul class="results-list">
-      <li><span>Cubic feet</span><b><span id="r-ft3">0</span> ft³</b></li>
-      <li><span>Cubic meters</span><b><span id="r-m3">0</span> m³</b></li>
-      <li><span>Order ready-mix <span class="sub">(¼ yd steps)</span></span><b id="r-order">—</b></li>
-      <li><span>80 lb bags</span><b id="r-bag80">—</b></li>
-      <li><span>60 lb bags</span><b id="r-bag60">—</b></li>
-      <li><span>50 lb bags</span><b id="r-bag50">—</b></li>
-      <li><span>40 lb bags</span><b id="r-bag40">—</b></li>
-    </ul>
-    <div class="cost" id="r-cost-box" hidden>Estimated concrete cost: <b id="r-cost"></b></div>
-    <p class="tip" id="r-tip"></p>
-    <p class="tip">Results include the waste allowance. Bag counts use the typical yield printed on premixed bags.</p>
-    </div>
-  </div>
-
   <div class="calc-inputs">
     <fieldset class="tabs">
       <legend>Shape</legend>
@@ -134,13 +115,32 @@ module.exports = {
     <p class="note">Price is optional. Enter your local ready-mix price per cubic yard to estimate the cost.</p>
     <button type="submit" class="btn-calc">Calculate</button>
   </div>
+
+  <div class="calc-results" aria-live="polite">
+    <p class="empty-state" id="r-empty">Enter your dimensions above and press <b>Calculate</b>.</p>
+    <div id="r-out" hidden>
+    <p class="big">Concrete needed<strong><span id="r-yd3">0</span> yd³</strong></p>
+    <ul class="results-list">
+      <li><span>Cubic feet</span><b><span id="r-ft3">0</span> ft³</b></li>
+      <li><span>Cubic meters</span><b><span id="r-m3">0</span> m³</b></li>
+      <li><span>Order ready-mix <span class="sub">(¼ yd steps)</span></span><b id="r-order">—</b></li>
+      <li><span>80 lb bags</span><b id="r-bag80">—</b></li>
+      <li><span>60 lb bags</span><b id="r-bag60">—</b></li>
+      <li><span>50 lb bags</span><b id="r-bag50">—</b></li>
+      <li><span>40 lb bags</span><b id="r-bag40">—</b></li>
+    </ul>
+    <div class="cost" id="r-cost-box" hidden>Estimated concrete cost: <b id="r-cost"></b></div>
+    <p class="tip" id="r-tip"></p>
+    <p class="tip">Results include the waste allowance. Bag counts use the typical yield printed on premixed bags.</p>
+    </div>
+  </div>
 </form>
 
 <div class="prose">
 <h2>How to use the concrete calculator</h2>
 <ol>
   <li>Pick the shape: a flat slab, a footing or wall, a round column (like a tube form), or a round slab.</li>
-  <li>Enter the measurements. Lengths take feet plus inches; thickness and depth are in inches.</li>
+  <li>Enter each measurement and choose its unit. For example, 10 feet 6 inches can be entered as 10.5 feet or 126 inches.</li>
   <li>If you are pouring several identical pieces, like deck footings, set the quantity.</li>
   <li>Keep 5–10% extra for waste, and add your local price per cubic yard if you want a cost estimate.</li>
 </ol>
@@ -165,26 +165,13 @@ ${table(["Bag size", "Yield per bag", "Bags per cubic yard", "Bags per ½ yard"]
 <p>Bags stop making sense somewhere around one cubic yard. Forty-five 80 lb bags is 3,600 pounds to carry, open and mix, and a mixer only handles two or three bags at a time — which means the first batch is setting while you are still mixing the tenth. For a continuous pour, that is how you end up with cold joints through the slab.</p>
 
 <h2>How much does a yard of concrete cost?</h2>
-<p>Ready-mix concrete costs roughly <strong>$140 to $190 per cubic yard</strong> for the material in 2026, but the delivered price is what matters, and several fees sit on top of it:</p>
-${table(["Charge", "Typical cost", "When it applies"], [
-  ["Ready-mix, per yard", "$140–$190", "The material itself, 3000–4000 psi mix."],
-  ["Short-load fee", "$50–$150", "Orders under about 3 yards."],
-  ["Delivery / fuel surcharge", "$20–$100", "Most suppliers, varies with distance."],
-  ["Standby time", "$1–$3 per minute", "After the first 5–10 minutes of unloading."],
-  ["Saturday or after-hours", "$50–$200", "Outside normal plant hours."],
-])}
-<p>That is why a single-yard pour can land near $400 all in, while five yards on the same truck costs perhaps $900. If you are close to a threshold, pouring a little more concrete is often cheaper per yard than pouring a little less.</p>
-<p>Bagged concrete is far more expensive per yard — 45 bags of 80 lb mix at $6 each is around $270 per cubic yard, before you count your own time. It wins only on small jobs where the short-load fee would dominate.</p>
+<p>Use the <a href="/concrete-cost-per-yard/">concrete cost-per-yard calculator</a> for the published $160–$195 material starting range and its source. A local quote for your mix and order size may be outside that range.</p>
+<p>Ask whether delivery, short-load fees, waiting time, weekend charges and tax are included. The optional price above calculates material only. For an installed budget, use the <a href="/concrete-slab-cost/">slab cost calculator</a>.</p>
+<p>For a bagged-price comparison, 45 bags yielding 0.60 cubic foot each make one yard. If each bag costs $6, that is $270 in material; the $6 price is an example, not a current store quote.</p>
 
-<h2>Common slab thicknesses</h2>
-${table(["Project", "Typical thickness", "Reinforcement"], [
-  ["Sidewalk, patio, shed floor", "4 in", "Fibre mesh or welded wire"],
-  ["Driveway, passenger cars", "4–5 in", "Welded wire or #3 rebar"],
-  ["Driveway, trucks or RVs", "5–6 in", "#4 rebar on 18 in centres"],
-  ["Garage floor", "4–6 in", "Welded wire or #3 rebar"],
-  ["Footing, frost depth", "8–12 in wide", "2 × #4 rebar continuous"],
-])}
-<p class="note">Your local building code and the load on the slab decide the final thickness. Footings must reach below the frost line, which varies from nothing in the south to 48 inches or more in northern states.</p>
+<h2>Use the thickness on your plans</h2>
+<p>A volume estimate cannot choose a safe slab or footing design. Confirm thickness, mix strength, base preparation, joints and reinforcement with the approved plans or a qualified professional. Soil, frost, water and intended loads all matter.</p>
+<p>A change from 4 to 6 inches increases concrete volume by 50%. Enter the actual planned thickness instead of treating the example as a specification.</p>
 
 <h2>How much extra concrete to order</h2>
 <p>The calculator defaults to 10%, which suits most slabs. Adjust it for the job:</p>
@@ -211,7 +198,8 @@ ${faq.map(([q, a]) => `<h3>${q}</h3>\n<p>${a}</p>`).join("\n")}
 <ul class="refs">
   <li>Bag yields are published by manufacturers; see the <a href="https://www.quikrete.com/pdfs/data_sheet-concrete%20mix%201101.pdf">QUIKRETE Concrete Mix product data sheet</a>.</li>
   <li>Volume conversions are standard geometry: 1 cubic yard = 27 cubic feet.</li>
-  <li>Thickness and reinforcement guidance follows common residential practice; your local building code takes precedence.</li>
+  <li>Pricing reference and scope: <a href="/concrete-cost-per-yard/">Concrete cost per yard</a>, with a link to the published source.</li>
+  <li>This is a volume estimate, not a thickness or reinforcement design.</li>
 </ul>
 </div>
 `,

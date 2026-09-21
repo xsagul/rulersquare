@@ -46,7 +46,7 @@
 
   function calc(shape, v) {
     var material = v.material && DENSITY[v.material] ? v.material : "gravel";
-    var lbPerYd3 = DENSITY[material];
+    var lbPerYd3 = num(v.density) || DENSITY[material];
     // Compaction is capped at 50%: past that the number is a guess, not an estimate.
     var compaction = Math.min(50, Math.max(0, parseFloat(v.compaction) || 0));
 
@@ -80,10 +80,9 @@
       orderYd3: orderYd3,
       orderTons: orderTons,
       coverageFt2: coverageFt2,
-      // 0.5 yd³ bags are the standard bulk "tote"; 2 ft³ is the standard retail bag.
+      bags: ft3c > 0 ? Math.ceil(ft3c / (num(v.bagSize) || 2) - 1e-9) : 0,
+      density: lbPerYd3,
       bags2ft3: ft3c > 0 ? Math.ceil(ft3c / 2 - 1e-9) : 0,
-      pickupLoads: yd3 > 0 ? Math.ceil(yd3 / 1 - 1e-9) : 0,
-      dumpLoads: yd3 > 0 ? Math.ceil(yd3 / 10 - 1e-9) : 0,
       cost: cost
     };
   }
@@ -124,9 +123,10 @@
     return shape;
   }
 
-  function update() {
+  function update(report) {
     var shape = showShape();
     if (!calculated) { return; }
+    if (!window.RSValidate(form, report === true)) { return; }
     var empty = document.getElementById("r-empty");
     var out = document.getElementById("r-out");
     if (empty) { empty.hidden = true; }
@@ -140,7 +140,7 @@
     set("r-order-yd3", r.orderYd3 > 0 ? fmt(r.orderYd3, 1) + " yd³" : "—");
     set("r-order-tons", r.orderTons > 0 ? fmt(r.orderTons, 1) + " tons" : "—");
     set("r-coverage", r.coverageFt2 > 0 ? fmt(r.coverageFt2, 0) + " ft² per yd³" : "—");
-    set("r-bags", r.bags2ft3 ? fmt(r.bags2ft3, 0) + " bags" : "—");
+    set("r-bags", r.bags ? fmt(r.bags, 0) + " bags" : "—");
 
     var costBox = document.getElementById("r-cost-box");
     if (costBox) {
@@ -155,23 +155,14 @@
 
     var tip = document.getElementById("r-tip");
     if (tip) {
-      if (r.yd3 <= 0) { tip.textContent = ""; }
-      else if (r.yd3 < 0.5) {
-        tip.textContent = "Under half a yard — bagged material from a home center is usually easier than a delivery.";
-      } else if (r.yd3 <= 1) {
-        tip.textContent = "About one pickup load. Most half-ton trucks max out at 1 yd³ of stone by weight, not by space.";
-      } else if (r.yd3 <= 12) {
-        tip.textContent = "Fits one tandem-axle dump truck load. Ask about the minimum delivery charge.";
-      } else {
-        tip.textContent = "Over one truckload — expect " + r.dumpLoads + " deliveries, or ask about a tri-axle.";
-      }
+      tip.textContent = "Estimated weight: " + fmt(r.lbs, 0) + " lb before order rounding. Confirm density and delivery with your supplier. A truck’s available payload, not its bed size, determines a safe load.";
     }
   }
   // Pressing Calculate is what starts it. After that, edits update live.
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     calculated = true;
-    update();
+    update(true);
   });
   form.addEventListener("input", update);
   form.addEventListener("change", update);

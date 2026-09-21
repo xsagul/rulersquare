@@ -45,6 +45,8 @@
   }
 
   input.addEventListener("input", render);
+  var query = new URLSearchParams(window.location.search).get("q");
+  if (query) input.value = query;
   // Escape clears rather than leaving the visitor stranded in a filtered view.
   input.addEventListener("keydown", function (e) {
     if (e.key === "Escape") { input.value = ""; render(); }

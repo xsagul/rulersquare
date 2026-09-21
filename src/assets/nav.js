@@ -19,9 +19,15 @@
 
   // ---------- drawer ----------
   var lastFocus = null;
+  var closeTimer;
 
   function setOpen(open) {
     if (!drawer || !backdrop) { return; }
+    window.clearTimeout(closeTimer);
+    drawer.inert = !open;
+    document.querySelector("main").inert = open;
+    document.querySelector(".site-header").inert = open;
+    document.querySelector(".site-footer").inert = open;
     if (open) {
       lastFocus = document.activeElement;
       backdrop.hidden = false;
@@ -41,7 +47,7 @@
       // is what makes a phone pan and zoom toward it as the drawer appears.
       if (closeBtn) { closeBtn.focus(); }
     } else {
-      window.setTimeout(function () { backdrop.hidden = true; }, 240);
+      closeTimer = window.setTimeout(function () { backdrop.hidden = true; }, 240);
       if (lastFocus && lastFocus.focus) { lastFocus.focus(); }
     }
   }
@@ -51,10 +57,19 @@
   if (backdrop) { backdrop.addEventListener("click", function () { setOpen(false); }); }
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && drawer && drawer.classList.contains("on")) { setOpen(false); }
+    if (e.key === "Tab" && drawer && drawer.classList.contains("on")) {
+      var items = Array.from(drawer.querySelectorAll("a,button,input")).filter(function (el) { return el.getClientRects().length > 0; });
+      var first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
   });
   // Coming back via the back button must not leave the page frozen.
   window.addEventListener("pageshow", function () {
-    document.body.classList.remove("nav-open");
+    if (drawer && drawer.classList.contains("on")) setOpen(false);
+  });
+  window.matchMedia("(min-width: 861px)").addEventListener("change", function (e) {
+    if (e.matches && drawer.classList.contains("on")) setOpen(false);
   });
 
   // ---------- search ----------

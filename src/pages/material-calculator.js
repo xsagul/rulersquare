@@ -5,7 +5,7 @@ function dim(label, name, unit) {
   return `<div class="field"><label class="label" for="f-${name}">${label}</label><div class="combo"><input id="f-${name}" name="${name}" type="number" inputmode="decimal" min="0.001" max="10000000" step="any" required><select name="${name}Unit" aria-label="${label} units">${[["in","inches"],["ft","feet"],["yd","yards"],["cm","cm"],["m","meters"]].map(([v,t])=>`<option value="${v}"${v===unit?" selected":""}>${t}</option>`).join("")}</select></div></div>`;
 }
 function one(label,name,value,unit,min=0,max=10000000) {
-  return `<div class="field"><label class="label" for="f-${name}">${label}</label><div class="unit"><input id="f-${name}" name="${name}" type="number" inputmode="decimal" min="${min}" max="${max}" step="any" value="${value}"><em>${unit}</em></div></div>`;
+  return `<div class="field"><label class="label" for="f-${name}">${label}</label><div class="unit"><input id="f-${name}" name="${name}" type="number" inputmode="decimal" min="${min}" max="${max}" step="any" value="${value}" required><em>${unit}</em></div></div>`;
 }
 function materialPage(cfg) {
   const volumeFirst = ["mulch","topsoil","fill-dirt","sand"].includes(cfg.material);
@@ -14,7 +14,7 @@ function materialPage(cfg) {
   const tons = cfg.lbPerYd3 / 2000;
   const faq = [...cfg.faq, [`How much area does one cubic yard of ${cfg.noun} cover?`, "One cubic yard covers 162 square feet at 2 inches deep, 108 at 3 inches or 81 at 4 inches, before any extra allowance."]];
   return {
-    path: cfg.path, title: cfg.title, description: cfg.description, crumbs: cfg.h1, lastmod:"2026-09-21",
+    path: cfg.path, title: cfg.title, description: cfg.description, crumbs: cfg.h1, lastmod:"2026-09-22",
     schema:[{"@context":"https://schema.org","@type":"WebApplication",name:cfg.h1,url:SITE.url+cfg.path,applicationCategory:"UtilitiesApplication",operatingSystem:"Any",offers:{"@type":"Offer",price:0,priceCurrency:"USD"}}],
     scripts:'<script src="/assets/material.js?v=VERSION" defer></script>',
     body:`<h1>${cfg.h1}</h1><p class="lede">${cfg.lede}</p>

@@ -83,7 +83,7 @@ ${schema}
   </div>
 </header>
 <div class="nav-backdrop" id="nav-backdrop" hidden></div>
-<aside class="nav-drawer" id="nav-panel" aria-label="Menu" aria-hidden="true">
+<aside class="nav-drawer" id="nav-panel" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true" inert>
   <div class="nav-drawer-head">
     <button type="button" class="nav-close" id="nav-close" aria-label="Close menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
@@ -110,6 +110,7 @@ ${page.body}
 </footer>
 <script>window.RS_INDEX=${JSON.stringify(page.index || [])};</script>
 <script src="/assets/nav.js?v=${page.version}" defer></script>
+${/id="(?:material|concrete|wage|paycheck|area)-form"/.test(page.body) ? `<script src="/assets/calc-ui.js?v=${page.version}" defer></script>` : ""}
 ${page.scripts || ""}
 ${page.dev ? `<script src="/assets/devtools.js?v=${page.version}" defer></script>` : ""}
 </body>

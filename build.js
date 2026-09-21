@@ -39,7 +39,7 @@ const pages = [
 // The search index is derived from the built pages rather than a hand-kept
 // list, so a new calculator is searchable the moment it is added.
 const NOT_SEARCHABLE = new Set([
-  "/", "/about/", "/contact/", "/privacy/", "/terms/", "/404.html",
+  "/", "/about/", "/contact/", "/privacy/", "/terms/", "/404.html", "/methodology/",
   "/construction-calculators/", "/landscaping-calculators/",
   "/pay-calculators/", "/cost-calculators/",
 ]);
@@ -49,7 +49,7 @@ const SEARCH_INDEX = pages
     u: p.path,
     t: (p.crumbs || p.title).replace(/\s*[|–-]\s*Ruler Square.*$/, ""),
     d: (p.description || "").slice(0, 110),
-    k: p.path.replace(/[/-]/g, " ").trim(),
+    k: [p.path.replace(/[/-]/g, " "), p.description, (require("./src/pages/other").ALL.find(item => item[0] === p.path) || [])[4]].filter(Boolean).join(" ").replace(/[-–—]/g, " ").trim(),
   }));
 
 for (const p of pages) {

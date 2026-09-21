@@ -50,6 +50,16 @@ for (const file of htmlFiles) {
   if (canonicals.length !== 1) { fail(`${route}: needs one canonical`); }
   if (h1s.length !== 1) { fail(`${route}: expected one h1, found ${h1s.length}`); }
   if (html.includes("VERSION")) { fail(`${route}: unresolved asset version token`); }
+  if (/salariile\.ro/i.test(html)) { fail(`${route}: unrelated salary-site reference`); }
+  const ids = matches(html, /\bid="([^"]+)"/g).map(m => m[1]);
+  const idSet = new Set(ids);
+  if (ids.length !== idSet.size) { fail(`${route}: duplicate element IDs`); }
+  for (const label of matches(html, /\bfor="([^"]+)"/g)) {
+    if (!idSet.has(label[1])) fail(`${route}: label has no target ${label[1]}`);
+  }
+  for (const anchor of matches(html, /href="#([^"]+)"/g)) {
+    if (!idSet.has(anchor[1])) fail(`${route}: missing section ${anchor[1]}`);
+  }
 
   if (titles.length === 1) {
     const title = titles[0][1];
@@ -84,6 +94,20 @@ for (const file of htmlFiles) {
 }
 
 const sitemap = fs.readFileSync(path.join(OUT, "sitemap.xml"), "utf8");
+const { ALL } = require("./src/pages/other");
+const { CATEGORIES } = require("./src/pages/categories");
+const calculatorRoutes = new Set(ALL.map(item => item[0]));
+const hubRoutes = new Set(CATEGORIES.flatMap(cat => cat.groups.flatMap(group => group.items.map(item => item[0]))));
+for (const route of calculatorRoutes) {
+  if (!routeToFile.has(route)) fail(`${route}: catalogue entry has no page`);
+  if (!hubRoutes.has(route)) fail(`${route}: calculator missing from category hubs`);
+}
+const homeHtml = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
+const searchMatch = homeHtml.match(/window\.RS_INDEX=([\s\S]*?);<\/script>/);
+const searchRoutes = searchMatch ? new Set(JSON.parse(searchMatch[1]).map(item => item.u)) : new Set();
+if (searchRoutes.size !== calculatorRoutes.size || [...calculatorRoutes].some(route => !searchRoutes.has(route))) fail("Search index and calculator catalogue differ");
+if (!homeHtml.includes(`${calculatorRoutes.size} free calculators`)) fail("Homepage calculator count is out of date");
+if (searchMatch && !JSON.parse(searchMatch[1]).some(item => item.u === "/paycheck-calculator/" && item.k.includes("take home"))) fail("Search index: take-home pay synonym missing");
 const sitemapRoutes = new Set(matches(sitemap, /<loc>https:\/\/rulersquare\.com([^<]*)<\/loc>/g).map(m => m[1]));
 for (const route of indexableRoutes) {
   if (!sitemapRoutes.has(route)) { fail(`${route}: indexable but absent from sitemap`); }

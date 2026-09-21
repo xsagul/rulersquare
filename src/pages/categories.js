@@ -24,7 +24,7 @@ const CATEGORIES = [
         name: "Driveways & paving", icon: "gravel",
         items: [
           ["/asphalt-calculator/", "Asphalt Calculator", "Tons of hot mix by area and thickness, with coverage and cost"],
-          ["/gravel-calculator/", "Gravel Calculator", "Driveway gravel in tons, yards and truckloads, with compaction"],
+          ["/gravel-calculator/", "Gravel Calculator", "Driveway gravel in tons and cubic yards, with an editable allowance"],
           ["/stone-calculator/", "Crushed Stone Calculator", "#57 stone and crusher run for bases and drainage"],
         ],
       },
@@ -172,7 +172,7 @@ function categoryPage(cat) {
     title: cat.title,
     description: cat.description,
     crumbs: cat.h1,
-    lastmod: "2026-09-21",
+    lastmod: "2026-09-22",
     schema: [
       {
         "@context": "https://schema.org", "@type": "CollectionPage",

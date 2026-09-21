@@ -159,9 +159,10 @@
       case "ramp": {
         // ADA limits a ramp to 1:12; the run is a consequence of the rise.
         const runFt = v.rise / 12 * v.slope;
-        const landings = Math.max(0, ceil(runFt / 30) - 1);
-        rows = [row("Ramp run", runFt, "ft", 2), row("Sloped length", Math.sqrt(runFt * runFt + (v.rise / 12) * (v.rise / 12)), "ft", 2), row("Slope", 1 / v.slope * 100, "%", 2), row("Intermediate landings", landings), row("Decking area at this width", runFt * v.width, "ft²", 1)];
-        note = "A 1:12 slope is the ADA maximum for a new ramp, with a 30 ft maximum run between landings. This sizes the geometry only — it is not a code review or a structural design.";
+        const landings = Math.max(0, ceil(v.rise / 30) - 1);
+        const surface = Math.hypot(runFt, v.rise / 12);
+        rows = [row("Ramp run", runFt, "ft", 2), row("Sloped length", surface, "ft", 2), row("Slope", 1 / v.slope * 100, "%", 2), row("Intermediate landings by rise", landings), row("Sloped surface, excluding landings", surface * v.width, "ft²", 1)];
+        note = (v.slope < 12 ? "This slope is steeper than the general ADA 1:12 limit. " : "") + "ADA ramp runs are limited to 30 inches of rise, not 30 feet of run at every slope. Top, bottom and turning landings need separate space. This is geometry, not a compliance check or structural design.";
         break;
       }
       case "framing": {
@@ -180,8 +181,8 @@
         const barsNeeded = ceil(linear / v.barLength * extra);
         // #3 is 0.376 lb/ft and each size step adds about 0.29 lb/ft.
         const lbPerFt = { 3: 0.376, 4: 0.668, 5: 1.043, 6: 1.502, 7: 2.044, 8: 2.670 }[v.barSize] || 0.668;
-        rows = [row("Bars to buy", barsNeeded, "bars"), row("Linear feet of rebar", linear * extra, "ft", 1), row("Bars running the length", alongLength), row("Bars running the width", alongWidth), row("Total weight", linear * extra * lbPerFt, "lb", 1), row("Rebar cost", barsNeeded * (v.price || 0), "$", 2)];
-        note = "A single flat mat at the spacing entered, without laps, chairs or bends. Lap splices typically add 30 to 40 bar diameters at every joint.";
+        rows = [row("Stock-bar equivalent by total length", barsNeeded, "bars"), row("Linear feet of rebar", linear * extra, "ft", 1), row("Bars running the length", alongLength), row("Bars running the width", alongWidth), row("Total weight", linear * extra * lbPerFt, "lb", 1), row("Minimum stock material cost", barsNeeded * (v.price || 0), "$", 2)];
+        note = "Length-based lower bound, not a cutting list or purchase count. Offcuts may be unusable, and laps, bends, cover and chairs are excluded. Get the cut schedule and splice lengths from your plans before ordering.";
         break;
       }
       case "sod": {
@@ -262,11 +263,21 @@
   const empty = document.getElementById("r-empty");
   const error = document.getElementById("form-error");
   let calculated = false;
+  function syncFields() {
+    if (cfg.kind !== "tank-volume") return;
+    const cylinder = form.elements.shape.value === "cylinder";
+    ["diameter", "length", "width"].forEach(name => {
+      const field = form.elements.namedItem(name).closest(".field");
+      field.hidden = name === "diameter" ? !cylinder : cylinder;
+      field.querySelectorAll("input,select").forEach(el => { el.disabled = field.hidden; });
+    });
+  }
   function fmt(r) {
     const format = n => (r.unit === "$" ? "$" : "") + n.toLocaleString("en-US", { maximumFractionDigits: r.digits, minimumFractionDigits: r.digits });
     return (Array.isArray(r.value) ? r.value.map(format).join("–") : format(r.value)) + (r.unit && r.unit !== "$" ? " " + r.unit : "");
   }
   function update(report) {
+    syncFields();
     if (!calculated) return;
     const invalid = Array.from(form.querySelectorAll("input,select")).find(el => !el.checkValidity());
     output.hidden = true;
@@ -314,8 +325,13 @@
   form.addEventListener("input", () => update(false));
   form.addEventListener("change", () => update(false));
   document.getElementById("use-example").addEventListener("click", () => {
-    Object.entries(cfg.example).forEach(([key, value]) => { if (form.elements[key]) form.elements[key].value = value; });
+    form.reset();
+    Object.entries(cfg.example).forEach(([key, value]) => {
+      const input = form.elements.namedItem(key);
+      if (input) input.value = value;
+    });
     calculated = true; update(true);
   });
-  document.getElementById("reset-calc").addEventListener("click", () => { form.reset(); calculated = false; output.hidden = true; empty.hidden = false; error.hidden = true; form.querySelector("input,select").focus(); });
+  document.getElementById("reset-calc").addEventListener("click", () => { form.reset(); syncFields(); calculated = false; output.hidden = true; empty.hidden = false; error.hidden = true; form.querySelector("input,select").focus(); });
+  syncFields();
 })();

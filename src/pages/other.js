@@ -13,7 +13,8 @@ const CONCRETE = [
   ["/square-footage-calculator/", "Square Footage Calculator", "Any shape, in sq ft, yards, meters and acres", "sqft", "square footage area room floor acres sq ft measure"],
 ];
 const AGGREGATE = [
-  ["/gravel-calculator/", "Gravel Calculator", "Tons, yards and truckloads for driveways and paths", "gravel", "gravel driveway pea stone aggregate tons yards"],
+  ["/gravel-calculator/", "Gravel Calculator", "Tons and cubic yards for driveways and paths", "gravel", "gravel driveway pea stone aggregate tons yards"],
+  ["/road-base-calculator/", "Road Base Calculator", "Crusher run with an adjustable allowance", "gravel", "road base crusher run aggregate abc"],
   ["/stone-calculator/", "Crushed Stone Calculator", "#57 stone and crusher run for bases and drainage", "stone", "crushed stone 57 crusher run paver base drainage"],
   ["/sand-calculator/", "Sand Calculator", "Bedding sand in cubic yards, tons or bags", "sand", "sand paver bedding sandbox concrete backfill"],
   ["/river-rock-calculator/", "River Rock Calculator", "Decorative beds and dry creek beds", "rock", "river rock decorative landscape stone dry creek"],
@@ -33,6 +34,8 @@ const PAY = [
 ];
 const { PROJ } = require("../data/projects");
 const { COSTS } = require("../data/costs");
+const { TOOLS } = require("../data/tools");
+const { CATEGORIES } = require("./categories");
 // One icon per subject, rather than a single default across fifteen pages.
 const KIND_ICON = {
   fence: "fence", deck: "deck", siding: "siding", drywall: "drywall",
@@ -41,7 +44,7 @@ const KIND_ICON = {
   "board-and-batten": "batten", grout: "trowel", thinset: "trowel",
   "cubic-yard": "cube", cost: "cost",
 };
-const NEW = [...PROJ, ...COSTS].map(c =>
+const NEW = [...PROJ, ...COSTS, ...TOOLS].map(c =>
   [`/${c.slug}/`, c.h1, c.lede, KIND_ICON[c.kind] || "sqft", `${c.h1} ${c.description}`]);
 const ALL = [].concat(CONCRETE, AGGREGATE, SOIL, PAY, NEW);
 module.exports = module.exports || {};
@@ -54,11 +57,11 @@ const cards = list => list.map(([href, title, desc, icon]) =>
  * category leaders do this, and it is what makes a modest catalogue read as
  * organised rather than thin. */
 const HUBS = [
-  ["/construction-calculators/", "Construction", "concrete", 5 + PROJ.filter(c => c.category !== "landscaping").length],
-  ["/landscaping-calculators/", "Landscaping", "mulch", 8 + PROJ.filter(c => c.category === "landscaping").length],
-  ["/cost-calculators/", "Project costs", "cost", COSTS.length],
-  ["/pay-calculators/", "Pay & Taxes", "paycheck", PAY.length],
-];
+  ["/construction-calculators/", "Construction", "concrete"],
+  ["/landscaping-calculators/", "Landscaping", "mulch"],
+  ["/cost-calculators/", "Project costs", "cost"],
+  ["/pay-calculators/", "Pay & Taxes", "paycheck"],
+].map(([path, name, icon]) => [path, name, icon, new Set(CATEGORIES.find(c => c.path === path).groups.flatMap(g => g.items.map(i => i[0]))).size]);
 
 const POPULAR = [
   ["/concrete-calculator/", "Concrete Calculator", "concrete"],
@@ -75,7 +78,7 @@ const home = {
   path: "/",
   title: "Ruler Square – Free Material, Cost & Paycheck Calculators",
   description: "Free calculators for building materials, landscaping, project costs and take-home pay. Get clear estimates with formulas, examples and visible assumptions.",
-  lastmod: "2026-09-21",
+  lastmod: "2026-09-22",
   // One @graph rather than separate blocks, so the site, the publisher and the
   // person behind it are linked by @id instead of merely co-present.
   schema: [{
@@ -137,7 +140,7 @@ const about = {
   title: "About Ruler Square — Who Maintains It",
   description: "Who builds and maintains Ruler Square, why it exists, how the figures are kept current, how it is funded, and the public log of corrections.",
   crumbs: "About",
-  lastmod: "2026-09-21",
+  lastmod: "2026-09-22",
   schema: [
     {
       "@context": "https://schema.org", "@type": "AboutPage",
@@ -150,11 +153,11 @@ const about = {
   body: `
 <div class="prose">
 <h1>About Ruler Square</h1>
-<p class="lede">An independent site that works out how much material a job needs, what it is likely to cost, and what actually reaches your bank account.</p>
+<p class="lede">Independent calculators for material quantities, project budgets and estimated take-home pay.</p>
 
 <h2>Who maintains the site</h2>
-<p>${AUTHOR.name}, a full-stack developer. I also build and maintain <a href="https://salariile.ro/" rel="me">salariile.ro</a>, an independent Romanian salary and tax calculator that has been running since 2026.</p>
-<p>You can check who I am: <a href="${AUTHOR.sameAs[0]}" rel="me nofollow">LinkedIn</a>, <a href="${AUTHOR.sameAs[1]}" rel="me nofollow">GitHub</a>, <a href="${AUTHOR.sameAs[2]}" rel="me nofollow">dev.to</a>. The source code for this site is public on GitHub, so the arithmetic behind every page can be read rather than trusted.</p>
+<p>${AUTHOR.name}, a full-stack developer. I build and maintain Ruler Square’s calculators, their formulas and the explanations on each page.</p>
+<p>You can check who I am: <a href="${AUTHOR.sameAs[0]}" rel="me nofollow">LinkedIn</a>, <a href="${AUTHOR.sameAs[1]}" rel="me nofollow">GitHub</a>, <a href="${AUTHOR.sameAs[2]}" rel="me nofollow">dev.to</a>. The <a href="https://github.com/xsagul/rulersquare">site’s source code</a> is public, so you can inspect the arithmetic.</p>
 
 <h2>Why the site exists</h2>
 <p>Material estimating is arithmetic that anyone can do and almost nobody enjoys. The figures are not secret — a cubic yard is 27 cubic feet whoever you ask — but they are scattered across supplier PDFs, trade tables and half-remembered rules of thumb.</p>
@@ -164,13 +167,13 @@ const about = {
 <ul>
   <li>Tax constants are reviewed when the IRS and SSA publish the next year's figures, usually October and November.</li>
   <li>Price ranges carry the date they were last checked against their published source.</li>
-  <li>Material densities change only when a standard does.</li>
-  <li>Every engine has automated tests — 148 assertions today — and the worked example on each page is checked against the engine at build time, so the two cannot drift apart.</li>
+  <li>Material densities are editable planning assumptions. Moisture and product differences matter; use your supplier’s figure.</li>
+  <li>Automated tests check calculation engines, example inputs and unit conversions. A separate site audit checks metadata, links and sitemap coverage before deployment.</li>
 </ul>
 <p>The full detail is on the <a href="/methodology/">methodology page</a>, including what these calculators deliberately do not attempt.</p>
 
 <h2>How the project is funded</h2>
-<p>By display advertising, and nothing else. There is no paid tier, no newsletter, no account to create and no lead form. Your inputs are calculated in your browser and are never sent to us or stored.</p>
+<p>The calculators are free, with no paid tier, newsletter, account or lead form. Display advertising may support the site; our <a href="/privacy/">privacy policy</a> explains this. Calculator inputs are processed in your browser, not sent to us.</p>
 <p>No page here is sponsored, and no supplier, contractor or manufacturer pays for a mention. Where a product or trade body is named it is because it is the source of a figure.</p>
 
 <h2>Estimates, not engineering</h2>
@@ -182,6 +185,7 @@ const about = {
 <h2>Corrections and updates</h2>
 <p class="note">Newest first. Substantive changes to a figure or a formula are listed here; wording and layout changes are not.</p>
 ${table(["Date", "Change"], [
+  ["22 September 2026", "Fixed supplier-density and bag-size inputs, salary result display and example unit resets. Corrected ramp landings to use 30 inches of rise per run and clarified rebar stock estimates and vehicle payload limits."],
   ["21 September 2026", "Added a methodology page and this correction log. Published author identity and source attribution across the site."],
   ["21 September 2026", "Fixed rebar bar-direction labelling: bars running the length are spaced across the width, not along it. The total count was unaffected; the displayed breakdown was wrong."],
   ["21 September 2026", "Fixed the labour cost page, where the total was hidden whenever no optional price was entered."],
@@ -197,7 +201,7 @@ const contact = {
   title: "Contact Ruler Square",
   description: "Get in touch with Ruler Square to report an error, suggest a calculator or ask a question.",
   crumbs: "Contact",
-  lastmod: "2026-09-21",
+  lastmod: "2026-09-22",
   body: `
 <div class="prose">
 <h1>Contact</h1>
@@ -212,7 +216,7 @@ const privacy = {
   title: "Privacy Policy | Ruler Square",
   description: "How Ruler Square handles your data.",
   crumbs: "Privacy Policy",
-  lastmod: "2026-09-21",
+  lastmod: "2026-09-22",
   body: `
 <div class="prose">
 <h1>Privacy Policy</h1>
@@ -236,7 +240,7 @@ const terms = {
   title: "Terms of Use | Ruler Square",
   description: "Terms of use for Ruler Square calculators and content.",
   crumbs: "Terms of Use",
-  lastmod: "2026-09-21",
+  lastmod: "2026-09-22",
   body: `
 <div class="prose">
 <h1>Terms of Use</h1>

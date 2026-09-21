@@ -2,6 +2,48 @@ const { calc } = require("./src/assets/concrete.js");
 let passed = 0;
 const assert = (c, m) => { if (!c) { console.error("FAIL", m); process.exitCode = 1; } else { passed++; console.log("ok ", m); } };
 process.on("exit", () => console.log(process.exitCode ? "SUITE FAILED" : "SUITE COMPLETE: " + passed + " assertions"));
+// Each project page's example inputs are tested against independently recorded
+// expected headline quantities. A missing expectation fails as the catalogue grows.
+const exampleExpected = {
+  "fence-calculator":193, "deck-calculator":29, "siding-calculator":1540,
+  "drywall-calculator":17, "tile-calculator":132, "paver-calculator":594,
+  "paint-calculator":2, "roofing-calculator":45, "retaining-wall-calculator":79,
+  "insulation-calculator":21, "board-and-batten-calculator":19.8,
+  "grout-calculator":2, "thinset-calculator":5, "cubic-yard-calculator":1,
+  "concrete-cost-per-yard":[1110,1320], "concrete-slab-cost":[2600,4200],
+  "concrete-patio-cost":[960,3456], "concrete-driveway-cost":[4000,16800],
+  "construction-cost-calculator":[396000,616000], "deck-cost-calculator":[4800,9600],
+  "fence-installation-cost":[3000,9000], "retaining-wall-cost":[3150,5850],
+  "roof-replacement-cost":[6000,12000], "feet-and-inches-calculator":4,
+  "cubic-feet-calculator":24, "board-foot-calculator":58.666666667,
+  "roof-pitch-calculator":6, "stair-calculator":14, "brick-calculator":1509,
+  "ramp-calculator":24, "framing-calculator":26, "rebar-calculator":20,
+  "sod-calculator":2200, "markup-calculator":12000, "labor-cost-calculator":4368,
+  "tank-volume-calculator":94.002980174,
+};
+for (const c of [...require("./src/data/projects").PROJ, ...require("./src/data/costs").COSTS, ...require("./src/data/tools").TOOLS]) {
+  const result = require("./src/assets/project").calculate(c.kind, {...c.example.values, costUnit:c.costUnit});
+  const expected = [].concat(exampleExpected[c.slug]);
+  const actual = [].concat(result.rows[0].value);
+  assert(expected.length === actual.length && actual.every((v,i) => Math.abs(v-expected[i]) < 0.00001), c.slug + ": published example headline");
+  assert(result.rows.every(r => [].concat(r.value).every(Number.isFinite)), c.slug + ": all example outputs finite");
+}
+{
+  const {calc:material} = require("./src/assets/material");
+  const v = {areaFt2:108, depth:3, depthUnit:"in", density:2000, bagSize:3, material:"gravel", price:50, priceUnit:"ton"};
+  const a = material("area",v), b = material("area",{...v,density:3000});
+  assert(a.tons === 1 && b.tons === 1.5, "material: supplier density affects weight");
+  assert(a.bags === 9 && material("area",{...v,bagSize:2}).bags === 14, "material: selected bag size affects count");
+  assert(a.cost === 50 && b.cost === 75, "material: supplier density affects per-ton cost");
+  const {calculate} = require("./src/assets/project");
+  const landings = r => r.rows.find(x => x.label === "Intermediate landings by rise").value;
+  assert(landings(calculate("ramp",{rise:30,slope:16,width:3})) === 0, "ramp: 40ft gentle run with 30in rise needs no intermediate landing by rise");
+  assert(landings(calculate("ramp",{rise:31,slope:12,width:3})) === 1, "ramp: over 30in rise needs an intermediate landing");
+  assert(landings(calculate("ramp",{rise:60,slope:16,width:3})) === 1, "ramp: landings depend on rise, not a fixed horizontal run");
+  let invalidPrices = false;
+  try { calculate("cost",{quantity:10,low:50,high:20}); } catch { invalidPrices = true; }
+  assert(invalidPrices,"cost: reversed price range is rejected");
+}
 const close = (a, b, t = 0.01) => Math.abs(a - b) <= t;
 // Worked example on page: 10x12 ft, 4 in, 10% waste
 let r = calc("slab", { length: 10, lengthUnit: "ft", width: 12, widthUnit: "ft", thickness: 4, thicknessUnit: "in", qty: 1, waste: 10 });

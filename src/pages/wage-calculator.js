@@ -18,9 +18,9 @@ const PER_OPTIONS = [
 function wagePage(cfg) {
   const faq = cfg.faq.concat([
     ["How many work hours are in a year?",
-     "2,080 for a standard full-time job — 40 hours a week times 52 weeks. That figure assumes you are paid for every week including holidays and vacation, which is how salaried roles work. If you take unpaid time off, the hours drop and your real hourly rate rises, because the same pay covers fewer hours."],
+     "2,080 at 40 hours a week for 52 weeks. For hourly or daily pay, unpaid weeks reduce the annual total here. For a weekly, monthly or annual salary, the entered pay is kept fixed; fewer work weeks raise its hourly equivalent. Enter the salary you actually expect to earn after any unpaid leave."],
     ["Does 2,080 hours include holidays and vacation?",
-     "Yes. The 2,080 figure counts every week of the year, so paid holidays and paid vacation are inside it. Only unpaid leave reduces it — set the unpaid weeks field above and the calculator adjusts both the hours and the hourly rate."],
+     "The usual 2,080-hour conversion includes paid holidays and vacation. Use weeks off only for weeks you want excluded from the hours calculation. For salaried pay, the annual total stays as entered; the calculator does not deduct leave from a salary."],
     ["Why is biweekly pay not the same as twice a month?",
      "Every two weeks gives 26 cheques a year; twice a month gives 24. The annual total is the same, so the twice-monthly cheque is larger. Two months each year contain three biweekly cheques, which is where the feeling of a bonus month comes from."],
   ]);
@@ -30,7 +30,7 @@ function wagePage(cfg) {
     title: cfg.title,
     description: cfg.description,
     crumbs: cfg.h1,
-    lastmod: "2026-09-21",
+    lastmod: "2026-09-22",
     schema: [
       {
         "@context": "https://schema.org", "@type": "WebApplication",
@@ -57,30 +57,11 @@ function wagePage(cfg) {
 <p class="lede">${cfg.lede}</p>
 
 <form class="calc" id="wage-form" novalidate>
-  <div class="calc-results" aria-live="polite">
-    <p class="empty-state" id="r-empty">Enter your pay above and press <b>Calculate</b>.</p>
-    <div id="r-out" hidden>
-    <p class="big">${cfg.headline}<strong id="${cfg.headlineId}">$0</strong></p>
-    <ul class="results-list">
-      <li><span>Hourly</span><b id="r-hourly">—</b></li>
-      <li><span>Daily</span><b id="r-daily">—</b></li>
-      <li><span>Weekly</span><b id="r-weekly">—</b></li>
-      <li><span>Every two weeks</span><b id="r-biweekly">—</b></li>
-      <li><span>Twice a month</span><b id="r-semimonthly">—</b></li>
-      <li><span>Monthly</span><b id="r-monthly">—</b></li>
-      <li><span>Annual</span><b id="r-annual">—</b></li>
-      <li><span>Paid hours a year</span><b id="r-hours">—</b></li>
-    </ul>
-    <div class="cost" id="r-ot-box" hidden>Overtime, annual: <b id="r-ot"></b></div>
-    <p class="tip">Gross pay, before tax. For take-home after withholding, use the <a href="/paycheck-calculator/">paycheck calculator</a>.</p>
-    </div>
-  </div>
-
   <div class="calc-inputs">
     <div class="field">
       <label class="label" for="f-amount">${cfg.amountLabel}</label>
       <div class="combo">
-        <input id="f-amount" type="number" inputmode="decimal" min="0" step="any" name="amount" value="">
+        <input id="f-amount" type="number" inputmode="decimal" min="0" max="1000000000" step="any" name="amount" value="" required>
         <select name="per" aria-label="Pay period">
           ${PER_OPTIONS.map(([v, t]) => `<option value="${v}"${v === cfg.defaultPer ? " selected" : ""}>${t}</option>`).join("")}
         </select>
@@ -90,16 +71,16 @@ function wagePage(cfg) {
     <div class="row2">
       <div class="field">
         <label class="label" for="f-hpw">Hours a week</label>
-        <div class="unit"><input id="f-hpw" type="number" inputmode="decimal" min="0" step="any" name="hoursPerWeek" value="40"><em>hrs</em></div>
+        <div class="unit"><input id="f-hpw" type="number" inputmode="decimal" min="0.001" max="168" step="any" name="hoursPerWeek" value="40" required><em>hrs</em></div>
       </div>
       <div class="field">
         <label class="label" for="f-dpw">Days a week</label>
-        <div class="unit"><input id="f-dpw" type="number" inputmode="decimal" min="0" max="7" step="any" name="daysPerWeek" value="5"><em>days</em></div>
+        <div class="unit"><input id="f-dpw" type="number" inputmode="decimal" min="0.001" max="7" step="any" name="daysPerWeek" value="5" required><em>days</em></div>
       </div>
     </div>
 
     <div class="field">
-      <label class="label" for="f-unpaid">Unpaid weeks off <span class="hint">(leave at 0 if your holiday is paid)</span></label>
+      <label class="label" for="f-unpaid">Weeks off <span class="hint">(0 for the usual 52-week conversion)</span></label>
       <div class="unit"><input id="f-unpaid" type="number" inputmode="decimal" min="0" max="51" step="any" name="unpaidWeeks" value="0"><em>wks</em></div>
     </div>
 
@@ -114,7 +95,27 @@ function wagePage(cfg) {
       </div>
     </div>
 
+    <p class="field-help">Hourly and daily pay: weeks off reduce annual earnings. Salary: enter your expected pay after unpaid leave; weeks off only change its hourly equivalent.</p>
     <button type="submit" class="btn-calc">Calculate</button>
+  </div>
+
+  <div class="calc-results" aria-live="polite">
+    <p class="empty-state" id="r-empty">Enter your pay above and press <b>Calculate</b>.</p>
+    <div id="r-out" hidden>
+    <p class="big">${cfg.headline}<strong id="${cfg.headlineId}-headline">$0</strong></p>
+    <ul class="results-list">
+      <li><span>Hourly</span><b id="r-hourly">—</b></li>
+      <li><span>Daily</span><b id="r-daily">—</b></li>
+      <li><span>Weekly</span><b id="r-weekly">—</b></li>
+      <li><span>Every two weeks</span><b id="r-biweekly">—</b></li>
+      <li><span>Twice a month</span><b id="r-semimonthly">—</b></li>
+      <li><span>Monthly</span><b id="r-monthly">—</b></li>
+      <li><span>Annual</span><b id="r-annual">—</b></li>
+      <li><span>Paid hours a year</span><b id="r-hours">—</b></li>
+    </ul>
+    <div class="cost" id="r-ot-box" hidden>Overtime, annual: <b id="r-ot"></b></div>
+    <p class="tip">Gross pay, before tax. For take-home after withholding, use the <a href="/paycheck-calculator/">paycheck calculator</a>.</p>
+    </div>
   </div>
 </form>
 
@@ -137,7 +138,7 @@ ${table(["Annual salary", "Hourly", "Weekly", "Monthly"], [
   ["$100,000", "$48.08", "$1,923.08", "$8,333"],
   ["$150,000", "$72.12", "$2,884.62", "$12,500"],
 ])}
-<p class="note">A quick trick that is close enough for a phone call: halve the hourly rate and drop the thousands. $25 an hour is roughly $50,000 a year. It is out by about 4%, because 2,080 is not quite 2,000.</p>
+<p class="note">A rough full-time shortcut: double the hourly rate and multiply by 1,000. $25 an hour is about $50,000 a year, or exactly $52,000 at 2,080 paid hours.</p>
 
 <h2>Where the simple conversion goes wrong</h2>
 <p>Multiplying by 2,080 is right for most salaried jobs and wrong for several common situations:</p>
