@@ -58,9 +58,7 @@ npm run deploy # test, clean build, then deploy
 
 ## Author
 
-Built and maintained by Știuriuc Sorin-Marian, who also runs
-[salariile.ro](https://salariile.ro) — an independent Romanian salary and tax
-calculator.
+Built and maintained by Știuriuc Sorin-Marian.
 
 [LinkedIn](https://www.linkedin.com/in/%C8%99tiuriuc-sorin-marian/) ·
 [GitHub](https://github.com/xsagul) ·

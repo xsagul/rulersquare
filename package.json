@@ -8,6 +8,7 @@
     "build": "node build.js",
     "check": "node build.js && node test.js && node audit.js",
     "dev": "node build.js --dev",
+    "preview": "node preview.js",
     "deploy": "npm run check && wrangler deploy"
   },
   "keywords": [],

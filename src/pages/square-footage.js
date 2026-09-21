@@ -25,7 +25,7 @@ module.exports = {
   title: "Square Footage Calculator – Area in Sq Ft, Yards & Acres | Ruler Square",
   description: "Free square footage calculator. Add rectangles, circles, triangles and trapezoids to measure any shape, with results in sq ft, sq yards, m² and acres.",
   crumbs: "Square Footage Calculator",
-  lastmod: "2026-09-21",
+  lastmod: "2026-09-22",
   schema: [
     {
       "@context": "https://schema.org", "@type": "WebApplication",
@@ -83,22 +83,6 @@ module.exports = {
 </template>
 
 <form class="calc" id="area-form" novalidate>
-  <div class="calc-results" aria-live="polite">
-    <p class="empty-state" id="r-empty">Enter your measurements above and press <b>Calculate</b>.</p>
-    <div id="r-out" hidden>
-    <p class="big">Total area<strong><span id="r-ft2">0</span> ft&sup2;</strong></p>
-    <ul class="results-list">
-      <li><span>Before waste allowance</span><b id="r-ft2-raw">—</b></li>
-      <li><span>Square yards</span><b id="r-yd2">—</b></li>
-      <li><span>Square meters</span><b id="r-m2">—</b></li>
-      <li><span>Acres</span><b id="r-acres">—</b></li>
-      <li><span>Roofing squares <span class="sub">(100 ft&sup2;)</span></span><b id="r-squares">—</b></li>
-    </ul>
-    <div class="cost" id="r-cost-box" hidden>Estimated cost: <b id="r-cost"></b></div>
-    <p class="tip">Add a section for each part of an irregular space. Areas are added together.</p>
-    </div>
-  </div>
-
   <div class="calc-inputs">
     <div id="sections"></div>
     <button type="button" class="btn-secondary" id="add-section">+ Add another section</button>
@@ -115,6 +99,22 @@ module.exports = {
     </div>
     <p class="note">Waste allowance and price are optional. Add 10–15% for flooring, more for diagonal or patterned layouts.</p>
     <button type="submit" class="btn-calc">Calculate</button>
+  </div>
+
+  <div class="calc-results" aria-live="polite">
+    <p class="empty-state" id="r-empty">Enter your measurements above and press <b>Calculate</b>.</p>
+    <div id="r-out" hidden>
+    <p class="big">Total area<strong><span id="r-ft2">0</span> ft&sup2;</strong></p>
+    <ul class="results-list">
+      <li><span>Before waste allowance</span><b id="r-ft2-raw">—</b></li>
+      <li><span>Square yards</span><b id="r-yd2">—</b></li>
+      <li><span>Square meters</span><b id="r-m2">—</b></li>
+      <li><span>Acres</span><b id="r-acres">—</b></li>
+      <li><span>Roofing squares <span class="sub">(100 ft&sup2;)</span></span><b id="r-squares">—</b></li>
+    </ul>
+    <div class="cost" id="r-cost-box" hidden>Estimated cost: <b id="r-cost"></b></div>
+    <p class="tip">Add a section for each part of an irregular space. Areas are added together.</p>
+    </div>
   </div>
 </form>
 

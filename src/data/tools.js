@@ -194,19 +194,19 @@ const TOOLS = [
     ],
     methodTitle: "The rise sets the run",
     method: "A ramp slope is stated as a ratio: 1:12 means one inch of rise needs twelve inches of run. Once you know the height you have to climb, the horizontal distance is fixed by whichever ratio you are building to. There is no way around it except a steeper slope, which the ADA does not allow on new construction.",
-    formula: "Run (ft) = rise (in) ÷ 12 × slope ratio<br>Sloped length = √(run² + rise²)<br>Landings = one every 30 ft of run",
+    formula: "Run (ft) = rise (in) ÷ 12 × slope ratio<br>Sloped length (ft) = √(run² + (rise in inches ÷ 12)²)<br>Intermediate landings by rise = round up(rise in inches ÷ 30) − 1",
     example: {
       title: "Example: a 24-inch rise at 1:12",
       values: { rise: 24, slope: 12, width: 3 },
-      text: "Twenty-four inches of rise at 1:12 needs 24 feet of run. The sloped surface is 24.08 feet long. At 30 feet maximum between landings this run needs none, but a 36-inch rise would need 36 feet of run and one intermediate landing. At three feet wide that is 72 square feet of decking.",
+      text: "A 24-inch rise at 1:12 needs 24 feet of horizontal run and 24.08 feet of sloped surface. It needs no intermediate landing based on rise alone. A 36-inch rise needs at least one. At three feet wide, the example has 72.25 square feet of sloped surface, excluding the top and bottom landings.",
     },
-    buy: "<p>The ADA maximum for a new ramp is 1:12, with a 30 inch maximum rise between landings and a 30 foot maximum run. Landings must be at least 60 inches long, and top and bottom landings must be as wide as the ramp.</p><p>Handrails are required on both sides when the rise exceeds six inches, along with edge protection. This page sizes geometry only — it does not check compliance or design the structure.</p>",
+    buy: "<p>For ADA-covered ramps, the general running-slope limit is 1:12 and the rise per run is limited to 30 inches. At 1:12 that means 30 feet of run; at gentler slopes the run can be longer. Top and bottom landings need separate space. Changes of direction and doors add clearance requirements.</p><p>Handrails, edge protection, cross slope and clear width also matter. Read the Access Board guide and confirm the rules for your project. This calculator does not check compliance or design the structure.</p>",
     faq: [
       ["How long should a wheelchair ramp be for 2 steps?", "Two standard 7.5 inch steps is a 15 inch rise, which needs 15 feet of run at the ADA 1:12 slope. A steeper 1:8 ramp would only need 10 feet but is not ADA compliant for new construction."],
-      ["Is 1:12 always required?", "For new ADA-covered construction, yes. Existing buildings being altered may use steeper slopes in limited circumstances, and residential ramps are not always ADA-governed. Check what applies to your project."],
-      ["Do I need a landing?", "Yes, at the top and bottom of every ramp, and at every change of direction. An intermediate landing is required at least every 30 feet of run or 30 inches of rise."],
+      ["Is 1:12 always required?", "It is generally the steepest allowed slope for new ADA-covered ramps; gentler slopes are allowed. Limited exceptions exist for alterations. Check whether ADA and other local requirements apply to your project."],
+      ["Do I need a landing?", "Allow top and bottom landings and landings where direction changes. This calculator adds intermediate landings so no run rises more than 30 inches. It does not plan landing size, doors or turns."],
     ],
-    sources: [[ADA, "US Department of Justice — 2010 ADA Standards for Accessible Design"]],
+    sources: [["https://www.access-board.gov/ada/guides/chapter-4-ramps-and-curb-ramps/", "US Access Board — ramp requirements and landings"], [ADA, "US Department of Justice — 2010 ADA Standards for Accessible Design"]],
     related: [link("stair-calculator", "Stair Calculator"), link("deck-calculator", "Deck Calculator"), link("concrete-calculator", "Concrete Calculator")],
   },
   {
@@ -258,9 +258,9 @@ const TOOLS = [
     example: {
       title: "Example: a 20 × 12 ft slab at 18 in centres",
       values: { length: 20, width: 12, spacing: 18, barSize: 4, barLength: 20, waste: 10 },
-      text: "Twelve feet of width at 18 inch centres gives 8 spaces, so 9 bars run the length. Twenty feet gives 14 spaces, so 15 bars run the width. That is 9 × 20 + 15 × 12 = 360 linear feet. In #4 bar at 0.668 lb per foot the mat weighs about 240 pounds, and with a 10% allowance you need 20 twenty-foot bars.",
+      text: "At 18-inch maximum spacing, 9 bars run the 20-foot length and 15 run the 12-foot width: 360 linear feet. The base mat weighs about 240 pounds in #4 bar. With 10% extra, 396 feet is equivalent to 20 twenty-foot stock bars by total length. That is not enough to cut every piece without splicing: without reusing offcuts or splicing, this layout needs at least 24 stock bars before spares. Use a cut schedule for ordering.",
     },
-    buy: "<p>This is a single flat mat without laps. Lap splices typically run 30 to 40 bar diameters, so a #4 bar needs 15 to 20 inches of overlap at every joint — that adds materially to a large slab.</p><p>Chairs or bolsters hold the mat at the correct height in the pour. Rebar lying on the subgrade does nothing structurally.</p><p>Bar size, spacing and cover are engineering decisions. This page counts what you specify; it does not design reinforcement.</p>",
+    buy: "<p>The stock-bar equivalent divides total length by stock length. It does not optimize cuts, reuse offcuts or include splice overlap. A real purchase count can be higher.</p><p>Bar size, spacing, cover, supports and splice length must come from the project’s reinforcement plan. There is no single lap length suitable for every bar and loading condition. This page estimates one flat mat; it does not design reinforcement.</p>",
     faq: [
       ["What spacing should slab rebar be?", "Residential slabs commonly use #3 or #4 bar at 16 to 24 inch centres, but the correct spacing depends on the load, soil and slab thickness. Use the figure from your plans or engineer, not a default."],
       ["How much does rebar weigh?", "Per linear foot: #3 is 0.376 lb, #4 is 0.668 lb, #5 is 1.043 lb, #6 is 1.502 lb. The bar number is the diameter in eighths of an inch, so #4 is half an inch."],

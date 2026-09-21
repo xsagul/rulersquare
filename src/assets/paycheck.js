@@ -123,8 +123,9 @@
   }
   function set(id, text) { var el = document.getElementById(id); if (el) { el.textContent = text; } }
 
-  function update() {
+  function update(report) {
     if (!calculated) { return; }
+    if (!window.RSValidate(form, report === true)) { return; }
     var empty = document.getElementById("r-empty");
     var out = document.getElementById("r-out");
     if (empty) { empty.hidden = true; }
@@ -148,7 +149,7 @@
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     calculated = true;
-    update();
+    update(true);
   });
   form.addEventListener("input", update);
   form.addEventListener("change", update);

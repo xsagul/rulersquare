@@ -5,7 +5,6 @@
  * That matters here because the paycheck and tax pages are YMYL: a financial
  * page with no identifiable author behind it is the weakest kind there is.
  *
- * Same approach as salariile.ro, the author's Romanian salary calculator.
  */
 
 const PERSON_ID = "https://rulersquare.com/#person";
@@ -15,12 +14,11 @@ const AUTHOR = {
   jobTitle: "Full-stack developer",
   url: "https://rulersquare.com/about/",
   description:
-    "Builds and maintains independent calculator sites, including the Romanian salary calculator salariile.ro.",
+    "Builds and maintains Ruler Square’s material, project cost and US pay calculators.",
   sameAs: [
     "https://www.linkedin.com/in/%C8%99tiuriuc-sorin-marian/",
     "https://github.com/xsagul",
     "https://dev.to/sorin_stiuriuc",
-    "https://salariile.ro/despre",
   ],
 };
 

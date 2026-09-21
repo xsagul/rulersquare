@@ -96,6 +96,11 @@
     ["a", "b", "c"].forEach(function (k, i) {
       var wrap = el.querySelector('[data-w="' + k + '"]');
       if (!wrap) { return; }
+      var input = wrap.querySelector("input");
+      input.required = !!labels[i];
+      input.min = "0.001";
+      input.max = "10000000";
+      input.setAttribute("aria-label", labels[i] || "Unused dimension");
       if (labels[i]) {
         wrap.hidden = false;
         wrap.querySelector(".label").textContent = labels[i];
@@ -107,6 +112,8 @@
 
   function addSection() {
     var el = tpl.content.firstElementChild.cloneNode(true);
+    el.querySelector('[data-f="qty"]').setAttribute("aria-label", "Number of identical sections");
+    el.querySelector('[data-f="qty"]').required = true;
     syncFields(el);
     el.querySelector(".section-remove").addEventListener("click", function () {
       if (list.querySelectorAll(".section").length > 1) { el.remove(); update(); }
@@ -119,8 +126,9 @@
 
   function set(id, text) { var el = document.getElementById(id); if (el) { el.textContent = text; } }
 
-  function update() {
+  function update(report) {
     if (!calculated) { return; }
+    if (!window.RSValidate(form, report === true)) { return; }
     var empty = document.getElementById("r-empty");
     var out = document.getElementById("r-out");
     if (empty) { empty.hidden = true; }
@@ -151,11 +159,13 @@
   addSection();
   document.getElementById("add-section").addEventListener("click", function () {
     addSection();
-    update();
+    update(false);
   });
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     calculated = true;
-    update();
+    update(true);
   });
+  form.addEventListener("input", update);
+  form.addEventListener("change", update);
 })();

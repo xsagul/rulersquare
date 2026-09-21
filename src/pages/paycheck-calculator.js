@@ -51,7 +51,7 @@ function paycheckPage(cfg) {
     title: cfg.title,
     description: cfg.description,
     crumbs: cfg.h1,
-    lastmod: "2026-09-21",
+    lastmod: "2026-09-22",
     schema: [
       {
         "@context": "https://schema.org", "@type": "WebApplication",
@@ -81,31 +81,10 @@ Object.keys(window.RS_TAX.FEDERAL_BRACKETS).forEach(function(k){var b=window.RS_
 <p class="lede">${cfg.lede}</p>
 
 <form class="calc" id="paycheck-form" novalidate>
-  <div class="calc-results" aria-live="polite">
-    <p class="empty-state" id="r-empty">Enter your pay above and press <b>Calculate</b>.</p>
-    <div id="r-out" hidden>
-    <p class="big">Take-home pay<strong id="r-net">$0.00</strong></p>
-    <p class="big-alt"><span id="r-net-annual">$0</span> a year</p>
-    <ul class="results-list">
-      <li><span>Gross, annual</span><b id="r-gross-annual">—</b></li>
-      <li><span>Federal income tax</span><b id="r-federal">—</b></li>
-      <li><span>${cfg.stateLabel}</span><b id="r-state">—</b></li>
-      <li><span>Social Security <span class="sub">(6.2%)</span></span><b id="r-ss">—</b></li>
-      <li><span>Medicare <span class="sub">(1.45%)</span></span><b id="r-medicare">—</b></li>
-      <li><span>401(k), pre-tax</span><b id="r-401k">—</b></li>
-      <li><span>Total tax</span><b id="r-total-tax">—</b></li>
-      <li><span>Effective tax rate</span><b id="r-effective">—</b></li>
-      <li><span>Top federal bracket</span><b id="r-marginal">—</b></li>
-      <li><span>You keep</span><b id="r-takehome">—</b></li>
-    </ul>
-    <p class="tip">An estimate for the 2026 tax year. It does not replace your employer's payroll system or advice from a tax professional.</p>
-    </div>
-  </div>
-
   <div class="calc-inputs">
     <div class="field">
       <label class="label" for="f-gross">Gross pay <span class="hint">(per pay period, before anything is taken out)</span></label>
-      <div class="unit"><input id="f-gross" type="number" inputmode="decimal" min="0" step="any" name="gross" value=""><em>$</em></div>
+      <div class="unit"><input id="f-gross" type="number" inputmode="decimal" min="0" max="1000000000" step="any" name="gross" value="" required><em>$</em></div>
     </div>
 
     <div class="field">
@@ -139,6 +118,27 @@ Object.keys(window.RS_TAX.FEDERAL_BRACKETS).forEach(function(k){var b=window.RS_
     <p class="note">${cfg.inputNote}</p>
     <p class="note">Federal withholding assumes one job and no dependents, credits, extra income or W-4 adjustments.</p>
     <button type="submit" class="btn-calc">Calculate</button>
+  </div>
+
+  <div class="calc-results" aria-live="polite">
+    <p class="empty-state" id="r-empty">Enter your pay above and press <b>Calculate</b>.</p>
+    <div id="r-out" hidden>
+    <p class="big">Take-home pay<strong id="r-net">$0.00</strong></p>
+    <p class="big-alt"><span id="r-net-annual">$0</span> a year</p>
+    <ul class="results-list">
+      <li><span>Gross, annual</span><b id="r-gross-annual">—</b></li>
+      <li><span>Federal income tax</span><b id="r-federal">—</b></li>
+      <li><span>${cfg.stateLabel}</span><b id="r-state">—</b></li>
+      <li><span>Social Security <span class="sub">(6.2%)</span></span><b id="r-ss">—</b></li>
+      <li><span>Medicare <span class="sub">(1.45%)</span></span><b id="r-medicare">—</b></li>
+      <li><span>401(k), pre-tax</span><b id="r-401k">—</b></li>
+      <li><span>Total tax</span><b id="r-total-tax">—</b></li>
+      <li><span>Effective tax rate</span><b id="r-effective">—</b></li>
+      <li><span>Top federal bracket</span><b id="r-marginal">—</b></li>
+      <li><span>You keep</span><b id="r-takehome">—</b></li>
+    </ul>
+    <p class="tip">An estimate for the 2026 tax year. It does not replace your employer's payroll system or advice from a tax professional.</p>
+    </div>
   </div>
 </form>
 
