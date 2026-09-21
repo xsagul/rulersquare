@@ -1,0 +1,16 @@
+dist/
+node_modules/
+*.log
+
+# Cloudflare / secrets
+.wrangler/
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
+
+# Private: business strategy, revenue figures, competitor research.
+# The site is open source; the plan behind it is not.
+PROJECT_BRIEF.md
+research/
+.claude/

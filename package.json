@@ -1,0 +1,19 @@
+{
+  "name": "rulersquare",
+  "version": "1.0.0",
+  "description": "Ruler Square - material, cost and paycheck calculators",
+  "main": "build.js",
+  "scripts": {
+    "test": "node test.js",
+    "build": "node build.js",
+    "check": "node build.js && node test.js && node audit.js",
+    "dev": "node build.js --dev",
+    "deploy": "npm run check && wrangler deploy"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "wrangler": "^4.136.0"
+  }
+}
