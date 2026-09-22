@@ -165,6 +165,10 @@
     e.preventDefault();
     calculated = true;
     update(true);
+    // Only when there is something to look at: a failed validation leaves the
+    // empty state in place, and scrolling to it would be a lie.
+    var out = document.getElementById("r-out");
+    if (out && !out.hidden && window.RSRevealResult) { window.RSRevealResult(form); }
   });
   form.addEventListener("input", update);
   form.addEventListener("change", update);

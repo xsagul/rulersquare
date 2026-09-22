@@ -110,7 +110,7 @@ ${page.body}
 </footer>
 <script>window.RS_INDEX=${JSON.stringify(page.index || [])};</script>
 <script src="/assets/nav.js?v=${page.version}" defer></script>
-${/id="(?:material|concrete|wage|paycheck|area)-form"/.test(page.body) ? `<script src="/assets/calc-ui.js?v=${page.version}" defer></script>` : ""}
+${/id="(?:material|concrete|wage|paycheck|area|project)-form"/.test(page.body) ? `<script src="/assets/calc-ui.js?v=${page.version}" defer></script>` : ""}
 ${page.scripts || ""}
 ${page.dev ? `<script src="/assets/devtools.js?v=${page.version}" defer></script>` : ""}
 </body>
