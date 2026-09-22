@@ -34,6 +34,9 @@ const pages = [
   ...require("./src/pages/costs"),
   ...require("./src/pages/tools"),
   require("./src/pages/methodology"),
+  // Temporary A/B trial for measurement diagrams. Remove with its page file
+  // once a style is picked.
+  require("./src/pages/diagram-test"),
 ];
 
 // The search index is derived from the built pages rather than a hand-kept
