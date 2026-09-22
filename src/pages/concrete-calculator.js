@@ -107,12 +107,15 @@ module.exports = {
       ${dim("Thickness", "cThickness", "in")}
     </div>
 
-    <div class="row3">
+    <details class="calc-options">
+    <summary>Quantity, waste allowance &amp; price</summary>
+    <div class="options-body row3">
       ${one("Quantity", "qty", 1, "pcs")}
       ${one("Extra for waste", "waste", 10, "%")}
       ${one("Price", "price", "", "$/yd³", "")}
     </div>
-    <p class="note">Price is optional. Enter your local ready-mix price per cubic yard to estimate the cost.</p>
+    <p class="note">Defaults are one pour with a 10% waste allowance. Enter your local ready-mix price per cubic yard to estimate the cost.</p>
+    </details>
     <button type="submit" class="btn-calc">Calculate</button>
   </div>
 

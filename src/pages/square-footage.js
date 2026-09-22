@@ -87,7 +87,9 @@ module.exports = {
     <div id="sections"></div>
     <button type="button" class="btn-secondary" id="add-section">+ Add another section</button>
 
-    <div class="row3">
+    <details class="calc-options">
+    <summary>Waste allowance &amp; price</summary>
+    <div class="options-body row3">
       <div class="field">
         <label class="label" for="f-waste">Waste allowance</label>
         <div class="unit"><input id="f-waste" type="number" inputmode="decimal" min="0" max="50" step="any" name="wastePct" value=""><em>%</em></div>
@@ -97,7 +99,8 @@ module.exports = {
         <div class="unit"><input id="f-price" type="number" inputmode="decimal" min="0" step="any" name="pricePerFt2" value=""><em>$/ft&sup2;</em></div>
       </div>
     </div>
-    <p class="note">Waste allowance and price are optional. Add 10–15% for flooring, more for diagonal or patterned layouts.</p>
+    <p class="note">Add 10–15% for flooring, more for diagonal or patterned layouts.</p>
+    </details>
     <button type="submit" class="btn-calc">Calculate</button>
   </div>
 

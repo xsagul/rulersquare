@@ -68,6 +68,9 @@ function wagePage(cfg) {
       </div>
     </div>
 
+    <details class="calc-options">
+    <summary>Hours, days, time off &amp; overtime</summary>
+    <div class="options-body">
     <div class="row2">
       <div class="field">
         <label class="label" for="f-hpw">Hours a week</label>
@@ -96,6 +99,8 @@ function wagePage(cfg) {
     </div>
 
     <p class="field-help">Hourly and daily pay: weeks off reduce annual earnings. Salary: enter your expected pay after unpaid leave; weeks off only change its hourly equivalent.</p>
+    </div>
+    </details>
     <button type="submit" class="btn-calc">Calculate</button>
   </div>
 

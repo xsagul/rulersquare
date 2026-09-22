@@ -89,7 +89,6 @@ function projectPage(c) {
       {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Home",item:SITE.url+"/"},{"@type":"ListItem",position:2,name:hub[0],item:SITE.url+"/"+hub[1]+"/"},{"@type":"ListItem",position:3,name:c.h1,item:SITE.url+path}]}],
     scripts: `<script type="application/json" id="project-config">${JSON.stringify({kind:c.kind,costUnit:c.costUnit,example:c.example.values,unitBase:unitBase(c)}).replace(/</g,"\\u003c")}</script><script src="/assets/project.js?v=VERSION" defer></script>`,
     body: `<h1>${esc(c.h1)}</h1><p class="lede">${esc(c.lede)}</p>
-${c.context || ""}
 <form class="calc" id="project-form" novalidate>
   <div class="calc-inputs">
     <p class="calc-step">Your project</p>
@@ -105,6 +104,7 @@ ${c.context || ""}
     <div id="r-out" hidden><p class="big"><span id="result-label"></span><strong id="result-main"></strong></p><ul class="results-list" id="result-rows"></ul><p class="tip" id="result-note"></p></div>
   </section>
 </form>
+${c.context || ""}
 <noscript><p class="note">Turn on JavaScript to use the calculator. The formula and worked example below are available without it.</p></noscript>
 <nav class="jump-links" aria-label="On this page"><a href="#method">How it works</a><a href="#example">Example</a><a href="#before-you-buy">Before you buy</a><a href="#questions">FAQs</a></nav>
 <div class="prose">
