@@ -6,7 +6,19 @@ const { SITE, esc } = require("../layout");
 const UNIT_SETS = {
   length: [["in", "inches"], ["ft", "feet"], ["yd", "yards"], ["cm", "cm"], ["m", "metres"]],
   area: [["ft2", "sq feet"], ["in2", "sq inches"], ["yd2", "sq yards"], ["m2", "sq metres"]],
+  // Suppliers quote ready-mix by the cubic yard, but our own concrete
+  // calculator hands you cubic feet and cubic metres too, so a visitor
+  // carrying either should not have to convert by hand to price the order.
+  volume: [["yd3", "cubic yards"], ["ft3", "cubic feet"], ["m3", "cubic metres"]],
 };
+
+/* The unit a measured field must reach the engine in, derived from its display
+ * unit. "ft²" and "yd³" are how a label reads; "ft2" and "yd3" are what the
+ * conversion tables are keyed by. */
+const UNIT_DEFAULT = { length: "ft", area: "ft²", volume: "yd³" };
+function baseUnit(f) {
+  return String(f.unit || UNIT_DEFAULT[f.units] || "ft").replace("²", "2").replace("³", "3");
+}
 
 function field(f) {
   const attrs = `id="p-${f.name}" name="${f.name}"`;
@@ -19,7 +31,7 @@ function field(f) {
     control = `<div class="select"><select ${attrs}>${f.options.map(([v, label]) => `<option value="${v}"${String(v) === String(f.value) ? " selected" : ""}>${esc(label)}</option>`).join("")}</select></div>`;
   } else if (f.units && UNIT_SETS[f.units]) {
     // The engine still receives f.unit; the selector only says what was typed.
-    const base = f.units === "area" ? (f.unit || "ft²").replace("²", "2") : (f.unit || "ft");
+    const base = baseUnit(f);
     control = `<div class="combo">${input}<select name="${f.name}Unit" aria-label="${esc(f.label)} units">${UNIT_SETS[f.units].map(([v, label]) => `<option value="${v}"${v === base ? " selected" : ""}>${esc(label)}</option>`).join("")}</select></div>`;
   } else {
     control = `<div class="unit">${input}<em>${esc(f.unit || "")}</em></div>`;
@@ -47,9 +59,7 @@ function unitBase(c) {
   const out = {};
   for (const f of [...(c.fields || []), ...(c.advanced || [])]) {
     if (!f.units) continue;
-    out[f.name] = f.units === "area"
-      ? (f.unit || "ft²").replace("²", "2")
-      : (f.unit || "ft");
+    out[f.name] = baseUnit(f);
   }
   return Object.keys(out).length ? out : undefined;
 }
@@ -71,19 +81,22 @@ const MEASURED = {
   "board-and-batten-calculator": ["width", "height"],
   "grout-calculator": ["area"],
   "thinset-calculator": ["area"],
-  "cubic-yard-calculator": ["length", "width"],
+  "cubic-yard-calculator": ["length", "width", "depth"],
   "board-foot-calculator": ["length"],
   "stair-calculator": ["totalRise"],
+  // Rise stays in inches: "rise per 12 in of run" is the trade convention the
+  // number is defined by. The run is a distance you walk with a tape.
+  "roof-pitch-calculator": ["run"],
   "brick-calculator": ["area"],
   "ramp-calculator": ["rise", "width"],
   "framing-calculator": ["length"],
   "rebar-calculator": ["length", "width"],
   "sod-calculator": ["area"],
   "tank-volume-calculator": ["diameter", "length", "width", "height"],
-  // Cost pages measure the same tape-measured rectangle the material pages do.
-  // The unit rate stays per ft² or per linear ft; only what you typed converts.
-  // "quantity:area" and ":length" name the set explicitly, because a field
-  // called `quantity` is an area on a roof and a length on a fence.
+  // Cost pages take the same measurements the material pages do. The unit rate
+  // stays per ft², per linear ft or per yd³; only what you typed converts.
+  // The ":set" suffix is explicit because a field called `quantity` is an area
+  // on a roof, a length on a fence and a volume on a ready-mix order.
   "concrete-slab-cost": ["length", "width"],
   "concrete-patio-cost": ["length", "width"],
   "concrete-driveway-cost": ["length", "width"],
@@ -91,10 +104,11 @@ const MEASURED = {
   "deck-cost-calculator": ["length", "width"],
   "retaining-wall-cost": ["length", "width"],
   "fence-installation-cost": ["quantity:length"],
+  "concrete-cost-per-yard": ["quantity:volume"],
   "roof-replacement-cost": ["quantity:area"],
 };
 const AREA_FIELDS = new Set(["area", "openings"]);
-const VALID_UNIT = { length: new Set(["in", "ft", "yd", "cm", "m"]), area: new Set(["ft2", "in2", "yd2", "m2"]) };
+const VALID_UNIT = Object.fromEntries(Object.entries(UNIT_SETS).map(([k, set]) => [k, new Set(set.map(([v]) => v))]));
 
 function markMeasured(c) {
   const names = MEASURED[c.slug];
@@ -109,8 +123,7 @@ function markMeasured(c) {
     f.units = spec[f.name];
     // A display unit like "linear ft" or "ft³" is a label, not a member of the
     // selector's set. Fall back to the base so an option is actually selected.
-    const base = f.units === "area" ? String(f.unit || "ft²").replace("²", "2") : String(f.unit || "ft");
-    if (!VALID_UNIT[f.units].has(base)) { f.unit = f.units === "area" ? "ft²" : "ft"; }
+    if (!VALID_UNIT[f.units].has(baseUnit(f))) { f.unit = UNIT_DEFAULT[f.units]; }
   }
 }
 

@@ -433,4 +433,31 @@ assert(studs(ft) === studs(yd) && studs(ft) === 19, "units: 24 ft and 8 yd both 
   const roofFt2 = convertUnits({ ...base, quantity: 2000, quantityUnit: "ft2" }, { quantity: "ft2" });
   const roofYd2 = convertUnits({ ...base, quantity: 2000 / 9, quantityUnit: "yd2" }, { quantity: "ft2" });
   assert(close(qty(roofFt2), 2000, 1e-9) && close(qty(roofYd2), 2000, 1e-6), "cost units: a roof in square yards converts to ft2");
+  // Ready-mix is ordered by the cubic yard, but our own concrete calculator
+  // reports cubic feet and cubic metres as well, so both must price the same
+  // order. 6 yd³ = 162 ft³ = 4.5873 m³.
+  const mix = { low: 160, high: 195, delivery: 0, removal: 0, other: 0, waste: 0, costUnit: "yd³" };
+  const inYd3 = convertUnits({ ...mix, quantity: 6, quantityUnit: "yd3" }, { quantity: "yd3" });
+  const inFt3 = convertUnits({ ...mix, quantity: 162, quantityUnit: "ft3" }, { quantity: "yd3" });
+  const inM3 = convertUnits({ ...mix, quantity: 4.587302, quantityUnit: "m3" }, { quantity: "yd3" });
+  assert(close(qty(inYd3), 6, 1e-9), "volume units: 6 yd3 stays 6 yd3");
+  assert(close(qty(inFt3), 6, 1e-9), "volume units: 162 ft3 is 6 yd3");
+  assert(close(qty(inM3), 6, 1e-4), "volume units: 4.5873 m3 is 6 yd3");
+  assert(close(rate(inYd3)[0], 960, 1e-9) && close(rate(inYd3)[1], 1170, 1e-9), "volume units: 6 yd3 at $160-$195 is $960-$1,170");
+  assert(close(rate(inFt3)[0], 960, 1e-9), "volume units: cubic feet give the same budget as cubic yards");
+  // A volume target must not be converted with the area or length table.
+  assert(close(convertUnits({ v: 1, vUnit: "m3" }, { v: "ft3" }).v, 35.314666721, 1e-6), "volume units: 1 m3 -> 35.3147 ft3");
+  assert(close(convertUnits({ v: 1, vUnit: "yd3" }, { v: "ft3" }).v, 27, 1e-9), "volume units: 1 yd3 -> 27 ft3");
+
+  // Depth reaches the cubic-yard engine in inches, because its formula divides
+  // by 324 (12 x 27). Converting it to feet instead would be wrong by 12x.
+  const bed = d => calculate("cubic-yard", convertUnits({ length: 12, width: 9, waste: 0, price: 0, ...d }, { length: "ft", width: "ft", depth: "in" }));
+  const yards = r => r.rows.find(x => x.label === "Volume with allowance").value;
+  assert(close(yards(bed({ depth: 3, depthUnit: "in" })), 1, 1e-9), "depth units: 12 x 9 ft at 3 in is 1 yd3");
+  assert(close(yards(bed({ depth: 0.25, depthUnit: "ft" })), 1, 1e-9), "depth units: a quarter foot of depth is the same cubic yard");
+  // A roof run is walked with a tape; the rise is defined per 12 inches of run.
+  const roof = u => calculate("roof-pitch", convertUnits({ rise: 6, run: u.n, runUnit: u.u }, { run: "ft" }));
+  const rafter = r => r.rows.find(x => x.label === "Rafter length").value;
+  assert(close(rafter(roof({ n: 15, u: "ft" })), rafter(roof({ n: 5, u: "yd" })), 1e-9), "run units: 5 yd of run equals 15 ft");
+  assert(close(rafter(roof({ n: 15, u: "ft" })), 16.7705, 1e-3), "run units: a 6/12 roof over 15 ft needs a 16.77 ft rafter");
 }

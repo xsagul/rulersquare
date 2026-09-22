@@ -237,6 +237,9 @@
    * was typed into the unit the engine expects, then drop the selector key. */
   const TO_FT = { in: 1 / 12, ft: 1, yd: 3, cm: 0.032808399, m: 3.280839895 };
   const TO_FT2 = { in2: 1 / 144, ft2: 1, yd2: 9, m2: 10.763910417 };
+  // Volumes are held in cubic feet, the way areas are held in square feet.
+  // 1 yd³ = 27 ft³ and 1 m³ = 35.3147 ft³.
+  const TO_FT3 = { in3: 1 / 1728, ft3: 1, yd3: 27, m3: 35.314666721 };
   function convertUnits(values, unitBase) {
     Object.keys(values).forEach(k => {
       if (!/Unit$/.test(k)) { return; }
@@ -244,7 +247,7 @@
       const chosen = values[k];
       const target = unitBase && unitBase[base];
       if (typeof values[base] === "number" && target && chosen) {
-        const table = target in TO_FT2 ? TO_FT2 : TO_FT;
+        const table = target in TO_FT3 ? TO_FT3 : (target in TO_FT2 ? TO_FT2 : TO_FT);
         if (table[chosen] && table[target]) {
           values[base] = values[base] * table[chosen] / table[target];
         }

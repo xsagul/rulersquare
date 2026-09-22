@@ -50,7 +50,18 @@ for (const file of htmlFiles) {
   if (canonicals.length !== 1) { fail(`${route}: needs one canonical`); }
   if (h1s.length !== 1) { fail(`${route}: expected one h1, found ${h1s.length}`); }
   if (html.includes("VERSION")) { fail(`${route}: unresolved asset version token`); }
-  if (/salariile\.ro/i.test(html)) { fail(`${route}: unrelated salary-site reference`); }
+  // An options object passed in the `value` argument of a field factory
+  // stringifies into the markup. A number input silently ignores it, so the
+  // page looks right and the mistake survives until someone reads the HTML.
+  if (html.includes("[object Object]")) { fail(`${route}: an object was stringified into the markup`); }
+  // salariile.ro is the author's other calculator site. It belongs in the
+  // Person schema's sameAs, which is how a byline becomes a checkable
+  // identity, and in the about page's account of who maintains this. Anywhere
+  // else it is a leak from the other codebase rather than a deliberate link.
+  const prose = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
+  if (route !== "/about/" && /salariile\.ro/i.test(prose)) {
+    fail(`${route}: salary-site reference outside the author schema`);
+  }
   const ids = matches(html, /\bid="([^"]+)"/g).map(m => m[1]);
   const idSet = new Set(ids);
   if (ids.length !== idSet.size) { fail(`${route}: duplicate element IDs`); }
