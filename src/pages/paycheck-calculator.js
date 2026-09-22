@@ -101,7 +101,9 @@ Object.keys(window.RS_TAX.FEDERAL_BRACKETS).forEach(function(k){var b=window.RS_
       <label><input type="radio" name="status" value="head"><span>Head of household</span></label>
     </fieldset>
 
-    <div class="row3">
+    <details class="calc-options">
+    <summary>Pre-tax deductions &amp; state rate</summary>
+    <div class="options-body row3">
       <div class="field">
         <label class="label" for="f-401k">401(k)</label>
         <div class="unit"><input id="f-401k" type="number" inputmode="decimal" min="0" max="100" step="any" name="pretax401kPct" value=""><em>%</em></div>
@@ -115,6 +117,7 @@ Object.keys(window.RS_TAX.FEDERAL_BRACKETS).forEach(function(k){var b=window.RS_
         <div class="unit"><input id="f-state" type="number" inputmode="decimal" min="0" max="100" step="any" name="stateRatePct" value="${stateRate}"${lockState ? " readonly" : ""}><em>%</em></div>
       </div>
     </div>
+    </details>
     <p class="note">${cfg.inputNote}</p>
     <p class="note">Federal withholding assumes one job and no dependents, credits, extra income or W-4 adjustments.</p>
     <button type="submit" class="btn-calc">Calculate</button>
