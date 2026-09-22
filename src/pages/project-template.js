@@ -80,16 +80,37 @@ const MEASURED = {
   "rebar-calculator": ["length", "width"],
   "sod-calculator": ["area"],
   "tank-volume-calculator": ["diameter", "length", "width", "height"],
+  // Cost pages measure the same tape-measured rectangle the material pages do.
+  // The unit rate stays per ft² or per linear ft; only what you typed converts.
+  // "quantity:area" and ":length" name the set explicitly, because a field
+  // called `quantity` is an area on a roof and a length on a fence.
+  "concrete-slab-cost": ["length", "width"],
+  "concrete-patio-cost": ["length", "width"],
+  "concrete-driveway-cost": ["length", "width"],
+  "construction-cost-calculator": ["length", "width"],
+  "deck-cost-calculator": ["length", "width"],
+  "retaining-wall-cost": ["length", "width"],
+  "fence-installation-cost": ["quantity:length"],
+  "roof-replacement-cost": ["quantity:area"],
 };
 const AREA_FIELDS = new Set(["area", "openings"]);
+const VALID_UNIT = { length: new Set(["in", "ft", "yd", "cm", "m"]), area: new Set(["ft2", "in2", "yd2", "m2"]) };
 
 function markMeasured(c) {
   const names = MEASURED[c.slug];
   if (!names) return;
+  const spec = {};
+  for (const entry of names) {
+    const [name, kind] = entry.split(":");
+    spec[name] = kind || (AREA_FIELDS.has(name) ? "area" : "length");
+  }
   for (const f of [...(c.fields || []), ...(c.advanced || [])]) {
-    if (names.includes(f.name) && !f.options) {
-      f.units = AREA_FIELDS.has(f.name) ? "area" : "length";
-    }
+    if (!spec[f.name] || f.options) continue;
+    f.units = spec[f.name];
+    // A display unit like "linear ft" or "ft³" is a label, not a member of the
+    // selector's set. Fall back to the base so an option is actually selected.
+    const base = f.units === "area" ? String(f.unit || "ft²").replace("²", "2") : String(f.unit || "ft");
+    if (!VALID_UNIT[f.units].has(base)) { f.unit = f.units === "area" ? "ft²" : "ft"; }
   }
 }
 

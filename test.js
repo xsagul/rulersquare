@@ -408,3 +408,29 @@ let yd = calculate("framing", convertUnits({ length: 8, lengthUnit: "yd", spacin
 const studs = r => r.rows.find(x => x.label === "Studs on layout").value;
 assert(studs(ft) === studs(yd) && studs(ft) === 19, "units: 24 ft and 8 yd both give 19 studs");
 }
+
+// Cost pages measure a tape-measured rectangle, so the same slab entered in
+// feet, yards or metres must produce the same budget. The unit rate stays per
+// square foot; only the measurement converts.
+{
+  const { convertUnits, calculate } = require("./src/assets/project.js");
+  const base = { low: 6.5, high: 10.5, delivery: 0, removal: 0, other: 0, waste: 0, costUnit: "ft²" };
+  const rate = v => calculate("cost", v).rows.find(r => r.label === "Planning range").value;
+  const qty = v => calculate("cost", v).rows.find(r => r.label === "Measured quantity").value;
+  const inFeet = convertUnits({ ...base, length: 20, lengthUnit: "ft", width: 20, widthUnit: "ft" }, { length: "ft", width: "ft" });
+  const inYards = convertUnits({ ...base, length: 20 / 3, lengthUnit: "yd", width: 20 / 3, widthUnit: "yd" }, { length: "ft", width: "ft" });
+  const inMetres = convertUnits({ ...base, length: 6.096, lengthUnit: "m", width: 6.096, widthUnit: "m" }, { length: "ft", width: "ft" });
+  assert(close(qty(inFeet), 400, 1e-9), "cost units: 20 x 20 ft is 400 ft2");
+  assert(close(qty(inYards), 400, 1e-6), "cost units: the same slab in yards is still 400 ft2");
+  assert(close(qty(inMetres), 400, 1e-3), "cost units: the same slab in metres is still 400 ft2");
+  assert(close(rate(inFeet)[0], 2600, 1e-9) && close(rate(inFeet)[1], 4200, 1e-9), "cost units: 400 ft2 at $6.50-$10.50 is $2,600-$4,200");
+  assert(close(rate(inYards)[0], 2600, 1e-6), "cost units: yards give the same budget as feet");
+  // A fence is priced per linear foot, so its quantity converts as a length.
+  const fenceFt = convertUnits({ ...base, costUnit: "linear ft", quantity: 150, quantityUnit: "ft" }, { quantity: "ft" });
+  const fenceYd = convertUnits({ ...base, costUnit: "linear ft", quantity: 50, quantityUnit: "yd" }, { quantity: "ft" });
+  assert(close(qty(fenceFt), 150, 1e-9) && close(qty(fenceYd), 150, 1e-9), "cost units: 50 yd of fence is 150 linear ft");
+  // A roof is priced per square foot, so its quantity converts as an area.
+  const roofFt2 = convertUnits({ ...base, quantity: 2000, quantityUnit: "ft2" }, { quantity: "ft2" });
+  const roofYd2 = convertUnits({ ...base, quantity: 2000 / 9, quantityUnit: "yd2" }, { quantity: "ft2" });
+  assert(close(qty(roofFt2), 2000, 1e-9) && close(qty(roofYd2), 2000, 1e-6), "cost units: a roof in square yards converts to ft2");
+}
