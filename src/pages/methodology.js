@@ -36,7 +36,7 @@ module.exports = {
   ],
   body: `
 <h1>Methodology</h1>
-<p class="lede">What every calculator on this site actually does, where its numbers come from, and what it deliberately does not attempt.</p>
+<p class="lede">What each calculator does, where its numbers come from, and its limits.</p>
 
 <div class="prose">
 <h2>The general principle</h2>

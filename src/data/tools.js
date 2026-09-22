@@ -47,7 +47,7 @@ const TOOLS = [
     slug: "cubic-feet-calculator", kind: "cubic-feet", h1: "Cubic Feet Calculator",
     title: "Cubic Feet Calculator — Volume in ft³, Yards & Gallons",
     description: "Calculate cubic feet from length, width and height in any unit, with conversions to cubic yards, cubic metres, US gallons and litres.",
-    lede: "Turn three dimensions into cubic feet, and into every other volume unit you might be quoted in.",
+    lede: "Three dimensions into cubic feet, and every other volume unit.",
     fields: [
       n("length", "Length", "", undefined, { min: 0 }),
       n("width", "Width", "", undefined, { min: 0 }),

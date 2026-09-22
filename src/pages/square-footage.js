@@ -49,7 +49,7 @@ module.exports = {
   scripts: `<script src="/assets/area.js?v=VERSION" defer></script>`,
   body: `
 <h1>Square Footage Calculator</h1>
-<p class="lede">Measure any space, including rooms that are not simple rectangles. Add a section for each part and the calculator adds them up.</p>
+<p class="lede">Measure any space, including odd shapes. Add a section for each part.</p>
 
 <template id="section-tpl">
   <div class="section">
