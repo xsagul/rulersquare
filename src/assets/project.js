@@ -329,7 +329,14 @@
       if (report && window.matchMedia("(max-width: 800px)").matches) document.getElementById("project-result").focus({ preventScroll: false });
     } catch (e) { error.textContent = e.message; error.hidden = false; }
   }
-  form.addEventListener("submit", e => { e.preventDefault(); calculated = true; update(true); });
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    calculated = true;
+    update(true);
+    // Only when there is something to look at: a failed validation leaves the
+    // empty state in place, and scrolling to it would be a lie.
+    if (!output.hidden && window.RSRevealResult) { window.RSRevealResult(form); }
+  });
   form.addEventListener("input", () => update(false));
   form.addEventListener("change", () => update(false));
   document.getElementById("use-example").addEventListener("click", () => {
