@@ -101,8 +101,13 @@ Object.keys(window.RS_TAX.FEDERAL_BRACKETS).forEach(function(k){var b=window.RS_
       <label><input type="radio" name="status" value="head"><span>Head of household</span></label>
     </fieldset>
 
+    ${lockState ? "" : `<div class="field">
+      <label class="label" for="f-state">State tax rate <span class="hint">(rough estimate)</span></label>
+      <div class="unit"><input id="f-state" type="number" inputmode="decimal" min="0" max="100" step="any" name="stateRatePct" value="${stateRate}"><em>%</em></div>
+    </div>`}
+
     <details class="calc-options">
-    <summary>Pre-tax deductions${lockState ? "" : " &amp; state rate"}</summary>
+    <summary>Pre-tax deductions</summary>
     <div class="options-body row3">
       <div class="field">
         <label class="label" for="f-401k">401(k)</label>
@@ -112,10 +117,10 @@ Object.keys(window.RS_TAX.FEDERAL_BRACKETS).forEach(function(k){var b=window.RS_
         <label class="label" for="f-other">Health etc.</label>
         <div class="unit"><input id="f-other" type="number" inputmode="decimal" min="0" step="any" name="pretaxOtherPerPeriod" value=""><em>$</em></div>
       </div>
-      <div class="field">
-        <label class="label" for="f-state">State tax rate${lockState ? "" : ' <span class="hint">(rough estimate)</span>'}</label>
-        <div class="unit"><input id="f-state" type="number" inputmode="decimal" min="0" max="100" step="any" name="stateRatePct" value="${stateRate}"${lockState ? " readonly" : ""}><em>%</em></div>
-      </div>
+      ${lockState ? `<div class="field">
+        <label class="label" for="f-state">State tax rate</label>
+        <div class="unit"><input id="f-state" type="number" inputmode="decimal" min="0" max="100" step="any" name="stateRatePct" value="${stateRate}" readonly><em>%</em></div>
+      </div>` : ""}
     </div>
     </details>
     <p class="note">${cfg.inputNote}</p>
