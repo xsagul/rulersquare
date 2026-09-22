@@ -223,11 +223,8 @@
         const extras = (v.delivery || 0) + (v.removal || 0) + (v.other || 0);
         const low = quantity * v.low + extras;
         const high = quantity * v.high + extras;
-        // The rates sit in the collapsed options, so the result has to say
-        // which ones it used. An estimate whose assumption is out of sight is
-        // exactly the kind of answer this site exists to avoid.
         rows = [row("Planning range", [low * extra, high * extra], "$", 0), row("Measured quantity", quantity, v.costUnit || "ft²", 2), row("Unit rate applied", [v.low, v.high], "$/" + (v.costUnit || "ft²"), 2), row("Work before extras", [quantity * v.low, quantity * v.high], "$", 0), row("Separate extras", extras, "$", 0), row("Contingency", v.waste || 0, "%")];
-        note = "Range based on the unit rate above, not a local bid. Change it under Unit rates, extras & contingency. Add an extra only if the unit rate excludes it. Taxes are not added automatically.";
+        note = "Range based on the unit rates entered above, not a local bid. Add an extra only if the unit rate excludes it. Taxes are not added automatically.";
         break;
       }
       default: throw new Error("Unknown calculator.");

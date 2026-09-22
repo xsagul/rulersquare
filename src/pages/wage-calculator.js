@@ -68,18 +68,17 @@ function wagePage(cfg) {
       </div>
     </div>
 
+    <div class="field">
+      <label class="label" for="f-hpw">Hours a week</label>
+      <div class="unit"><input id="f-hpw" type="number" inputmode="decimal" min="0.001" max="168" step="any" name="hoursPerWeek" value="40" required><em>hrs</em></div>
+    </div>
+
     <details class="calc-options">
-    <summary>Hours, days, time off &amp; overtime</summary>
+    <summary>Days a week, time off &amp; overtime</summary>
     <div class="options-body">
-    <div class="row2">
-      <div class="field">
-        <label class="label" for="f-hpw">Hours a week</label>
-        <div class="unit"><input id="f-hpw" type="number" inputmode="decimal" min="0.001" max="168" step="any" name="hoursPerWeek" value="40" required><em>hrs</em></div>
-      </div>
-      <div class="field">
-        <label class="label" for="f-dpw">Days a week</label>
-        <div class="unit"><input id="f-dpw" type="number" inputmode="decimal" min="0.001" max="7" step="any" name="daysPerWeek" value="5" required><em>days</em></div>
-      </div>
+    <div class="field">
+      <label class="label" for="f-dpw">Days a week</label>
+      <div class="unit"><input id="f-dpw" type="number" inputmode="decimal" min="0.001" max="7" step="any" name="daysPerWeek" value="5" required><em>days</em></div>
     </div>
 
     <div class="field">
