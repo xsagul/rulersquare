@@ -416,3 +416,16 @@ h2 > a:hover { color: var(--accent); text-decoration: underline; }
   .calc-inputs > .btn-calc { order: 1; }
   .calc-inputs > .note { order: 2; margin-top: 16px; margin-bottom: 0; }
 }
+
+/* ---------- Measurement diagrams (A/B trial) ---------- */
+/* Strokes inherit the text colour so one drawing serves both themes; labels
+   take the accent. Sized by max-width, never stretched to the column. */
+.diagram { display: block; height: auto; color: var(--muted); }
+.diagram-label { fill: var(--accent); stroke: var(--accent); }
+.diagram-label text { stroke: none; }
+/* Explicit widths, not just max-width: an SVG with no width attribute has no
+   intrinsic size, so inside a flex row it shrinks to nothing. */
+.diagram-wire { width: 190px; max-width: 100%; }
+.diagram-dim { width: 260px; max-width: 100%; }
+.diagram-figure { margin: 0; flex: 0 0 auto; }
+.diagram-figure figcaption { color: var(--muted); font-size: 14px; margin-top: 6px; }
