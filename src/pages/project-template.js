@@ -26,6 +26,22 @@ function field(f) {
   }
   return `<div class="field"><label class="label" for="p-${f.name}">${esc(f.label)}${f.optional ? ' <span class="hint">(optional)</span>' : ""}</label>${control}${help}</div>`;
 }
+
+/* Fields sharing a `group` are two halves of one reading — feet and inches off
+ * the same tape — so they sit side by side. Five stacked boxes read as five
+ * questions; two pairs and a verb read as the measurement it actually is. */
+function fields(list) {
+  const out = [];
+  for (let i = 0; i < list.length; i++) {
+    const g = list[i].group;
+    if (!g) { out.push(field(list[i])); continue; }
+    const run = [];
+    while (i < list.length && list[i].group === g) { run.push(field(list[i])); i++; }
+    i--;
+    out.push(`<div class="field-pair">${run.join("")}</div>`);
+  }
+  return out.join("\n");
+}
 /* Which unit each measured field must reach the engine in. */
 function unitBase(c) {
   const out = {};
@@ -92,8 +108,8 @@ function projectPage(c) {
 <form class="calc" id="project-form" novalidate>
   <div class="calc-inputs">
     <p class="calc-step">Your project</p>
-    ${c.fields.map(field).join("\n")}
-    ${c.advanced?.length ? `<details class="calc-options"><summary>${esc(c.optionsLabel || "Waste, sizes & optional cost")}</summary><div class="options-body">${c.advanced.map(field).join("\n")}</div></details>` : ""}
+    ${fields(c.fields)}
+    ${c.advanced?.length ? `<details class="calc-options"><summary>${esc(c.optionsLabel || "Waste, sizes & optional cost")}</summary><div class="options-body">${fields(c.advanced)}</div></details>` : ""}
     <p class="form-error" id="form-error" role="alert" hidden></p>
     <button class="btn-calc" type="submit">Calculate</button>
     <div class="calc-actions"><button type="button" id="use-example">Try an example</button><button type="button" id="reset-calc">Reset</button></div>

@@ -303,6 +303,10 @@ h2 > a:hover { color: var(--accent); text-decoration: underline; }
 }
 .combo input:focus-visible, .combo select:focus-visible { outline: 2px solid var(--accent); outline-offset: -1px; }
 .row2 { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; }
+/* Two halves of one reading. Unlike .row2 this keeps both columns on a phone:
+   feet and inches are short numbers, and stacking them turns one measurement
+   into what looks like two separate questions. */
+.field-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; }
 @media (max-width: 480px) { .row2 { grid-template-columns: 1fr; } }
 
 
