@@ -102,7 +102,7 @@ Object.keys(window.RS_TAX.FEDERAL_BRACKETS).forEach(function(k){var b=window.RS_
     </fieldset>
 
     <details class="calc-options">
-    <summary>Pre-tax deductions &amp; state rate</summary>
+    <summary>Pre-tax deductions${lockState ? "" : " &amp; state rate"}</summary>
     <div class="options-body row3">
       <div class="field">
         <label class="label" for="f-401k">401(k)</label>

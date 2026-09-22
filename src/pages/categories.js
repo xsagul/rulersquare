@@ -11,7 +11,7 @@ const CATEGORIES = [
     h1: "Construction Calculators",
     title: "Construction Calculators – Concrete, Asphalt & Area | Ruler Square",
     description: "Free construction calculators for concrete, asphalt and square footage. Estimate materials and cost for slabs, driveways, footings and paving.",
-    lede: "Estimate the materials a build needs, from a concrete slab to a paved driveway, with the formula shown on every page.",
+    lede: "Estimate materials for a build, with the formula shown on every page.",
     intro: "Construction estimating comes down to volume: work out the area, multiply by the thickness, convert to whatever unit your supplier quotes in. These calculators do that conversion and show the arithmetic, so you can sanity-check a quote rather than take it on faith.",
     groups: [
       {
@@ -67,7 +67,7 @@ const CATEGORIES = [
     h1: "Landscaping Calculators",
     title: "Landscaping Calculators – Mulch, Soil, Gravel & Rock | Ruler Square",
     description: "Free landscaping calculators for mulch, topsoil, fill dirt, gravel, river rock and sand. Get cubic yards, tons, bags and delivered cost.",
-    lede: "Work out how much mulch, soil, stone or sand your yard needs, in the units your supplier actually quotes.",
+    lede: "Mulch, soil, stone and sand, in the units your supplier quotes.",
     intro: "Everything in this group is sold by volume or weight and spread to a depth, so the method never changes: measure the area, pick a depth, convert. What changes is the weight per cubic yard, which runs from 800 pounds for bark mulch to 3,000 for crusher run — a factor of nearly four.",
     groups: [
       {

@@ -88,6 +88,12 @@ h1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.15; letter-spacing: -.0
 h2 { font-size: 24px; line-height: 1.25; letter-spacing: -.01em; margin: 40px 0 10px; }
 h3 { font-size: 19px; margin: 24px 0 6px; }
 .lede { font-size: 19px; color: var(--muted); margin: 0 0 22px; max-width: 62ch; }
+/* On a phone the lede is the last thing between the heading and the calculator,
+   so it is sized to hold a one-sentence answer in two lines. At 19px the same
+   sentence ran to four, which is 120px of prose before anyone can type. */
+@media (max-width: 640px) {
+  .lede { font-size: 17px; line-height: 1.45; margin-bottom: 18px; }
+}
 .prose { max-width: 70ch; }
 .prose p, .prose li { color: var(--text); }
 .note { font-size: 15px; color: var(--muted); }

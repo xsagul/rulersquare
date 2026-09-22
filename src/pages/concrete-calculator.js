@@ -76,7 +76,7 @@ module.exports = {
   scripts: `<script src="/assets/concrete.js?v=VERSION" defer></script>`,
   body: `
 <h1>Concrete Calculator</h1>
-<p class="lede">Enter your dimensions to see how many cubic yards of concrete you need, how many bags to buy, and what it will cost.</p>
+<p class="lede">Cubic yards, bags and cost for your slab, footing or column.</p>
 
 <form class="calc" id="concrete-form" novalidate>
   <div class="calc-inputs">

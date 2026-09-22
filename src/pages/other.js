@@ -105,7 +105,7 @@ const home = {
   body: `
 <section class="hero">
   <h1>Find your calculator</h1>
-  <p class="lede">Materials, project costs and pay. ${ALL.length} free calculators with clear answers and the math behind them.</p>
+  <p class="lede">Materials, project costs and pay. ${ALL.length} free calculators that show their math.</p>
   <div class="search">
     <label class="sr-only" for="q">Search calculators</label>
     ${ICONS.search}
@@ -153,7 +153,7 @@ const about = {
   body: `
 <div class="prose">
 <h1>About Ruler Square</h1>
-<p class="lede">Independent calculators for material quantities, project budgets and estimated take-home pay.</p>
+<p class="lede">Independent calculators for materials, project budgets and take-home pay.</p>
 
 <h2>Who maintains the site</h2>
 <p>${AUTHOR.name}, a full-stack developer. I build and maintain Ruler Square’s calculators, their formulas and the explanations on each page.</p>
