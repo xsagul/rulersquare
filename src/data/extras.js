@@ -16,6 +16,58 @@ const HG = "https://homeguide.com/costs/";
 const CN = "https://www.concretenetwork.com/";
 
 const EXTRAS = {
+  "gravel-calculator": `
+<h2 id="types">Types of gravel and what they are for</h2>
+<p>Stone numbers come from the ASTM size standard: the smaller the number, the bigger the stone. Suppliers’ names vary by region, so ask by size as well as by name.</p>
+${table(["Gravel", "Typical size", "Best for"], [["#3 stone", "1–2 in", "Bottom course of a new driveway; drainage"], ["#57 stone", "about ½–1 in", "Middle course, drainage around pipes, under pavers’ base"], ["Crusher run (#411, ABC)", "¾ in down to dust", "Top course or base that compacts hard"], ["Pea gravel", "about ⅜ in, rounded", "Paths, play areas, between stepping stones"], ["River rock", "1–3 in, rounded", "Decorative beds and dry creek beds"]])}
+<p>Rounded gravel never locks together, so it rolls underfoot and ruts under tires. Anything that has to carry a car wants angular, crushed stone.</p>
+<h2 id="driveway">How much gravel for a driveway</h2>
+<p>For a 12 × 50-foot driveway topped up 4 inches deep: 600 ft² × 4 ÷ 324 = 7.4 cubic yards, about 10.4 tons at 1.4 tons per yard. A new driveway on bare soil, built 8–12 inches deep in layers, takes two to three times that. Add 10–15% for compaction on anything that will be driven on.</p>`,
+
+  "stone-calculator": `
+<h2 id="types">Crushed stone sizes</h2>
+${table(["Stone", "Typical size", "Use"], [["#1", "2–4 in", "Construction entrances, heavy base"], ["#3", "1–2 in", "Driveway base course, drainage"], ["#57", "about ½–1 in", "Drainage, pipe bedding, base under pavers"], ["#8", "about ⅜ in", "Paver joints, concrete mix, top dressing"], ["#10 / screenings", "¼ in down to dust", "Leveling layer under pavers and flagstone"], ["Crusher run", "¾ in down to dust", "Compacted base for driveways and slabs"]])}
+<p>Clean stones such as #57 drain because they have no fines. Crusher run and screenings compact into a firm layer because the fines fill the gaps. Pick by whether the layer must drain or must bear load.</p>
+<h2 id="compaction">Allowing for compaction</h2>
+<p>A loose base shrinks when it is plate-compacted, so order more than the finished depth calls for. 10–15% is a common allowance for crusher run under a driveway or slab; clean stone settles less.</p>`,
+
+  "thinset-calculator": `
+<h2 id="trowel">What trowel size for what tile</h2>
+<p>The notch decides how much mortar goes down, so it decides the coverage you type into the calculator. Pick it by the tile’s longest side.</p>
+${table(["Tile", "Trowel", "Coverage per 50 lb bag"], [["Mesh-mounted mosaics", "3/16 in V-notch", "90–100 ft²"], ["4–12 in", "1/4 in square notch", "75–85 ft²"], ["12–16 in", "3/8 in square notch", "60–70 ft²"], ["16 in and larger", "1/2 in square or U-notch", "40–50 ft²"], ["Thicker than 3/8 in", "1/2 in square or U-notch", "40–50 ft²"], ["Setting cement board", "1/4 in square notch", "75–85 ft²"]])}
+${cite("https://www.tileshop.com/resources/installation-videos-and-guides/preparation-and-layout/thinset-and-grout-coverage-info", "Tile Shop, thinset and grout coverage")}
+<p>Enter the low end of the range for your trowel as the coverage above. Large tiles often need the back buttered too, which uses more than the chart allows.</p>
+<h2 id="check">Checking you have enough mortar under the tile</h2>
+<p>Lift a freshly set tile now and then and look at the back. Floors and wet areas need near-complete contact; if you see bare patches or the ridges have not collapsed, switch to a bigger notch or back-butter. That uses more mortar, so recalculate the bags.</p>`,
+
+  "grout-calculator": `
+<h2 id="by-tile">Grout coverage by tile size</h2>
+<p>Bigger tiles mean fewer joints per square foot, so a bag goes further. Narrow joints stretch it further still.</p>
+${table(["Tile", "Joint", "Coverage per 25 lb bag of sanded grout"], [["Ceramic mosaic", "1/8 in", "40–75 ft²"], ["Glass or stone mosaic", "1/8 in", "30–50 ft²"], ["3 × 6 in", "1/8 in", "105–115 ft²"], ["4 in", "1/8 in", "105–115 ft²"], ["8 in", "3/16 in", "95–105 ft²"], ["12 in", "3/16 in", "115–125 ft²"], ["12 × 24 in", "3/16 in", "130–140 ft²"], ["18 in", "3/16 in", "140–150 ft²"], ["24 in", "3/16 in", "190–200 ft²"]])}
+${cite("https://www.tileshop.com/resources/installation-videos-and-guides/preparation-and-layout/thinset-and-grout-coverage-info", "Tile Shop, thinset and grout coverage")}
+<p>These are one retailer’s figures for its own grout. Use the chart printed on the bag you buy; enter its coverage above.</p>
+<h2 id="sanded">Sanded or unsanded</h2>
+<p>Sanded grout is the usual choice for joints of ⅛ inch and wider; the sand stops it shrinking and cracking. Unsanded grout is for narrow joints, typically under ⅛ inch, and for surfaces that sand could scratch. Epoxy grout is a separate product with its own yield.</p>`,
+
+  "insulation-calculator": `
+<h2 id="r-value">What R-value you need, by climate zone</h2>
+<p>ENERGY STAR’s recommendation for adding insulation to an existing wood-framed home. Zone 1 is the far south; zones 7 and 8 are the far north and Alaska.</p>
+${table(["Zone", "Attic, uninsulated", "Attic with 3–4 in already", "Floor"], [["1", "R30", "R25", "R13"], ["2", "R49", "R38", "R13"], ["3", "R49", "R38", "R19"], ["4A and 4B", "R60", "R49", "R19"], ["4C, 5 and 6", "R60", "R49", "R30"], ["7 and 8", "R60", "R49", "R38"]])}
+${cite("https://www.energystar.gov/saveathome/seal_insulate/identify-problems-you-want-fix/diy-checks-inspections/insulation-r-values", "ENERGY STAR, recommended home insulation R-values")}
+<h2 id="walls">Batts for walls</h2>
+<p>A wall cavity limits the R-value it can hold. 2×4 walls take R-13 or R-15 batts; 2×6 walls take R-19 or R-21. Compressing a thicker batt into a shallower cavity lowers its rating rather than adding to it.</p>
+<h2 id="coverage">Using the package coverage</h2>
+<p>Batts and rolls state the square feet they cover. Loose-fill bags state coverage per bag for each target R-value, and that figure changes with depth — use the line on the bag chart for the R-value you are installing.</p>`,
+
+  "siding-calculator": `
+<h2 id="measure">How to measure a house for siding</h2>
+<p><b>Walls:</b> length × height for each rectangular wall, measured from the foundation line to the eaves. <b>Gables:</b> the triangle above the eaves is ½ × width × height from the eave line to the peak. A 30-foot-wide gable that rises 8 feet adds ½ × 30 × 8 = 120 ft².</p>
+<p>Add the faces together, then enter the doors and windows separately so the calculator can take them out. A typical exterior door is about 20 ft², a 3 × 5-foot window 15 ft².</p>
+<h2 id="squares">What a square of siding is</h2>
+<p>One square covers 100 ft² of wall. Siding is priced and ordered by the square, so 1,540 ft² of wall with allowance is 15.4 squares — order 16. A box of vinyl siding commonly covers two squares, but check the label: profiles differ.</p>
+<h2 id="waste">How much extra to order</h2>
+<p>10% is usual for a plain, rectangular house. Gables, dormers and many windows mean more cut pieces; 15% is safer there. Trim, J-channel, corners, soffit and starter strip are separate and are measured by the linear foot.</p>`,
+
   "concrete-driveway-cost": `
 <h2 id="by-finish">Concrete driveway cost by finish</h2>
 <p>The finish moves the price more than anything else on a driveway of a given size.</p>
@@ -112,12 +164,16 @@ ${table(["Angle", "Pitch"], [5, 10, 15, 18.43, 20, 22.62, 25, 26.57, 30, 33.69, 
 ${table(["Measured in", "Multiply the volume by", "Example"], [["Cubic meters", "35.3147", "2 m³ = 70.63 ft³"], ["Cubic centimeters", "÷ 28,317", "50,000 cm³ = 1.77 ft³"], ["Cubic yards", "27", "3 yd³ = 81 ft³"], ["Liters", "÷ 28.317", "100 L = 3.53 ft³"]])}
 <h2 id="shapes">Cylinders and irregular spaces</h2>
 <p><b>Cylinder:</b> π × radius² × height, all in feet. A round planter 2 feet across and 3 feet deep holds 3.1416 × 1² × 3 = 9.42 ft³.</p>
-<p><b>L-shaped or stepped spaces:</b> split them into rectangles, work out each one and add them. A closet with a 4 × 3-ft section and a 2 × 2-ft alcove, both 8 ft high, is (12 + 4) × 8 = 128 ft³.</p>`,
+<p><b>L-shaped or stepped spaces:</b> split them into rectangles, work out each one and add them. A closet with a 4 × 3-ft section and a 2 × 2-ft alcove, both 8 ft high, is (12 + 4) × 8 = 128 ft³.</p>
+${table(["Shape", "Cubic feet, all measurements in feet"], [["Box", "length × width × height"], ["Cylinder", "3.1416 × radius² × height"], ["Cone", "3.1416 × radius² × height ÷ 3"], ["Sphere", "4.1888 × radius³"], ["Triangular prism", "base × height of the triangle ÷ 2 × length"]])}`,
 
   "cubic-yard-calculator": `
-<h2 id="how">How to calculate cubic yards</h2>
+<h2 id="what">What is a cubic yard?</h2>
+<p>A cube 3 feet on every side: 3 × 3 × 3 = 27 cubic feet, about 0.76 cubic meters. It is the unit ready-mix concrete, mulch, topsoil and most bulk landscape material are sold in. A full-size pickup bed holds about two cubic yards level, but volume is not the limit: one yard of gravel weighs around 2,800 lb, more than many half-ton pickups are rated to carry.</p>
+<h2 id="how">Cubic yards from feet, inches or meters</h2>
 <p>With every side in feet: length × width × height ÷ 27. With the depth in inches, which is how most projects are measured: length × width × depth ÷ 324. A 12 × 9-ft bed 3 inches deep is 12 × 9 × 3 ÷ 324 = 1 cubic yard.</p>
 <p>From cubic feet, divide by 27. From cubic meters, multiply by 1.308.</p>
+<p><b>Round areas:</b> 3.1416 × radius² gives the area in square feet; multiply by the depth in inches and divide by 324. A round bed 10 feet across, 3 inches deep: 3.1416 × 25 × 3 ÷ 324 = 0.73 cubic yards.</p>
 <h2 id="to-tons">Cubic yards to tons</h2>
 <p>Volume does not tell you weight; the material does. These are the starting densities our material calculators use, which you can replace with your supplier’s figure.</p>
 ${table(["Material", "lb per yd³", "US tons per yd³"], MATERIALS.filter(m => m.lbPerYd3).map(m => [m.name, num(m.lbPerYd3), num(m.lbPerYd3 / 2000, 2)]))}`,
@@ -139,7 +195,9 @@ ${table(["Cost", "Typical amount"], [["Social Security and Medicare (employer sh
 <h2 id="percentage">Labor cost percentage</h2>
 <p>Labor cost ÷ revenue × 100. A job billed at $12,000 with $4,368 of burdened labor runs at 36.4% labor. Track it per job type: if it creeps up, either the estimate or the crew’s hours are off.</p>
 <h2 id="billable">Paid hours are not billable hours</h2>
-<p>Travel, material runs, setup and cleanup are paid but rarely billed by the hour. Estimate the hours a crew is on the clock, not only the hours on the task.</p>`,
+<p>Travel, material runs, setup and cleanup are paid but rarely billed by the hour. Estimate the hours a crew is on the clock, not only the hours on the task.</p>
+<h2 id="direct">Direct and indirect labor</h2>
+<p><b>Direct labor</b> is the crew working on the job — the hours this calculator prices. <b>Indirect labor</b> is everyone the business pays who does not work on a specific job: an estimator, a dispatcher, the owner’s time spent selling. Indirect labor belongs in overhead, recovered through markup, not in the job’s labor line.</p>`,
 
   "feet-and-inches-calculator": `
 <h2 id="add">How to add feet and inches by hand</h2>
@@ -147,7 +205,11 @@ ${table(["Cost", "Typical amount"], [["Social Security and Medicare (employer sh
 <h2 id="subtract">How to subtract</h2>
 <p>If the inches you are taking away are larger, borrow a foot as 12 inches. 8 ft 7 in − 3 ft 11 in: borrow, so 7 ft 19 in − 3 ft 11 in = 4 ft 8 in.</p>
 <h2 id="convert">Converting to decimals and metric</h2>
-<p>Inches ÷ 12 gives decimal feet: 9 ft 4 in is 9 + 4 ÷ 12 = 9.333 ft. Total inches × 2.54 gives centimeters: 112 in × 2.54 = 284.5 cm.</p>`,
+<p>Inches ÷ 12 gives decimal feet: 9 ft 4 in is 9 + 4 ÷ 12 = 9.333 ft. Total inches × 2.54 gives centimeters: 112 in × 2.54 = 284.5 cm.</p>
+<h2 id="multiply">Multiplying and dividing</h2>
+<p>Convert to inches first. Six boards of 2 ft 7 in: 31 in × 6 = 186 in = 15 ft 6 in. Dividing a 10 ft 4 in wall into 4 equal bays: 124 in ÷ 4 = 31 in = 2 ft 7 in each.</p>
+<h2 id="notation">How feet and inches are written</h2>
+<p>A single prime mark means feet and a double prime means inches: 5′ 9″ is five feet nine inches. On plans you will also see 5'-9", with a hyphen between the parts so the inches are not misread as a separate dimension.</p>`,
 
   "markup-calculator": `
 <h2 id="formulas">Markup and margin formulas</h2>

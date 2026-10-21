@@ -26,7 +26,7 @@ const TOOLS = [
       n("bFeet", "Second, feet", "ft", 0, { min: 0, group: "b" }),
       n("bInches", "Second, inches", "in", 0, { min: 0, step: "any", group: "b" }),
     ],
-    methodTitle: "Why mixed units trip people up",
+    methodTitle: "How to calculate feet and inches",
     method: "Feet and inches are base twelve, so you cannot add them the way you add decimals. Convert both readings to inches, do the arithmetic, then convert back. That is all this page does, but it removes the step where most errors happen — borrowing twelve inches when subtracting.",
     formula: "Total inches = feet × 12 + inches<br>Result feet = whole part of (total ÷ 12)<br>Result inches = remainder",
     example: {
@@ -55,7 +55,7 @@ const TOOLS = [
       n("unit", "Units", "", "ft", { options: [["in", "inches"], ["ft", "feet"], ["yd", "yards"], ["cm", "centimetres"], ["m", "metres"]] }),
     ],
     advanced: [waste(0)],
-    methodTitle: "Volume is three dimensions, in the same unit",
+    methodTitle: "How to calculate cubic feet",
     method: "Multiply length by width by height, with all three in the same unit. The mistake that ruins most volume estimates is mixing units — measuring a room in feet and its depth in inches, then multiplying. Pick one unit here and the conversion is handled for you.",
     formula: "Cubic feet = length × width × height, all in feet<br>Cubic yards = cubic feet ÷ 27 &nbsp;•&nbsp; US gallons = cubic feet × 7.48",
     example: {
@@ -84,7 +84,7 @@ const TOOLS = [
       n("pieces", "Number of pieces", "", 1, { min: 1, step: 1 }),
     ],
     advanced: [waste(10), price("Price per board foot", "$/bf")],
-    methodTitle: "What a board foot actually measures",
+    methodTitle: "How to calculate board feet",
     method: "A board foot is 144 cubic inches of lumber — a piece one inch thick, twelve inches wide and one foot long. Hardwood and rough stock are sold this way because it prices volume rather than length, so a wide board costs more per foot than a narrow one.",
     formula: "Board feet per piece = thickness (in) × width (in) × length (ft) ÷ 12<br>Order = board feet × pieces × (1 + waste % ÷ 100)",
     example: {
@@ -110,7 +110,7 @@ const TOOLS = [
       n("rise", "Rise, per 12 in of run", "in", 6, { min: 0, step: "any" }),
       n("run", "Horizontal run, wall to ridge", "ft", undefined, { min: 0 }),
     ],
-    methodTitle: "Pitch, angle and multiplier are three views of one number",
+    methodTitle: "How to calculate roof pitch",
     method: "US roofing states pitch as rise over a twelve-inch run: a 6/12 roof climbs six inches for every twelve it travels horizontally. From that single ratio you get the angle in degrees, the multiplier that converts footprint area to sloped area, and the rafter length for any run.",
     formula: "Angle = arctan(rise ÷ 12)<br>Slope multiplier = √(rise² + 144) ÷ 12<br>Rafter length = run × multiplier",
     example: {
@@ -137,7 +137,7 @@ const TOOLS = [
       n("maxRiser", "Maximum riser height allowed", "in", 7.75, { min: 4, max: 9, step: "any" }),
       n("treadDepth", "Tread depth", "in", 10, { min: 8, max: 14, step: "any" }),
     ],
-    methodTitle: "The rise decides the riser count, not your preference",
+    methodTitle: "How to calculate stairs",
     method: "Divide the total rise by the largest riser your code allows and round up. That gives the riser count. Then divide the total rise by that count to get the exact riser height, which is what you actually cut — every riser in a flight must match within three eighths of an inch, so you cannot round each one.",
     formula: "Risers = round up(total rise ÷ maximum riser)<br>Actual riser = total rise ÷ risers<br>Treads = risers − 1<br>Stringer = √(total rise² + total run²)",
     example: {
@@ -165,7 +165,7 @@ const TOOLS = [
       n("unitHeight", "Unit height", "in", 2.25, { min: 0, step: "any" }),
     ],
     advanced: [n("joint", "Mortar joint", "in", 0.375, { min: 0, step: "any" }), waste(10), price("Price per unit", "$/unit")],
-    methodTitle: "The joint is part of the unit",
+    methodTitle: "How to calculate how many bricks you need",
     method: "A brick does not occupy its own size on a wall — it occupies its size plus one mortar joint in each direction. Add the joint to the length and to the height, multiply to get the area each unit covers, then divide the wall area by that figure.",
     formula: "Area per unit = (length + joint) × (height + joint) ÷ 144<br>Units = wall area ÷ area per unit × (1 + waste % ÷ 100)",
     example: {
@@ -192,7 +192,7 @@ const TOOLS = [
       n("slope", "Slope ratio, 1 in", "", 12, { min: 4, max: 20, step: "any", hint: "12 is the ADA maximum for a new ramp." }),
       n("width", "Ramp width", "ft", 3, {units:"length", min: 0, step: "any" }),
     ],
-    methodTitle: "The rise sets the run",
+    methodTitle: "How to calculate ramp length",
     method: "A ramp slope is stated as a ratio: 1:12 means one inch of rise needs twelve inches of run. Once you know the height you have to climb, the horizontal distance is fixed by whichever ratio you are building to. There is no way around it except a steeper slope, which the ADA does not allow on new construction.",
     formula: "Run (ft) = rise (in) ÷ 12 × slope ratio<br>Sloped length (ft) = √(run² + (rise in inches ÷ 12)²)<br>Intermediate landings by rise = round up(rise in inches ÷ 30) − 1",
     example: {
@@ -220,7 +220,7 @@ const TOOLS = [
       n("corners", "Corners and intersections", "", 0, { min: 0, step: 1 }),
     ],
     advanced: [waste(10), price("Price per stud", "$/stud")],
-    methodTitle: "Layout plus one, then add the corners",
+    methodTitle: "How to calculate studs for a wall",
     method: "Studs on layout are the wall length divided by the spacing, plus one for the far end. Corners and wall intersections need additional studs to provide backing and a nailing surface — two extra per corner is the usual allowance for a standard three-stud corner.",
     formula: "Studs on layout = round up(length × 12 ÷ spacing) + 1<br>Plate material = wall length × 3, for a double top plate and single bottom plate",
     example: {
@@ -252,7 +252,7 @@ const TOOLS = [
       n("barLength", "Stock bar length", "ft", 20, { min: 1 }),
       waste(10), price("Price per bar", "$/bar"),
     ],
-    methodTitle: "Two directions, counted separately",
+    methodTitle: "How to calculate rebar for a slab",
     method: "A slab mat runs bars in both directions. Count the bars running the length by dividing the width by the spacing and adding one, then do the reverse for the other direction. Multiply each count by the span it crosses to get linear feet, and divide by your stock length for a bar count.",
     formula: "Bars one way = round up(width × 12 ÷ spacing) + 1<br>Linear feet = bars one way × length + bars other way × width<br>Weight = linear feet × weight per foot for the bar size",
     example: {
@@ -279,7 +279,7 @@ const TOOLS = [
       n("rollArea", "Area per roll or slab", "ft²", 10, { min: 0.5, step: "any", hint: "A common US slab is 16 × 24 in, which is 2.67 ft²." }),
     ],
     advanced: [n("perPallet", "Pieces per pallet", "", 50, { min: 1, step: 1 }), waste(10), price("Price per ft²", "$/ft²")],
-    methodTitle: "Order by area, then convert",
+    methodTitle: "How to calculate how much sod you need",
     method: "Sod is grown and priced by area but delivered in rolls or slabs on pallets, and both vary by region. Work out the area first, add an allowance for trimming to curved edges, then convert using your supplier's actual piece size rather than a default.",
     formula: "Area to order = lawn area × (1 + waste % ÷ 100)<br>Pieces = round up(area ÷ area per piece)<br>Pallets = round up(pieces ÷ pieces per pallet)",
     example: {
@@ -305,7 +305,7 @@ const TOOLS = [
       n("cost", "Your total cost", "$", undefined, { min: 0, step: "any" }),
       n("markup", "Markup on cost", "%", 20, { min: 0, max: 500, step: "any" }),
     ],
-    methodTitle: "Markup and margin are different numbers",
+    methodTitle: "How to calculate markup",
     method: "Markup is a percentage added to what the job costs you. Margin is the percentage of the price you charge that you keep. They are not the same, and confusing them is the most common way a contractor prices a job at less profit than intended.",
     formula: "Price = cost × (1 + markup % ÷ 100)<br>Profit = price − cost<br>Margin = profit ÷ price × 100",
     example: {
@@ -333,7 +333,7 @@ const TOOLS = [
       n("workers", "Number of workers", "", 1, { min: 1, step: 1 }),
     ],
     advanced: [n("burden", "Labor burden", "%", 30, { min: 0, max: 200, step: "any", hint: "Payroll taxes, insurance and benefits on top of the wage." })],
-    methodTitle: "The wage is not the cost",
+    methodTitle: "How to calculate labor cost",
     method: "What you pay an employee per hour and what that hour costs your business are different numbers. Payroll taxes, workers compensation, liability insurance, paid time off and any benefits all sit on top of the wage. That addition is the labor burden, and ignoring it is how a job that looked profitable is not.",
     formula: "Burdened rate = wage × (1 + burden % ÷ 100)<br>Total = burdened rate × hours × workers",
     example: {
@@ -362,7 +362,7 @@ const TOOLS = [
       n("width", "Width, rectangular only", "in", 0, { min: 0, step: "any" }),
       n("height", "Height or depth", "in", undefined, { min: 0, step: "any" }),
     ],
-    methodTitle: "Volume first, then convert",
+    methodTitle: "How to calculate tank volume",
     method: "Work out the internal volume in cubic inches or cubic feet, then convert. A cylinder is π times the radius squared times the height; a rectangular tank is simply length times width times height. Everything after that is a unit conversion.",
     formula: "Cylinder: π × (diameter ÷ 2)² × height<br>Rectangle: length × width × height<br>US gallons = cubic feet × 7.48",
     example: {

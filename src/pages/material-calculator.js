@@ -2,6 +2,22 @@ const { SITE, esc } = require("../layout");
 const { MATERIALS } = require("../data/materials");
 const { placeOf } = require("./categories");
 const { slab, round, shapeSet } = require("../diagrams");
+const { EXTRAS } = require("../data/extras");
+
+/* "How many tons in a yard of gravel" and "how much gravel for 200 sq ft"
+ * are the questions the top-ranking pages answer under the calculator. Both
+ * tables come from the same densities the calculator starts from. */
+function weightTables(cfg, options) {
+  const name = cfg.materialName || cfg.h1.replace(/ Calculator$/, "");
+  const depths = [2, 3, 4, 6];
+  return `<h2 id="tons-per-yard">How many tons in a yard of ${cfg.noun}?</h2>
+<p>Weight per cubic yard depends on the material, its particle size and how wet it is. These are the loose, delivered ranges this calculator starts from; turned around, they give yards per ton.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Material</th><th scope="col">Tons per cubic yard</th><th scope="col">Cubic yards per ton</th></tr></thead><tbody>${options.map(m => `<tr><th scope="row">${esc(m.name)}</th><td>${m.lowTons.toFixed(1)}–${m.highTons.toFixed(1)}</td><td>${(1 / m.highTons).toFixed(2)}–${(1 / m.lowTons).toFixed(2)}</td></tr>`).join("")}</tbody></table></div>
+<h2 id="by-area">${esc(name)} needed by area and depth</h2>
+<p>Tons at the starting ${cfg.lbPerYd3.toLocaleString("en-US")} lb per cubic yard, before any allowance for compaction or spillage.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Area</th>${depths.map(d => `<th scope="col">${d} in deep</th>`).join("")}</tr></thead><tbody>${[100, 200, 300, 500, 1000].map(a => `<tr><th scope="row">${a.toLocaleString("en-US")} ft²</th>${depths.map(d => `<td>${(a * d / 324 * cfg.lbPerYd3 / 2000).toFixed(1)} t</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+<p class="note">${cfg.lbPerYd3 < 1500 ? "Most buyers order this by the cubic yard rather than the ton; the yards are in the coverage table above." : "Divide by the tons per cubic yard above to get yards."}</p>`;
+}
 
 function dim(label, name, unit) {
   return `<div class="field"><label class="label" for="f-${name}">${label}</label><div class="combo"><input id="f-${name}" name="${name}" type="number" inputmode="decimal" min="0.001" max="10000000" step="any" required><select name="${name}Unit" aria-label="${label} units">${[["in","inches"],["ft","feet"],["yd","yards"],["cm","cm"],["m","meters"]].map(([v,t])=>`<option value="${v}"${v===unit?" selected":""}>${t}</option>`).join("")}</select></div></div>`;
@@ -60,7 +76,7 @@ function materialPage(cfg) {
   </section>
 </form>
 <noscript><p>Enable JavaScript to calculate, or use the formula below.</p></noscript>
-<nav class="jump-links" aria-label="On this page"><a href="#method">How it works</a><a href="#example">Example</a><a href="#coverage">Coverage</a><a href="#questions">FAQs</a></nav>
+<nav class="jump-links" aria-label="On this page"><a href="#method">How it works</a><a href="#example">Example</a><a href="#coverage">Coverage</a><a href="#tons-per-yard">Tons per yard</a><a href="#by-area">By area</a><a href="#questions">FAQs</a></nav>
 <div class="prose">
 <h2 id="method">How much ${cfg.noun} do you need?</h2><p>${cfg.intro}</p>
 <div class="formula">Cubic yards = area (ft²) × depth (in) ÷ 324<br>Adjusted yards = cubic yards × (1 + allowance % ÷ 100)<br>US tons = adjusted yards × density (lb/yd³) ÷ 2,000</div>
@@ -69,6 +85,7 @@ function materialPage(cfg) {
 <h2 id="coverage">Coverage by depth</h2>
 <div class="table-wrap"><table><thead><tr><th scope="col">Layer depth</th><th scope="col">Area per cubic yard</th></tr></thead><tbody>${[[1,324],[2,162],[3,108],[4,81],[6,54]].map(([d,a])=>`<tr><th scope="row">${d} in</th><td>${a} ft²</td></tr>`).join("")}</tbody></table></div>
 <p class="note">Exact geometry before allowance. The table does not recommend a depth for your project.</p>
+${weightTables(cfg, options)}${EXTRAS[cfg.path.replace(/\//g, "")] || ""}
 <h2>Depth and ordering</h2><p>${cfg.depthProse}</p>
 <p>For weight-based quotes, use US short tons of 2,000 pounds. Confirm whether a supplier quotes loose or compacted volume. The displayed half-yard and half-ton rounding are examples of order increments, not rules every supplier uses.</p>
 <h2>Cost and delivery</h2><p>Enter a local material quote per ton or per cubic yard. The estimate excludes delivery, labor, tax and minimum-load fees. It prices the calculated quantity before order rounding; ask the supplier to confirm the final order and bill.</p>
