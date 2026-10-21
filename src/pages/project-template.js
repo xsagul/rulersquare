@@ -3,6 +3,7 @@ const { siblingsOf } = require("./categories");
 const { diagramFor } = require("../diagrams");
 const { chartsFor } = require("../data/charts");
 const { EXTRAS } = require("../data/extras");
+const { byline, authorRef, UPDATED } = require("../author");
 
 /* A field the visitor measures on site gets a unit selector; a field that is a
  * product spec or a trade constant keeps its fixed unit. Nominal lumber
@@ -157,9 +158,9 @@ function projectPage(c) {
   const category = c.category || "construction";
   const hub = {construction:["Construction","construction-calculators"],landscaping:["Landscaping","landscaping-calculators"],cost:["Project costs","cost-calculators"],pay:["Pay & Taxes","pay-calculators"]}[category] || ["Construction","construction-calculators"];
   return {
-    path, title: c.title + " | Ruler Square", description: c.description, crumbs: c.h1, lastmod: "2026-09-22",
+    path, title: c.title + " | Ruler Square", description: c.description, crumbs: c.h1, lastmod: UPDATED.iso,
     category: c.category || "construction",
-    schema: [{"@context":"https://schema.org","@type":"WebApplication",name:c.h1,url:SITE.url+path,applicationCategory:"UtilitiesApplication",operatingSystem:"Any",offers:{"@type":"Offer",price:0,priceCurrency:"USD"}},
+    schema: [{"@context":"https://schema.org","@type":"WebApplication",name:c.h1,author:authorRef,url:SITE.url+path,applicationCategory:"UtilitiesApplication",operatingSystem:"Any",offers:{"@type":"Offer",price:0,priceCurrency:"USD"}},
       {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Home",item:SITE.url+"/"},{"@type":"ListItem",position:2,name:hub[0],item:SITE.url+"/"+hub[1]+"/"},{"@type":"ListItem",position:3,name:c.h1,item:SITE.url+path}]},
       {"@context":"https://schema.org","@type":"FAQPage",mainEntity:c.faq.map(([q,a])=>({"@type":"Question",name:q,acceptedAnswer:{"@type":"Answer",text:a}}))}],
     scripts: `<script type="application/json" id="project-config">${JSON.stringify({kind:c.kind,costUnit:c.costUnit,example:c.example.values,unitBase:unitBase(c)}).replace(/</g,"\\u003c")}</script><script src="/assets/project.js?v=VERSION" defer></script>`,
@@ -181,6 +182,7 @@ function projectPage(c) {
 </form>
 ${c.context || ""}
 <noscript><p class="note">Turn on JavaScript to use the calculator. The formula and worked example below are available without it.</p></noscript>
+${byline()}
 <nav class="jump-links" aria-label="On this page"><a href="#method">How it works</a><a href="#example">Example</a>${charts.map(t=>`<a href="#${t.id}">${esc(t.jump)}</a>`).join("")}<a href="#before-you-buy">Before you buy</a><a href="#questions">FAQs</a></nav>
 <div class="prose">
   <h2 id="method">${esc(c.methodTitle)}</h2><p>${c.method}</p><div class="formula">${c.formula}</div>

@@ -3,6 +3,7 @@ const { MATERIALS } = require("../data/materials");
 const { placeOf } = require("./categories");
 const { slab, round, shapeSet } = require("../diagrams");
 const { EXTRAS } = require("../data/extras");
+const { byline, authorRef, UPDATED } = require("../author");
 
 /* "How many tons in a yard of gravel" and "how much gravel for 200 sq ft"
  * are the questions the top-ranking pages answer under the calculator. Both
@@ -33,8 +34,8 @@ function materialPage(cfg) {
   const hub = (placeOf(cfg.path) || {}).cat;
   const faq = [...cfg.faq, [`How much area does one cubic yard of ${cfg.noun} cover?`, "One cubic yard covers 162 square feet at 2 inches deep, 108 at 3 inches or 81 at 4 inches, before any extra allowance."]];
   return {
-    path: cfg.path, title: cfg.title, description: cfg.description, crumbs: cfg.h1, lastmod:"2026-09-22",
-    schema:[{"@context":"https://schema.org","@type":"WebApplication",name:cfg.h1,url:SITE.url+cfg.path,applicationCategory:"UtilitiesApplication",operatingSystem:"Any",offers:{"@type":"Offer",price:0,priceCurrency:"USD"}},
+    path: cfg.path, title: cfg.title, description: cfg.description, crumbs: cfg.h1, lastmod: UPDATED.iso,
+    schema:[{"@context":"https://schema.org","@type":"WebApplication",name:cfg.h1,author:authorRef,url:SITE.url+cfg.path,applicationCategory:"UtilitiesApplication",operatingSystem:"Any",offers:{"@type":"Offer",price:0,priceCurrency:"USD"}},
       {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Home",item:SITE.url+"/"},...(hub?[{"@type":"ListItem",position:2,name:hub.h1,item:SITE.url+hub.path}]:[]),{"@type":"ListItem",position:hub?3:2,name:cfg.h1,item:SITE.url+cfg.path}]},
       {"@context":"https://schema.org","@type":"FAQPage",mainEntity:faq.map(([q,a])=>({"@type":"Question",name:q,acceptedAnswer:{"@type":"Answer",text:a}}))}],
     scripts:'<script src="/assets/material.js?v=VERSION" defer></script>',
@@ -76,6 +77,7 @@ function materialPage(cfg) {
   </section>
 </form>
 <noscript><p>Enable JavaScript to calculate, or use the formula below.</p></noscript>
+${byline()}
 <nav class="jump-links" aria-label="On this page"><a href="#method">How it works</a><a href="#example">Example</a><a href="#coverage">Coverage</a><a href="#tons-per-yard">Tons per yard</a><a href="#by-area">By area</a><a href="#questions">FAQs</a></nav>
 <div class="prose">
 <h2 id="method">How much ${cfg.noun} do you need?</h2><p>${cfg.intro}</p>

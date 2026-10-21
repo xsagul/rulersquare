@@ -35,4 +35,11 @@ const personSchema = {
   sameAs: AUTHOR.sameAs,
 };
 
-module.exports = { AUTHOR, PERSON_ID, personSchema };
+/* The visible half of the same signal: who wrote the page, when it was last
+ * checked, and where the arithmetic is explained. The category leaders put
+ * this on every calculator; until now it lived only on /about/. */
+const UPDATED = { iso: "2026-10-22", text: "October 22, 2026" };
+const byline = () => `<p class="byline">By <a href="${AUTHOR.url.replace("https://rulersquare.com", "")}">${AUTHOR.name}</a> · Updated <time datetime="${UPDATED.iso}">${UPDATED.text}</time> · <a href="/methodology/">How we calculate</a></p>`;
+const authorRef = { "@type": "Person", "@id": PERSON_ID, name: AUTHOR.name, url: AUTHOR.url };
+
+module.exports = { AUTHOR, PERSON_ID, personSchema, UPDATED, byline, authorRef };

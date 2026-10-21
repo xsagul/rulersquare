@@ -97,6 +97,9 @@ h3 { font-size: 19px; margin: 24px 0 6px; }
 .prose { max-width: 70ch; }
 .prose p, .prose li { color: var(--text); }
 .note { font-size: 15px; color: var(--muted); }
+/* Author and date under the calculator: present, not loud. */
+.byline { font-size: 14px; color: var(--muted); margin: 14px 0 0; }
+.byline a { color: var(--muted); }
 
 /* Calculator card */
 .calc { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); display: grid; grid-template-columns: 1.1fr .9fr; overflow: hidden; }

@@ -1,5 +1,6 @@
 const { SITE } = require("../layout");
 const { areaShapes } = require("../diagrams");
+const { byline, authorRef, UPDATED } = require("../author");
 
 const table = (head, rows) => `<div class="table-wrap"><table>
   <thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead>
@@ -26,11 +27,11 @@ module.exports = {
   title: "Square Footage Calculator – Area in Sq Ft, Yards & Acres | Ruler Square",
   description: "Free square footage calculator. Add rectangles, circles, triangles and trapezoids to measure any shape, with results in sq ft, sq yards, m² and acres.",
   crumbs: "Square Footage Calculator",
-  lastmod: "2026-09-22",
+  lastmod: UPDATED.iso,
   schema: [
     {
       "@context": "https://schema.org", "@type": "WebApplication",
-      name: "Square Footage Calculator", url: SITE.url + "/square-footage-calculator/",
+      name: "Square Footage Calculator", url: SITE.url + "/square-footage-calculator/", author: authorRef,
       applicationCategory: "UtilitiesApplication", operatingSystem: "Any",
       offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
       publisher: { "@type": "Organization", name: SITE.name, url: SITE.url },
@@ -121,6 +122,7 @@ module.exports = {
     </div>
   </div>
 </form>
+${byline()}
 
 <div class="prose">
 <h2>How to calculate square footage</h2>

@@ -1,5 +1,6 @@
 const { SITE } = require("../layout");
 const { slab, round, shapeSet } = require("../diagrams");
+const { byline, authorRef, UPDATED } = require("../author");
 
 function dim(label, name, defUnit, hint = "") {
   const units = [["in", "inches"], ["ft", "feet"], ["yd", "yards"], ["cm", "cm"], ["m", "meters"]];
@@ -48,13 +49,14 @@ module.exports = {
   title: "Concrete Calculator – Cubic Yards, Bags & Cost | Ruler Square",
   description: "Free concrete calculator for slabs, footings, columns and round pads. Get cubic yards, how many 40, 50, 60 or 80 lb bags you need, and the cost.",
   crumbs: "Concrete Calculator",
-  lastmod: "2026-09-22",
+  lastmod: UPDATED.iso,
   schema: [
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
       name: "Concrete Calculator",
       url: SITE.url + "/concrete-calculator/",
+      author: authorRef,
       applicationCategory: "UtilitiesApplication",
       operatingSystem: "Any",
       offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
@@ -140,6 +142,7 @@ module.exports = {
     </div>
   </div>
 </form>
+${byline()}
 
 <div class="prose">
 <h2>How to use the concrete calculator</h2>
