@@ -66,6 +66,11 @@ fs.writeFileSync(path.join(OUT, "favicon.svg"),
   LOGO.replace('aria-hidden="true" focusable="false"', 'xmlns="http://www.w3.org/2000/svg"')
       .replace(/var\(--accent\)/g, "#c2410c").replace(/var\(--accent-ink\)/g, "#ffffff"));
 
+// Files served as-is from the site root: the IndexNow key, llms.txt.
+for (const f of fs.readdirSync(path.join(__dirname, "src/public"))) {
+  fs.copyFileSync(path.join(__dirname, "src/public", f), path.join(OUT, f));
+}
+
 // Open Graph card
 fs.writeFileSync(path.join(OUT, "og.png"), ogImage());
 // Google Search supports raster favicons and recommends a multiple of 48 px.
