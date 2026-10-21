@@ -213,5 +213,29 @@ ${cat.outro}
   };
 }
 
+/* Where a calculator sits in the hubs. The first hub that lists it wins, so a
+ * page filed under two hubs takes its breadcrumb from the earlier one. */
+function placeOf(href) {
+  for (const cat of CATEGORIES) {
+    const group = cat.groups.find(g => g.items.some(i => i[0] === href));
+    if (group) return { cat, group };
+  }
+  return null;
+}
+
+/* Its neighbours: group-mates first, since those are the closest substitutes,
+ * then the rest of its hub. Pages top up their hand-picked related links from
+ * this, so a new calculator is linked from its neighbours the day it ships. */
+function siblingsOf(href) {
+  const place = placeOf(href);
+  if (!place) return [];
+  const seen = new Set([href]);
+  return [...place.group.items, ...place.cat.groups.flatMap(g => g.items)]
+    .filter(([h]) => !seen.has(h) && seen.add(h))
+    .map(([h, title]) => [h, title]);
+}
+
 module.exports = CATEGORIES.map(categoryPage);
 module.exports.CATEGORIES = CATEGORIES;
+module.exports.placeOf = placeOf;
+module.exports.siblingsOf = siblingsOf;

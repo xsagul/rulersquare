@@ -1,4 +1,5 @@
 const { SITE, esc } = require("../layout");
+const { siblingsOf } = require("./categories");
 
 /* A field the visitor measures on site gets a unit selector; a field that is a
  * product spec or a trade constant keeps its fixed unit. Nominal lumber
@@ -127,6 +128,19 @@ function markMeasured(c) {
   }
 }
 
+/* Hand-picked links lead; neighbours from the same hub fill the rest. Three
+ * links left most of these pages reachable from only their hub. */
+const RELATED_COUNT = 6;
+function relatedLinks(c, path) {
+  const out = c.related.map(([slug, label]) => [`/${slug}/`, label]);
+  const have = new Set([path, ...out.map(([href]) => href)]);
+  for (const [href, label] of siblingsOf(path)) {
+    if (out.length >= RELATED_COUNT) break;
+    if (!have.has(href)) { have.add(href); out.push([href, label]); }
+  }
+  return out;
+}
+
 function projectPage(c) {
   markMeasured(c);
   const path = `/${c.slug}/`;
@@ -136,7 +150,8 @@ function projectPage(c) {
     path, title: c.title + " | Ruler Square", description: c.description, crumbs: c.h1, lastmod: "2026-09-22",
     category: c.category || "construction",
     schema: [{"@context":"https://schema.org","@type":"WebApplication",name:c.h1,url:SITE.url+path,applicationCategory:"UtilitiesApplication",operatingSystem:"Any",offers:{"@type":"Offer",price:0,priceCurrency:"USD"}},
-      {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Home",item:SITE.url+"/"},{"@type":"ListItem",position:2,name:hub[0],item:SITE.url+"/"+hub[1]+"/"},{"@type":"ListItem",position:3,name:c.h1,item:SITE.url+path}]}],
+      {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Home",item:SITE.url+"/"},{"@type":"ListItem",position:2,name:hub[0],item:SITE.url+"/"+hub[1]+"/"},{"@type":"ListItem",position:3,name:c.h1,item:SITE.url+path}]},
+      {"@context":"https://schema.org","@type":"FAQPage",mainEntity:c.faq.map(([q,a])=>({"@type":"Question",name:q,acceptedAnswer:{"@type":"Answer",text:a}}))}],
     scripts: `<script type="application/json" id="project-config">${JSON.stringify({kind:c.kind,costUnit:c.costUnit,example:c.example.values,unitBase:unitBase(c)}).replace(/</g,"\\u003c")}</script><script src="/assets/project.js?v=VERSION" defer></script>`,
     body: `<h1>${esc(c.h1)}</h1><p class="lede">${esc(c.lede)}</p>
 <form class="calc" id="project-form" novalidate>
@@ -163,7 +178,7 @@ ${c.context || ""}
   <h2 id="before-you-buy">${esc(c.buyTitle || "Before you buy")}</h2>${c.buy}
   ${c.extra || ""}
   <h2 id="questions">Common questions</h2>${c.faq.map(([q,a])=>`<h3>${esc(q)}</h3><p>${a}</p>`).join("")}
-  <h2>Related calculators</h2><div class="grid">${c.related.map(([slug,label])=>`<a class="card" href="/${slug}/"><b>${esc(label)}</b></a>`).join("")}</div>
+  <h2>Related calculators</h2><div class="grid">${relatedLinks(c, path).map(([href,label])=>`<a class="card" href="${href}"><b>${esc(label)}</b></a>`).join("")}</div>
   <h2>Sources & assumptions</h2><ul class="refs">${c.sources.map(([url,label])=>`<li><a href="${url}">${esc(label)}</a></li>`).join("")}</ul><p class="note">${esc(c.sourceNote || "Quantities use the geometry shown above. Default allowances are editable planning assumptions, not building specifications. Check the selected product and project requirements.")} Checked ${c.checked || "September 21, 2026"}.</p>
 </div>`
   };

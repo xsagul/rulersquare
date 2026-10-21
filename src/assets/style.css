@@ -199,6 +199,14 @@ main { padding-bottom: 8px; }
 
 .home-note { margin-top: 40px; padding-top: 8px; border-top: 1px solid var(--line); }
 
+/* Every calculator, one click from the homepage. Plain links in columns: the
+   cards above already do the browsing, this is the index. */
+.directory { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px 20px; }
+.directory h3 { font-size: 16px; margin: 8px 0 6px; }
+.directory h3 a { color: var(--text); text-decoration: none; }
+.directory ul { list-style: none; padding: 0; margin: 0; }
+.directory li { padding: 4px 0; font-size: 15px; }
+
 
 /* Icons */
 .ico { width: 26px; height: 26px; color: var(--accent); display: block; margin-bottom: 10px; }

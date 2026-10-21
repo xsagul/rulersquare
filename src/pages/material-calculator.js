@@ -1,5 +1,6 @@
 const { SITE, esc } = require("../layout");
 const { MATERIALS } = require("../data/materials");
+const { placeOf } = require("./categories");
 
 function dim(label, name, unit) {
   return `<div class="field"><label class="label" for="f-${name}">${label}</label><div class="combo"><input id="f-${name}" name="${name}" type="number" inputmode="decimal" min="0.001" max="10000000" step="any" required><select name="${name}Unit" aria-label="${label} units">${[["in","inches"],["ft","feet"],["yd","yards"],["cm","cm"],["m","meters"]].map(([v,t])=>`<option value="${v}"${v===unit?" selected":""}>${t}</option>`).join("")}</select></div></div>`;
@@ -12,10 +13,13 @@ function materialPage(cfg) {
   const bags = cfg.material !== "asphalt";
   const options = MATERIALS.filter(m => (cfg.variants || [cfg.material]).includes(m.id));
   const tons = cfg.lbPerYd3 / 2000;
+  const hub = (placeOf(cfg.path) || {}).cat;
   const faq = [...cfg.faq, [`How much area does one cubic yard of ${cfg.noun} cover?`, "One cubic yard covers 162 square feet at 2 inches deep, 108 at 3 inches or 81 at 4 inches, before any extra allowance."]];
   return {
     path: cfg.path, title: cfg.title, description: cfg.description, crumbs: cfg.h1, lastmod:"2026-09-22",
-    schema:[{"@context":"https://schema.org","@type":"WebApplication",name:cfg.h1,url:SITE.url+cfg.path,applicationCategory:"UtilitiesApplication",operatingSystem:"Any",offers:{"@type":"Offer",price:0,priceCurrency:"USD"}}],
+    schema:[{"@context":"https://schema.org","@type":"WebApplication",name:cfg.h1,url:SITE.url+cfg.path,applicationCategory:"UtilitiesApplication",operatingSystem:"Any",offers:{"@type":"Offer",price:0,priceCurrency:"USD"}},
+      {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Home",item:SITE.url+"/"},...(hub?[{"@type":"ListItem",position:2,name:hub.h1,item:SITE.url+hub.path}]:[]),{"@type":"ListItem",position:hub?3:2,name:cfg.h1,item:SITE.url+cfg.path}]},
+      {"@context":"https://schema.org","@type":"FAQPage",mainEntity:faq.map(([q,a])=>({"@type":"Question",name:q,acceptedAnswer:{"@type":"Answer",text:a}}))}],
     scripts:'<script src="/assets/material.js?v=VERSION" defer></script>',
     body:`<h1>${cfg.h1}</h1><p class="lede">${cfg.lede}</p>
 <form class="calc" id="material-form" novalidate>

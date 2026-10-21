@@ -53,9 +53,10 @@ module.exports = module.exports || {};
 const cards = list => list.map(([href, title, desc, icon]) =>
   `<a class="card" href="${href}">${ICONS[icon]}<b>${title}</b><span>${desc}</span></a>`).join("\n  ");
 
-/* The homepage is a directory of categories, not a list of calculators. Both
+/* The homepage leads with categories, not a list of calculators. Both
  * category leaders do this, and it is what makes a modest catalogue read as
- * organised rather than thin. */
+ * organised rather than thin. A plain index of every calculator follows, so
+ * each one is a single click from the page search engines visit most. */
 const HUBS = [
   ["/construction-calculators/", "Construction", "concrete"],
   ["/landscaping-calculators/", "Landscaping", "mulch"],
@@ -78,7 +79,7 @@ const home = {
   path: "/",
   title: "Ruler Square – Free Material, Cost & Paycheck Calculators",
   description: "Free calculators for building materials, landscaping, project costs and take-home pay. Get clear estimates with formulas, examples and visible assumptions.",
-  lastmod: "2026-09-22",
+  lastmod: "2026-10-21",
   // One @graph rather than separate blocks, so the site, the publisher and the
   // person behind it are linked by @id instead of merely co-present.
   schema: [{
@@ -123,6 +124,15 @@ const home = {
 <div class="grid tight">
   ${POPULAR.map(([href, title, icon]) =>
     `<a class="card" href="${href}">${ICONS[icon]}<b>${title}</b></a>`).join("\n  ")}
+</div>
+
+<h2>All calculators</h2>
+<div class="directory">
+  ${CATEGORIES.map(cat => `<section>
+    <h3><a href="${cat.path}">${cat.h1}</a></h3>
+    <ul>${[...new Map(cat.groups.flatMap(g => g.items).map(([href, title]) => [href, title]))]
+      .map(([href, title]) => `<li><a href="${href}">${title}</a></li>`).join("")}</ul>
+  </section>`).join("\n  ")}
 </div>
 
 </div>
