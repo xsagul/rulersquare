@@ -29,6 +29,14 @@
     (stacked ? results : form).scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
   };
 
+  /* A page with shape tabs carries one drawing per shape. Only the chosen
+   * one shows: a slab drawing beside round-column fields would mislead. */
+  window.RSShowDiagram = function (shape) {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-diagram]"), function (d) {
+      d.hidden = d.getAttribute("data-diagram") !== shape;
+    });
+  };
+
   window.RSValidate = function (form, report) {
     var invalid = Array.from(form.querySelectorAll("input,select")).find(function (el) {
       return !el.closest("[hidden]") && !el.checkValidity();

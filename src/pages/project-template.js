@@ -1,5 +1,6 @@
 const { SITE, esc } = require("../layout");
 const { siblingsOf } = require("./categories");
+const { diagramFor } = require("../diagrams");
 
 /* A field the visitor measures on site gets a unit selector; a field that is a
  * product spec or a trade constant keeps its fixed unit. Nominal lumber
@@ -165,7 +166,7 @@ function projectPage(c) {
   </div>
   <section class="calc-results" id="project-result" tabindex="-1" aria-label="Your estimate" aria-live="polite">
     <p class="calc-step">Your estimate</p>
-    <p class="empty-state" id="r-empty">Add your measurements, then select <b>Calculate</b>. Your result and buying quantities will appear here.</p>
+    <div class="empty-state" id="r-empty"><p>Add your measurements, then select <b>Calculate</b>. Your result and buying quantities will appear here.</p>${diagramFor(c.slug)}</div>
     <div id="r-out" hidden><p class="big"><span id="result-label"></span><strong id="result-main"></strong></p><ul class="results-list" id="result-rows"></ul><p class="tip" id="result-note"></p></div>
   </section>
 </form>

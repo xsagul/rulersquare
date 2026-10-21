@@ -1,4 +1,5 @@
 const { SITE } = require("../layout");
+const { areaShapes } = require("../diagrams");
 
 const table = (head, rows) => `<div class="table-wrap"><table>
   <thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead>
@@ -105,7 +106,7 @@ module.exports = {
   </div>
 
   <div class="calc-results" aria-live="polite">
-    <p class="empty-state" id="r-empty">Enter your measurements above and press <b>Calculate</b>.</p>
+    <div class="empty-state" id="r-empty"><p>Enter your measurements above and press <b>Calculate</b>.</p>${areaShapes()}</div>
     <div id="r-out" hidden>
     <p class="big">Total area<strong><span id="r-ft2">0</span> ft&sup2;</strong></p>
     <ul class="results-list">

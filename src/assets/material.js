@@ -120,6 +120,7 @@
     Array.prototype.forEach.call(document.querySelectorAll(".shape"), function (s) {
       s.hidden = s.getAttribute("data-shape") !== shape;
     });
+    if (window.RSShowDiagram) { window.RSShowDiagram(shape); }
     return shape;
   }
 

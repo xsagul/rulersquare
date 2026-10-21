@@ -1,4 +1,5 @@
 const { SITE } = require("../layout");
+const { slab, round, shapeSet } = require("../diagrams");
 
 function dim(label, name, defUnit, hint = "") {
   const units = [["in", "inches"], ["ft", "feet"], ["yd", "yards"], ["cm", "cm"], ["m", "meters"]];
@@ -121,7 +122,7 @@ module.exports = {
   </div>
 
   <div class="calc-results" aria-live="polite">
-    <p class="empty-state" id="r-empty">Enter your dimensions above and press <b>Calculate</b>.</p>
+    <div class="empty-state" id="r-empty"><p>Enter your dimensions above and press <b>Calculate</b>.</p>${shapeSet([["slab", slab()], ["footing", slab({ vertical: "depth" })], ["column", round({ vertical: "height" })], ["circle", round()]])}</div>
     <div id="r-out" hidden>
     <p class="big">Concrete needed<strong><span id="r-yd3">0</span> yd³</strong></p>
     <ul class="results-list">

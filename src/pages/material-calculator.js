@@ -1,6 +1,7 @@
 const { SITE, esc } = require("../layout");
 const { MATERIALS } = require("../data/materials");
 const { placeOf } = require("./categories");
+const { slab, round, shapeSet } = require("../diagrams");
 
 function dim(label, name, unit) {
   return `<div class="field"><label class="label" for="f-${name}">${label}</label><div class="combo"><input id="f-${name}" name="${name}" type="number" inputmode="decimal" min="0.001" max="10000000" step="any" required><select name="${name}Unit" aria-label="${label} units">${[["in","inches"],["ft","feet"],["yd","yards"],["cm","cm"],["m","meters"]].map(([v,t])=>`<option value="${v}"${v===unit?" selected":""}>${t}</option>`).join("")}</select></div></div>`;
@@ -41,7 +42,7 @@ function materialPage(cfg) {
     <button type="submit" class="btn-calc">Calculate</button>
   </div>
   <section class="calc-results" aria-label="Your estimate" aria-live="polite" tabindex="-1">
-    <p class="empty-state" id="r-empty">Add your measurements, then select <b>Calculate</b>.</p>
+    <div class="empty-state" id="r-empty"><p>Add your measurements, then select <b>Calculate</b>.</p>${shapeSet([["rect", slab({ vertical: "depth" })], ["circle", round({ vertical: "depth" })], ["area", ""]])}</div>
     <div id="r-out" hidden>
       <p class="big">Estimated quantity<strong><span id="${volumeFirst?"r-yd3":"r-tons"}">0</span> ${volumeFirst?"yd³":"tons"}</strong></p>
       <p class="big-alt"><span id="${volumeFirst?"r-tons":"r-yd3"}">0</span> ${volumeFirst?"US tons":"cubic yards"}</p>

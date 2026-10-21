@@ -269,6 +269,7 @@
   function syncFields() {
     if (cfg.kind !== "tank-volume") return;
     const cylinder = form.elements.shape.value === "cylinder";
+    if (window.RSShowDiagram) window.RSShowDiagram(form.elements.shape.value);
     ["diameter", "length", "width"].forEach(name => {
       const field = form.elements.namedItem(name).closest(".field");
       field.hidden = name === "diameter" ? !cylinder : cylinder;

@@ -86,6 +86,7 @@
     Array.prototype.forEach.call(document.querySelectorAll(".shape"), function (s) {
       s.hidden = s.getAttribute("data-shape") !== shape;
     });
+    if (window.RSShowDiagram) { window.RSShowDiagram(shape); }
   }
   function set(id, text) { var el = document.getElementById(id); if (el) { el.textContent = text; } }
 
