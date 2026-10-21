@@ -97,7 +97,7 @@ const COSTS = items.map(c => ({ ...c,kind:"cost",category:"cost",costUnit:c.cost
   // of projects, sit in the collapsed block.
   fields:[...(c.quantityLabel ? [n("quantity",c.quantityLabel,c.costUnit)] : [n("length","Length","ft"),n("width",c.widthLabel||"Width","ft")]),n("low","Low unit price","$/"+(c.costUnit||"ft²"),c.low,{min:0,group:"rate"}),n("high","High unit price","$/"+(c.costUnit||"ft²"),c.high,{min:0,group:"rate"})],
   advanced:[n("delivery","Delivery or access charges not in unit price","$",0,{min:0}),n("removal","Removal and disposal not in unit price","$",0,{min:0}),n("other","Other excluded work or fees","$",0,{min:0}),n("waste","Budget contingency","%",0,{min:0,max:50})],optionsLabel:"Excluded extras & contingency",
-  context:`<p class="reference-note">${c.reference} <a href="${c.source}">Source</a>. Change them under <b>Unit rates, extras &amp; contingency</b>.</p>`,
+  context:`<p class="reference-note">${c.reference} <a href="${c.source}">Source</a>. Replace the rates above with your local quotes; anything they leave out goes under <b>Excluded extras &amp; contingency</b>.</p>`,
   formula:"Base range = measured quantity × low / high unit rate<br>Budget range = (base range + excluded extras) × (1 + contingency % ÷ 100)",
   sources:[[c.source,"Published US pricing reference — checked "+(c.checked||"September 21, 2026")]],sourceNote:"Published price ranges are third-party benchmarks, not Ruler Square survey data or local quotes. Inputs for extras are your estimates. Check the scope and taxes with the contractor."
 }));

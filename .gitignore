@@ -14,3 +14,9 @@ node_modules/
 PROJECT_BRIEF.md
 research/
 .claude/
+
+# Raw competitor measurements: regenerable, and not ours to publish
+research/serp-*/features.json
+research/serp-*/render.json
+research/serp-*/fetch-index.json
+research/serp-*/render-queue.json

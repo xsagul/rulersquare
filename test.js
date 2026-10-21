@@ -461,3 +461,34 @@ assert(studs(ft) === studs(yd) && studs(ft) === 19, "units: 24 ft and 8 yd both 
   assert(close(rafter(roof({ n: 15, u: "ft" })), rafter(roof({ n: 5, u: "yd" })), 1e-9), "run units: 5 yd of run equals 15 ft");
   assert(close(rafter(roof({ n: 15, u: "ft" })), 16.7705, 1e-3), "run units: a 6/12 roof over 15 ft needs a 16.77 ft rafter");
 }
+
+// Reference charts and the extra sections quote numbers; check them against
+// the engine and against figures a reader can verify by hand.
+{
+  const { chartsFor, CHART_PAGES } = require("./src/data/charts");
+  const { calculate } = require("./src/assets/project.js");
+  const pages = [...require("./src/data/projects").PROJ, ...require("./src/data/costs").COSTS, ...require("./src/data/tools").TOOLS];
+  const page = slug => pages.find(p => p.slug === slug);
+  const cell = (slug, title, rowLabel, col) => {
+    const t = chartsFor(page(slug)).find(x => x.title === title);
+    return t.rows.find(r => r[0] === rowLabel)[col];
+  };
+  for (const slug of CHART_PAGES) {
+    const charts = chartsFor(page(slug));
+    assert(charts.length > 0 && charts.every(t => t.rows.length && t.rows.every(r => r.length === t.head.length && r.every(c => !/NaN|undefined|Infinity/.test(String(c))))), slug + ": charts render with no empty or invalid cells");
+  }
+  assert(cell("roof-pitch-calculator", "Roof pitch chart", "6/12", 1) === "26.57°", "chart: 6/12 is 26.57 degrees");
+  assert(cell("roof-pitch-calculator", "Roof pitch chart", "12/12", 3) === "1.414", "chart: 12/12 multiplier is the square root of 2");
+  assert(cell("board-foot-calculator", "Board feet in common lumber sizes", "2×4×8", 1) === "5.33", "chart: a 2x4x8 is 5.33 board feet");
+  assert(cell("brick-calculator", "Bricks per square foot by size", "Modular brick", 2) === "6.86", "chart: modular brick is 6.86 per ft2 with a 3/8 joint");
+  assert(cell("drywall-calculator", "How many sheets of drywall for a room", "12 × 12 ft", 1) === "14", "chart: 12x12 room, 8 ft walls, 10% waste is 14 sheets");
+  assert(cell("concrete-cost-per-yard", "How many yards common pours take", "10 × 10 ft slab", 2) === "1.23 yd³", "chart: 10x10 slab at 4 in is 1.23 yd3");
+  assert(cell("markup-calculator", "Markup vs margin", "50%", 1) === "33.3%", "chart: 50% markup is a 33.3% margin");
+  assert(cell("stair-calculator", "Stair risers and run by total rise", "108 in", 1) === "14", "chart: 108 in rise at 7.75 max is 14 risers");
+
+  const v = (kind, values, label) => calculate(kind, values).rows.find(r => r.label === label).value;
+  assert(close(v("cubic-feet", { length: 24, width: 18, height: 12, unit: "in", waste: 0 }, "Volume"), 3, 1e-9), "extras: 24 x 18 x 12 in is 3 ft3");
+  assert(close(v("labor-cost", { rate: 28, hours: 40, workers: 3, burden: 30 }, "Total labor"), 4368, 1e-9), "extras: the labor example is $4,368");
+  assert(close(v("markup", { cost: 100, markup: 30 }, "Gross margin"), 23.0769, 1e-3), "extras: a 30% markup is a 23.1% margin");
+  assert(close(v("cubic-yard", { length: 12, width: 9, depth: 3, waste: 0 }, "Volume with allowance"), 1, 1e-9), "extras: 12 x 9 ft at 3 in is 1 yd3");
+}

@@ -1,6 +1,8 @@
 const { SITE, esc } = require("../layout");
 const { siblingsOf } = require("./categories");
 const { diagramFor } = require("../diagrams");
+const { chartsFor } = require("../data/charts");
+const { EXTRAS } = require("../data/extras");
 
 /* A field the visitor measures on site gets a unit selector; a field that is a
  * product spec or a trade constant keeps its fixed unit. Nominal lumber
@@ -142,8 +144,15 @@ function relatedLinks(c, path) {
   return out;
 }
 
+/* A reference chart: a heading people search for, one line on how to read it,
+ * the table, and a note on what it leaves out. */
+function chartHtml(t) {
+  return `<h2 id="${t.id}">${esc(t.title)}</h2>${t.intro ? `<p>${esc(t.intro)}</p>` : ""}<div class="table-wrap"><table><thead><tr>${t.head.map(h => `<th scope="col">${esc(h)}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r => `<tr>${r.map((cell, i) => i === 0 ? `<th scope="row">${esc(cell)}</th>` : `<td>${esc(cell)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>${t.note ? `<p class="note">${esc(t.note)}</p>` : ""}`;
+}
+
 function projectPage(c) {
   markMeasured(c);
+  const charts = chartsFor(c);
   const path = `/${c.slug}/`;
   const category = c.category || "construction";
   const hub = {construction:["Construction","construction-calculators"],landscaping:["Landscaping","landscaping-calculators"],cost:["Project costs","cost-calculators"],pay:["Pay & Taxes","pay-calculators"]}[category] || ["Construction","construction-calculators"];
@@ -172,12 +181,13 @@ function projectPage(c) {
 </form>
 ${c.context || ""}
 <noscript><p class="note">Turn on JavaScript to use the calculator. The formula and worked example below are available without it.</p></noscript>
-<nav class="jump-links" aria-label="On this page"><a href="#method">How it works</a><a href="#example">Example</a><a href="#before-you-buy">Before you buy</a><a href="#questions">FAQs</a></nav>
+<nav class="jump-links" aria-label="On this page"><a href="#method">How it works</a><a href="#example">Example</a>${charts.map(t=>`<a href="#${t.id}">${esc(t.jump)}</a>`).join("")}<a href="#before-you-buy">Before you buy</a><a href="#questions">FAQs</a></nav>
 <div class="prose">
   <h2 id="method">${esc(c.methodTitle)}</h2><p>${c.method}</p><div class="formula">${c.formula}</div>
   <h2 id="example">${esc(c.example.title)}</h2><p>${c.example.text}</p>
+  ${charts.map(chartHtml).join("")}
   <h2 id="before-you-buy">${esc(c.buyTitle || "Before you buy")}</h2>${c.buy}
-  ${c.extra || ""}
+  ${c.extra || ""}${EXTRAS[c.slug] || ""}
   <h2 id="questions">Common questions</h2>${c.faq.map(([q,a])=>`<h3>${esc(q)}</h3><p>${a}</p>`).join("")}
   <h2>Related calculators</h2><div class="grid">${relatedLinks(c, path).map(([href,label])=>`<a class="card" href="${href}"><b>${esc(label)}</b></a>`).join("")}</div>
   <h2>Sources & assumptions</h2><ul class="refs">${c.sources.map(([url,label])=>`<li><a href="${url}">${esc(label)}</a></li>`).join("")}</ul><p class="note">${esc(c.sourceNote || "Quantities use the geometry shown above. Default allowances are editable planning assumptions, not building specifications. Check the selected product and project requirements.")} Checked ${c.checked || "September 21, 2026"}.</p>
