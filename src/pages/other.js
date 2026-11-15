@@ -24,14 +24,6 @@ const SOIL = [
   ["/fill-dirt-calculator/", "Fill Dirt Calculator", "Grading, low spots and backfill", "dirt", "fill dirt grading backfill low spot subsoil"],
   ["/mulch-calculator/", "Mulch Calculator", "Cubic yards and bags for garden beds", "mulch", "mulch bark garden bed landscaping bags cubic yards"],
 ];
-const PAY = [
-  ["/paycheck-calculator/", "Paycheck Calculator", "Take-home pay after federal tax, FICA and 401(k)", "paycheck", "paycheck salary take home net pay gross to net tax withholding"],
-  ["/texas-paycheck-calculator/", "Texas Paycheck Calculator", "No state income tax — federal and FICA only", "paycheck", "texas paycheck salary take home no state income tax"],
-  ["/florida-paycheck-calculator/", "Florida Paycheck Calculator", "No state income tax — federal and FICA only", "paycheck", "florida paycheck salary take home no state income tax"],
-  ["/salary-to-hourly-calculator/", "Salary to Hourly Calculator", "Any salary as an hourly rate, and back", "paycheck", "salary to hourly wage convert annual rate per hour"],
-  ["/annual-income-calculator/", "Annual Income Calculator", "Yearly pay from any rate, with overtime", "paycheck", "annual income yearly salary gross earnings overtime"],
-  ["/pay-rate-calculator/", "Pay Rate Calculator", "Hourly, weekly, biweekly, monthly and yearly", "paycheck", "pay rate wage weekly biweekly monthly convert period"],
-];
 const { PROJ } = require("../data/projects");
 const { COSTS } = require("../data/costs");
 const { TOOLS } = require("../data/tools");
@@ -46,7 +38,7 @@ const KIND_ICON = {
 };
 const NEW = [...PROJ, ...COSTS, ...TOOLS].map(c =>
   [`/${c.slug}/`, c.h1, c.lede, KIND_ICON[c.kind] || "sqft", `${c.h1} ${c.description}`]);
-const ALL = [].concat(CONCRETE, AGGREGATE, SOIL, PAY, NEW);
+const ALL = [].concat(CONCRETE, AGGREGATE, SOIL, NEW);
 module.exports = module.exports || {};
 
 
@@ -61,7 +53,6 @@ const HUBS = [
   ["/construction-calculators/", "Construction", "concrete"],
   ["/landscaping-calculators/", "Landscaping", "mulch"],
   ["/cost-calculators/", "Project costs", "cost"],
-  ["/pay-calculators/", "Pay & Taxes", "paycheck"],
 ].map(([path, name, icon]) => [path, name, icon, new Set(CATEGORIES.find(c => c.path === path).groups.flatMap(g => g.items.map(i => i[0]))).size]);
 
 const POPULAR = [
@@ -69,7 +60,7 @@ const POPULAR = [
   ["/gravel-calculator/", "Gravel Calculator", "gravel"],
   ["/square-footage-calculator/", "Square Footage Calculator", "sqft"],
   ["/mulch-calculator/", "Mulch Calculator", "mulch"],
-  ["/paycheck-calculator/", "Paycheck Calculator", "paycheck"],
+  ["/feet-and-inches-calculator/", "Feet and Inches Calculator", "sqft"],
   ["/asphalt-calculator/", "Asphalt Calculator", "asphalt"],
   ["/fence-calculator/", "Fence Calculator", "sqft"],
   ["/concrete-slab-cost/", "Concrete Slab Cost", "concrete"],
@@ -77,9 +68,9 @@ const POPULAR = [
 
 const home = {
   path: "/",
-  title: "Ruler Square – Free Material, Cost & Paycheck Calculators",
-  description: "Free calculators for building materials, landscaping, project costs and take-home pay. Get clear estimates with formulas, examples and visible assumptions.",
-  lastmod: "2026-10-21",
+  title: "Ruler Square – Building Material & Project Cost Calculators",
+  description: "Free calculators for building materials, home improvements and landscaping. Estimate quantities and project costs with formulas and worked examples.",
+  lastmod: "2026-11-15",
   // One @graph rather than separate blocks, so the site, the publisher and the
   // person behind it are linked by @id instead of merely co-present.
   schema: [{
@@ -105,12 +96,13 @@ const home = {
   }],
   body: `
 <section class="hero">
-  <h1>Find your calculator</h1>
-  <p class="lede">Materials, project costs and pay. ${ALL.length} free calculators that show their math.</p>
+  <p class="eyebrow">Measure. Plan. Build.</p>
+  <h1>Get the numbers<br>before you build.</h1>
+  <p class="lede">${ALL.length} free calculators for building materials and project costs. Clear units, worked examples and the math behind every estimate.</p>
   <div class="search">
     <label class="sr-only" for="q">Search calculators</label>
     ${ICONS.search}
-    <input id="q" type="search" autocomplete="off" placeholder="Search calculators — try &quot;driveway&quot; or &quot;take home pay&quot;">
+    <input id="q" type="search" autocomplete="off" placeholder="Search calculators — try &quot;flooring&quot; or &quot;concrete&quot;">
   </div>
   <ul class="search-hits" id="hits" hidden></ul>
 </section>
@@ -126,20 +118,11 @@ const home = {
     `<a class="card" href="${href}">${ICONS[icon]}<b>${title}</b></a>`).join("\n  ")}
 </div>
 
-<h2>All calculators</h2>
-<div class="directory">
-  ${CATEGORIES.map(cat => `<section>
-    <h3><a href="${cat.path}">${cat.h1}</a></h3>
-    <ul>${[...new Map(cat.groups.flatMap(g => g.items).map(([href, title]) => [href, title]))]
-      .map(([href, title]) => `<li><a href="${href}">${title}</a></li>`).join("")}</ul>
-  </section>`).join("\n  ")}
-</div>
-
 </div>
 <section class="prose home-note">
 <h2>Know what is in the estimate</h2>
-<p>Use your measurements, check the assumptions and see a worked example. Material quantities are separate from installed costs. Pay estimates show which deductions are included.</p>
-<p>No account is needed. Calculator inputs stay in your browser. Confirm an order with your supplier or compare the estimate with your actual pay statement.</p>
+<p>Use your measurements, check the assumptions and see a worked example. Material calculators tell you what to order. Cost calculators help you compare rates and budget for the work.</p>
+<p>No account is needed. Calculator inputs stay in your browser. Confirm quantities with your supplier and compare written quotes before starting work.</p>
 </section>
 `,
   scripts: `<script src="/assets/search.js?v=VERSION" defer></script>`,
@@ -150,7 +133,7 @@ const about = {
   title: "About Ruler Square — Who Maintains It",
   description: "Who builds and maintains Ruler Square, why it exists, how the figures are kept current, how it is funded, and the public log of corrections.",
   crumbs: "About",
-  lastmod: "2026-09-22",
+  lastmod: "2026-11-15",
   schema: [
     {
       "@context": "https://schema.org", "@type": "AboutPage",
@@ -163,7 +146,7 @@ const about = {
   body: `
 <div class="prose">
 <h1>About Ruler Square</h1>
-<p class="lede">Independent calculators for materials, project budgets and take-home pay.</p>
+<p class="lede">Independent calculators for building materials and home project budgets.</p>
 
 <h2>Who maintains the site</h2>
 <p>${AUTHOR.name}, a full-stack developer. I build and maintain Ruler Square’s calculators, their formulas and the explanations on each page.</p>
@@ -176,7 +159,6 @@ const about = {
 
 <h2>How the calculations are kept current</h2>
 <ul>
-  <li>Tax constants are reviewed when the IRS and SSA publish the next year's figures, usually October and November.</li>
   <li>Price ranges carry the date they were last checked against their published source.</li>
   <li>Material densities are editable planning assumptions. Moisture and product differences matter; use your supplier’s figure.</li>
   <li>Automated tests check calculation engines, example inputs and unit conversions. A separate site audit checks metadata, links and sitemap coverage before deployment.</li>
@@ -188,7 +170,7 @@ const about = {
 <p>No page here is sponsored, and no supplier, contractor or manufacturer pays for a mention. Where a product or trade body is named it is because it is the source of a figure.</p>
 
 <h2>Estimates, not engineering</h2>
-<p>These calculators are for planning and buying materials. They do not replace a structural engineer, your local building code, a tax professional or your supplier's own advice. The paycheck pages estimate withholding; they are not tax advice.</p>
+<p>These calculators are for planning and buying materials. They do not replace a structural engineer, your local building code or your supplier's own advice. Cost ranges are planning references, not contractor bids.</p>
 
 <h2>Found a mistake?</h2>
 <p>Write to <a href="mailto:${SITE.email}">${SITE.email}</a>. If a figure does not match its stated source, that is a bug and it gets fixed. Corrections are logged below rather than quietly edited.</p>
@@ -196,6 +178,7 @@ const about = {
 <h2>Corrections and updates</h2>
 <p class="note">Newest first. Substantive changes to a figure or a formula are listed here; wording and layout changes are not.</p>
 ${table(["Date", "Change"], [
+  ["15 November 2026", "Focused the site on construction and home projects. Retired the six pay calculators; added six material and measurement calculators and sixteen sourced cost estimators."],
   ["22 September 2026", "Fixed supplier-density and bag-size inputs, salary result display and example unit resets. Corrected ramp landings to use 30 inches of rise per run and clarified rebar stock estimates and vehicle payload limits."],
   ["21 September 2026", "Added a methodology page and this correction log. Published author identity and source attribution across the site."],
   ["21 September 2026", "Fixed rebar bar-direction labelling: bars running the length are spaced across the width, not along it. The total count was unaffected; the displayed breakdown was wrong."],

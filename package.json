@@ -1,7 +1,7 @@
 {
   "name": "rulersquare",
   "version": "1.0.0",
-  "description": "Ruler Square - material, cost and paycheck calculators",
+  "description": "Ruler Square - building material and home project cost calculators",
   "main": "build.js",
   "scripts": {
     "test": "node test.js",

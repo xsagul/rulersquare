@@ -2,8 +2,8 @@
  *
  * `sameAs` ties the byline to verifiable external profiles so Google can build
  * a knowledge graph entry around the person rather than an anonymous site.
- * That matters here because the paycheck and tax pages are YMYL: a financial
- * page with no identifiable author behind it is the weakest kind there is.
+ * Cost pages quote money figures, so each one names who maintains it and
+ * where every number comes from.
  *
  */
 
@@ -14,9 +14,9 @@ const AUTHOR = {
   jobTitle: "Full-stack developer",
   url: "https://rulersquare.com/about/",
   description:
-    "Builds and maintains Ruler Square’s material, project cost and US pay calculators, and salariile.ro, an independent Romanian salary calculator.",
+    "Builds and maintains Ruler Square’s construction material and project cost calculators, and salariile.ro, an independent Romanian salary calculator.",
   sameAs: [
-    "https://www.linkedin.com/in/%C8%99tiuriuc-sorin-marian/",
+    "https://www.linkedin.com/in/sorin-stiuriuc/",
     "https://github.com/xsagul",
     "https://dev.to/sorin_stiuriuc",
     // Same Person @id on a site with its own published methodology and source
@@ -39,7 +39,7 @@ const personSchema = {
  * checked, and where the arithmetic is explained. The category leaders put
  * this on every calculator; until now it lived only on /about/. */
 const UPDATED = { iso: "2026-10-22", text: "October 22, 2026" };
-const byline = () => `<p class="byline">By <a href="${AUTHOR.url.replace("https://rulersquare.com", "")}">${AUTHOR.name}</a> · Updated <time datetime="${UPDATED.iso}">${UPDATED.text}</time> · <a href="/methodology/">How we calculate</a></p>`;
+const byline = (updated = UPDATED) => `<p class="byline">By <a href="${AUTHOR.url.replace("https://rulersquare.com", "")}">${AUTHOR.name}</a> · Updated <time datetime="${updated.iso}">${updated.text}</time> · <a href="/methodology/">How we calculate</a></p>`;
 const authorRef = { "@type": "Person", "@id": PERSON_ID, name: AUTHOR.name, url: AUTHOR.url };
 
 module.exports = { AUTHOR, PERSON_ID, personSchema, UPDATED, byline, authorRef };

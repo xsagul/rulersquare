@@ -108,17 +108,22 @@ const sitemap = fs.readFileSync(path.join(OUT, "sitemap.xml"), "utf8");
 const { ALL } = require("./src/pages/other");
 const { CATEGORIES } = require("./src/pages/categories");
 const calculatorRoutes = new Set(ALL.map(item => item[0]));
+for (const slug of ["paycheck-calculator", "texas-paycheck-calculator", "florida-paycheck-calculator", "salary-to-hourly-calculator", "annual-income-calculator", "pay-rate-calculator", "pay-calculators"]) {
+  if (routeToFile.has(`/${slug}/`)) fail(`${slug}: retired pay page is still being built`);
+}
 const hubRoutes = new Set(CATEGORIES.flatMap(cat => cat.groups.flatMap(group => group.items.map(item => item[0]))));
 for (const route of calculatorRoutes) {
   if (!routeToFile.has(route)) fail(`${route}: catalogue entry has no page`);
   if (!hubRoutes.has(route)) fail(`${route}: calculator missing from category hubs`);
+}
+for (const route of hubRoutes) {
+  if (!calculatorRoutes.has(route)) fail(`${route}: category entry missing from calculator catalogue`);
 }
 const homeHtml = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
 const searchMatch = homeHtml.match(/window\.RS_INDEX=([\s\S]*?);<\/script>/);
 const searchRoutes = searchMatch ? new Set(JSON.parse(searchMatch[1]).map(item => item.u)) : new Set();
 if (searchRoutes.size !== calculatorRoutes.size || [...calculatorRoutes].some(route => !searchRoutes.has(route))) fail("Search index and calculator catalogue differ");
 if (!homeHtml.includes(`${calculatorRoutes.size} free calculators`)) fail("Homepage calculator count is out of date");
-if (searchMatch && !JSON.parse(searchMatch[1]).some(item => item.u === "/paycheck-calculator/" && item.k.includes("take home"))) fail("Search index: take-home pay synonym missing");
 const sitemapRoutes = new Set(matches(sitemap, /<loc>https:\/\/rulersquare\.com([^<]*)<\/loc>/g).map(m => m[1]));
 for (const route of indexableRoutes) {
   if (!sitemapRoutes.has(route)) { fail(`${route}: indexable but absent from sitemap`); }

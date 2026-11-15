@@ -1,5 +1,4 @@
 const { SITE, esc } = require("../layout");
-const { siblingsOf } = require("./categories");
 const { diagramFor } = require("../diagrams");
 const { chartsFor } = require("../data/charts");
 const { EXTRAS } = require("../data/extras");
@@ -41,7 +40,8 @@ function field(f) {
   } else {
     control = `<div class="unit">${input}<em>${esc(f.unit || "")}</em></div>`;
   }
-  return `<div class="field"><label class="label" for="p-${f.name}">${esc(f.label)}${f.optional ? ' <span class="hint">(optional)</span>' : ""}</label>${control}${help}</div>`;
+  const showIf = f.showIf ? ` data-show-field="${esc(f.showIf[0])}" data-show-value="${esc(f.showIf[1])}"` : "";
+  return `<div class="field"${showIf}><label class="label" for="p-${f.name}">${esc(f.label)}${f.optional ? ' <span class="hint">(optional)</span>' : ""}</label>${control}${help}</div>`;
 }
 
 /* Fields sharing a `group` are two halves of one reading — feet and inches off
@@ -111,6 +111,28 @@ const MEASURED = {
   "fence-installation-cost": ["quantity:length"],
   "concrete-cost-per-yard": ["quantity:volume"],
   "roof-replacement-cost": ["quantity:area"],
+  "carpet-installation-cost": ["length", "width"],
+  "laminate-flooring-installation-cost": ["length", "width"],
+  "tile-installation-cost": ["length", "width"],
+  "home-addition-cost": ["length", "width"],
+  "epoxy-garage-floor-cost": ["length", "width"],
+  "deck-staining-cost": ["length", "width"],
+  "asphalt-driveway-cost": ["length", "width"],
+  "interior-painting-cost": ["quantity:area"],
+  "drywall-installation-cost": ["quantity:area"],
+  "countertop-cost": ["quantity:area"],
+  "stucco-cost": ["quantity:area"],
+  "vinyl-siding-cost": ["quantity:area"],
+  "metal-roof-cost": ["quantity:area"],
+  "spray-foam-insulation-cost": ["quantity:area"],
+  "sod-installation-cost": ["quantity:area"],
+  "french-drain-cost": ["quantity:length"],
+  "linear-feet-calculator": ["length", "area"],
+  "pool-volume-calculator": ["length", "width", "diameter", "shallow:length", "deep:length"],
+  "wallpaper-calculator": ["wallWidth:length", "height"],
+  "flooring-calculator": ["length", "width"],
+  "carpet-calculator": ["length", "width"],
+  "concrete-block-calculator": ["area"],
 };
 const AREA_FIELDS = new Set(["area", "openings"]);
 const VALID_UNIT = Object.fromEntries(Object.entries(UNIT_SETS).map(([k, set]) => [k, new Set(set.map(([v]) => v))]));
@@ -132,17 +154,11 @@ function markMeasured(c) {
   }
 }
 
-/* Hand-picked links lead; neighbours from the same hub fill the rest. Three
- * links left most of these pages reachable from only their hub. */
-const RELATED_COUNT = 6;
+/* Keep only the next steps chosen for this project. Category hubs carry the
+ * full catalogue, rather than repeating it beneath every calculator. */
 function relatedLinks(c, path) {
-  const out = c.related.map(([slug, label]) => [`/${slug}/`, label]);
-  const have = new Set([path, ...out.map(([href]) => href)]);
-  for (const [href, label] of siblingsOf(path)) {
-    if (out.length >= RELATED_COUNT) break;
-    if (!have.has(href)) { have.add(href); out.push([href, label]); }
-  }
-  return out;
+  return c.related.map(([slug, label]) => [`/${slug}/`, label])
+    .filter(([href]) => href !== path).slice(0, 3);
 }
 
 /* A reference chart: a heading people search for, one line on how to read it,
@@ -156,9 +172,9 @@ function projectPage(c) {
   const charts = chartsFor(c);
   const path = `/${c.slug}/`;
   const category = c.category || "construction";
-  const hub = {construction:["Construction","construction-calculators"],landscaping:["Landscaping","landscaping-calculators"],cost:["Project costs","cost-calculators"],pay:["Pay & Taxes","pay-calculators"]}[category] || ["Construction","construction-calculators"];
+  const hub = {construction:["Construction","construction-calculators"],landscaping:["Landscaping","landscaping-calculators"],cost:["Project costs","cost-calculators"]}[category] || ["Construction","construction-calculators"];
   return {
-    path, title: c.title + " | Ruler Square", description: c.description, crumbs: c.h1, lastmod: UPDATED.iso,
+    path, title: c.title + " | Ruler Square", description: c.description, crumbs: c.h1, lastmod: c.checked === "November 15, 2026" ? "2026-11-15" : UPDATED.iso,
     category: c.category || "construction",
     schema: [{"@context":"https://schema.org","@type":"WebApplication",name:c.h1,author:authorRef,url:SITE.url+path,applicationCategory:"UtilitiesApplication",operatingSystem:"Any",offers:{"@type":"Offer",price:0,priceCurrency:"USD"}},
       {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Home",item:SITE.url+"/"},{"@type":"ListItem",position:2,name:hub[0],item:SITE.url+"/"+hub[1]+"/"},{"@type":"ListItem",position:3,name:c.h1,item:SITE.url+path}]},
@@ -182,7 +198,7 @@ function projectPage(c) {
 </form>
 ${c.context || ""}
 <noscript><p class="note">Turn on JavaScript to use the calculator. The formula and worked example below are available without it.</p></noscript>
-${byline()}
+${byline(c.checked === "November 15, 2026" ? {iso:"2026-11-15",text:c.checked} : UPDATED)}
 <nav class="jump-links" aria-label="On this page"><a href="#method">How it works</a><a href="#example">Example</a>${charts.map(t=>`<a href="#${t.id}">${esc(t.jump)}</a>`).join("")}<a href="#before-you-buy">Before you buy</a><a href="#questions">FAQs</a></nav>
 <div class="prose">
   <h2 id="method">${esc(c.methodTitle)}</h2><p>${c.method}</p><div class="formula">${c.formula}</div>
@@ -191,7 +207,7 @@ ${byline()}
   <h2 id="before-you-buy">${esc(c.buyTitle || "Before you buy")}</h2>${c.buy}
   ${c.extra || ""}${EXTRAS[c.slug] || ""}
   <h2 id="questions">Common questions</h2>${c.faq.map(([q,a])=>`<h3>${esc(q)}</h3><p>${a}</p>`).join("")}
-  <h2>Related calculators</h2><div class="grid">${relatedLinks(c, path).map(([href,label])=>`<a class="card" href="${href}"><b>${esc(label)}</b></a>`).join("")}</div>
+  <h2>Next steps for your project</h2><ul class="related-links">${relatedLinks(c, path).map(([href,label])=>`<li><a href="${href}">${esc(label)}</a></li>`).join("")}</ul>
   <h2>Sources & assumptions</h2><ul class="refs">${c.sources.map(([url,label])=>`<li><a href="${url}">${esc(label)}</a></li>`).join("")}</ul><p class="note">${esc(c.sourceNote || "Quantities use the geometry shown above. Default allowances are editable planning assumptions, not building specifications. Check the selected product and project requirements.")} Checked ${c.checked || "September 21, 2026"}.</p>
 </div>`
   };

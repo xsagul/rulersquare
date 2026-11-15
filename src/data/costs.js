@@ -87,7 +87,8 @@ const items = [
     example:{title:"Example: a 2,000-square-foot roof",values:{quantity:2000,low:3,high:6,delivery:0,removal:0,other:0,waste:0},text:"A measured 2,000-square-foot roof at $3–$6 per square foot gives $6,000–$12,000. Those are installed budget figures, not the cost of shingle bundles alone. If your quote already includes tear-off, leave the separate removal field at zero."},
     buyTitle:"Compare roof systems, not just shingles",buy:"<p>Ask for the shingle or roof-covering specification, underlayment, water barriers where needed, flashing, ventilation, starter and ridge details. Confirm the number of existing layers to remove, debris disposal and protection of the property.</p><p>Deck damage may only become visible after tear-off. Ask for repair unit prices and an approval process for extra work. A warranty should identify what is covered by the product maker and what is covered by the installer.</p>",
     faq:[["Can I use my home’s listed square footage?","Usually not. Living area may include several floors, while roof area includes slopes and overhangs. Use a roof measurement or a footprint adjusted for pitch."],["Is the default range suitable for metal or tile roofing?","Do not assume so. Replace it with installed rates for the chosen roof system, including any required structural work."],["Should I add waste to the installed roof area?","Not automatically. Contractors normally account for material waste in their rate. The optional contingency here is a budget reserve, not a shingle-order allowance."]],related:[["roofing-calculator","Roofing Material Calculator"],["insulation-calculator","Insulation Calculator"],["square-footage-calculator","Area Calculator"]]
-  }
+  },
+  ...require("./costs-more")
 ];
 const COSTS = items.map(c => ({ ...c,kind:"cost",category:"cost",costUnit:c.costUnit||"ft²",
   // The unit rate is the number that decides the answer on a cost page, so it

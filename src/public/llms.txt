@@ -1,6 +1,6 @@
 # Ruler Square
 
-> Free calculators for US building materials, home project costs and take-home pay. Each calculator shows its formula, a worked example and the assumptions behind the default values, so a result can be checked rather than taken on trust. Quantities round up, never to nearest, because running short mid-job costs more than ordering long. Independent and maintained by one person, Știuriuc Sorin-Marian; no accounts, and calculator inputs stay in the browser.
+> Free calculators for US building materials, home project costs. Each calculator shows its formula, a worked example and the assumptions behind the default values, so a result can be checked rather than taken on trust. Quantities round up, never to nearest, because running short mid-job costs more than ordering long. Independent and maintained by one person, Știuriuc Sorin-Marian; no accounts, and calculator inputs stay in the browser.
 
 ## Citation
 
@@ -11,7 +11,6 @@ Results, formulas and short explanations may be quoted with attribution and a li
 - [Construction calculators](https://rulersquare.com/construction-calculators/): concrete, asphalt, framing, stairs, roofing, drywall, tile, siding, brick, rebar and unit conversions
 - [Landscaping calculators](https://rulersquare.com/landscaping-calculators/): gravel, crushed stone, sand, topsoil, fill dirt, mulch, river rock, sod, pavers and retaining walls
 - [Project cost calculators](https://rulersquare.com/cost-calculators/): installed budgets for concrete slabs, patios, driveways, decks, fences, retaining walls and roof replacement
-- [Pay calculators](https://rulersquare.com/pay-calculators/): 2026 take-home pay after federal tax and FICA, and wage conversion between pay periods
 
 ## Most used
 
@@ -20,7 +19,6 @@ Results, formulas and short explanations may be quoted with attribution and a li
 - [Crushed Stone Calculator](https://rulersquare.com/stone-calculator/): #57 stone and crusher run in tons and yards
 - [Mulch Calculator](https://rulersquare.com/mulch-calculator/): cubic yards and bags for beds
 - [Square Footage Calculator](https://rulersquare.com/square-footage-calculator/): rectangles, circles, triangles and trapezoids, summed across sections
-- [Paycheck Calculator](https://rulersquare.com/paycheck-calculator/): 2026 federal brackets, Social Security and Medicare
 
 ## About
 

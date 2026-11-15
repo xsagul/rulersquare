@@ -217,6 +217,63 @@
         note = "Full internal capacity from the dimensions entered. Usable volume is lower once you allow for fittings, freeboard and any inlet or outlet height.";
         break;
       }
+      case "linear-feet": {
+        // Two questions share the name: the total length of a pile of boards,
+        // and how much board it takes to cover an area.
+        const fromArea = v.mode === "area";
+        const base = fromArea ? v.area * 12 / v.boardWidth : v.pieces * v.length;
+        needed = base * extra;
+        rows = [row("Linear feet", needed, "ft", 1), row("Linear yards", needed / 3, "yd", 1), row("Linear metres", needed * 0.3048, "m", 1), row("Total inches", needed * 12, "in", 0), row("Before allowance", base, "ft", 1), row("Material cost", needed * (v.price || 0), "$", 2)];
+        note = fromArea
+          ? "Area divided by the board’s face width. Use the exposed width once installed, not the nominal size: a 1×6 covers 5.5 inches, less if it laps or has a tongue."
+          : "A linear foot is 12 inches of length, whatever the width or thickness. It is not a board foot (volume) or a square foot (area).";
+        break;
+      }
+      case "pool": {
+        // Volume is water surface times average depth. A floor that slopes
+        // evenly from shallow to deep averages the two ends exactly.
+        const avg = (v.shallow + v.deep) / 2;
+        const surface = v.shape === "round" ? Math.PI * Math.pow(v.diameter / 2, 2)
+          : v.shape === "oval" ? Math.PI * v.length * v.width / 4
+          : v.length * v.width;
+        const ft3 = surface * avg;
+        const gal = ft3 * 7.48051948;
+        rows = [row("Pool volume", gal, "US gal", 0), row("Litres", ft3 * 28.316846592, "L", 0), row("Cubic feet", ft3, "ft³", 1), row("Average depth", avg, "ft", 2), row("Water surface", surface, "ft²", 1), row("Water weight", gal * 8.345, "lb", 0)];
+        note = "Water depth, not wall height: measure from the floor to the waterline. A hopper bottom, steps or a bench change the real volume, so treat this as a dosing estimate and adjust from test results.";
+        break;
+      }
+      case "wallpaper": {
+        // Paper is hung in full-height strips, so rolls are counted by strips,
+        // not by area: the offcut at the end of a roll is rarely long enough.
+        const strips = ceil(v.wallWidth * 12 / v.rollWidth);
+        const stripLength = v.height * 12 + (v.repeat || 0) + (v.trim || 0);
+        const perRoll = Math.floor(v.rollLength * 12 / stripLength + 1e-9);
+        if (perRoll < 1) throw new Error("One strip is longer than the roll. Check the wall height and the roll length.");
+        const withSpare = ceil(strips * extra);
+        count = ceil(withSpare / perRoll);
+        rows = [row("Rolls to buy", count, "rolls"), row("Strips to hang", strips, "strips"), row("Strips including spare", withSpare, "strips"), row("Full strips per roll", perRoll), row("Cut length per strip", stripLength / 12, "ft", 2), row("Wall area", v.wallWidth * v.height, "ft²", 1), row("Wallpaper cost", count * (v.price || 0), "$", 2)];
+        note = "Counts full-height strips across the total wall width. Doors and windows are not deducted, which leaves paper for matching around them. Buy every roll from one batch: colour varies between print runs.";
+        break;
+      }
+      case "flooring": {
+        area = v.length * v.width;
+        needed = area * extra;
+        const boxes = v.boxCoverage > 0 ? ceil(needed / v.boxCoverage) : 0;
+        rows = [row("Flooring to buy", needed, "ft²", 1), row("Room area", area, "ft²", 1), row("Allowance for cuts", needed - area, "ft²", 1), row("Square yards", needed / 9, "yd²", 1), row("Material cost", (boxes ? boxes * v.boxCoverage : needed) * (v.price || 0), "$", 2)];
+        if (boxes) rows.splice(1, 0, row("Boxes to buy", boxes, "boxes"), row("Coverage in those boxes", boxes * v.boxCoverage, "ft²", 1));
+        note = "One rectangular room. Add each room or closet separately, and raise the allowance for diagonal or herringbone layouts. Underlayment, trim and transitions are separate.";
+        break;
+      }
+      case "carpet": {
+        area = v.length * v.width;
+        needed = area * extra;
+        // Carpet is cut from a roll of fixed width. A room wider than the roll
+        // in both directions needs a seam, which is worth knowing before a quote.
+        const drops = ceil(Math.min(v.length, v.width) / v.rollWidth);
+        rows = [row("Carpet to order", needed / 9, "yd²", 1), row("Same in square feet", needed, "ft²", 1), row("Room area", area, "ft²", 1), row("Roll widths across the room", drops), row("Seams", drops - 1), row("Carpet cost", needed / 9 * (v.price || 0), "$", 2)];
+        note = "Area plus an allowance, the way stores quote. The installer’s cut plan from a fixed-width roll can need more, especially when the pile must run one direction through adjoining rooms.";
+        break;
+      }
       case "cost": {
         const quantity = v.quantity || v.length * v.width;
         if (v.high < v.low) throw new Error("The high unit price must be at least the low unit price.");
@@ -267,6 +324,14 @@
   const error = document.getElementById("form-error");
   let calculated = false;
   function syncFields() {
+    // A field can depend on a selector: it shows only for the listed values,
+    // and a hidden field is disabled so it is neither validated nor submitted.
+    form.querySelectorAll("[data-show-field]").forEach(field => {
+      const control = form.elements.namedItem(field.dataset.showField);
+      const on = field.dataset.showValue.split("|").indexOf(control.value) !== -1;
+      field.hidden = !on;
+      field.querySelectorAll("input,select").forEach(el => { el.disabled = !on; });
+    });
     if (cfg.kind !== "tank-volume") return;
     const cylinder = form.elements.shape.value === "cylinder";
     if (window.RSShowDiagram) window.RSShowDiagram(form.elements.shape.value);

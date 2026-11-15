@@ -93,7 +93,7 @@ ${weightTables(cfg, options)}${EXTRAS[cfg.path.replace(/\//g, "")] || ""}
 <h2>Cost and delivery</h2><p>Enter a local material quote per ton or per cubic yard. The estimate excludes delivery, labor, tax and minimum-load fees. It prices the calculated quantity before order rounding; ask the supplier to confirm the final order and bill.</p>
 <p>Never judge a pickup’s capacity by bed volume. Check the vehicle’s payload label and remaining capacity after passengers, equipment and other cargo. Ask the supplier to arrange suitable delivery if the load is too heavy.</p>
 <h2 id="questions">Common questions</h2>${faq.map(([q,a])=>`<h3>${q}</h3><p>${a}</p>`).join("")}
-<h2>Related calculators</h2><div class="grid">${cfg.related.map(([href,label])=>`<a class="card" href="${href}"><b>${label}</b></a>`).join("")}</div>
+<h2>Next steps for your project</h2><ul class="related-links">${cfg.related.slice(0, 3).map(([href,label])=>`<li><a href="${href}">${esc(label)}</a></li>`).join("")}</ul>
 <h2>Sources &amp; assumptions</h2><p class="note">Volume and coverage use the geometry above. Density and allowance are starting assumptions; confirm them for the selected material. Guidance: ${cfg.sources.map(([url,label])=>`<a href="${url}">${label}</a>`).join("; ")}. Checked September 21, 2026.</p>
 </div>`
   };

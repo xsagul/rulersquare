@@ -26,8 +26,6 @@ const pages = [
   ...require("./src/pages/other"),
   require("./src/pages/concrete-calculator"),
   ...require("./src/pages/aggregates"),
-  ...require("./src/pages/paychecks"),
-  ...require("./src/pages/wages"),
   require("./src/pages/square-footage"),
   ...require("./src/pages/categories"),
   ...require("./src/pages/projects"),
@@ -41,7 +39,7 @@ const pages = [
 const NOT_SEARCHABLE = new Set([
   "/", "/about/", "/contact/", "/privacy/", "/terms/", "/404.html", "/methodology/",
   "/construction-calculators/", "/landscaping-calculators/",
-  "/pay-calculators/", "/cost-calculators/",
+  "/cost-calculators/",
 ]);
 const SEARCH_INDEX = pages
   .filter(p => !NOT_SEARCHABLE.has(p.path) && !p.noSitemap)

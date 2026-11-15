@@ -1,12 +1,12 @@
 # Ruler Square
 
 Source for **[rulersquare.com](https://rulersquare.com)** — free calculators for
-building materials, project costs and US take-home pay.
+building materials and home project costs.
 
-53 calculators: concrete, gravel, crushed stone, sand, topsoil, mulch, asphalt,
+69 calculators: concrete, gravel, crushed stone, sand, topsoil, mulch, asphalt,
 road base, square footage, roof pitch, stairs, framing, rebar, brick, pavers,
 drywall, tile, siding, paint, insulation, board feet, fence, deck, sod, ramps,
-tank volume, project cost ranges, paycheck and wage conversion.
+tank volume, project cost ranges, flooring, carpet, wallpaper, linear feet and pool volume.
 
 ## Why the source is public
 
@@ -23,23 +23,24 @@ dependencies. `build.js` renders every page to `dist/`, which Cloudflare serves.
 src/
   assets/        calculation engines + styles; each engine runs in the
                  browser and in the test suite from the same file
-  data/          material densities, tax constants, page definitions
+  data/          material densities, sourced cost ranges, page definitions
   pages/         page templates and content
   author.js      shared author identity (schema.org Person)
   layout.js      shared HTML shell
   og.js          Open Graph image, drawn at build time with no dependencies
 build.js         the generator
-test.js          148 assertions over every engine
+test.js          305 assertions over every engine
 ```
 
 ## Commands
 
 ```bash
 npm install
-npm test       # 148 assertions; fails loudly rather than silently
+npm test       # 305 assertions; fails loudly rather than silently
 npm run build  # production build to dist/
 npm run dev    # local build, adds a translation helper that never ships
-npm run deploy # test, clean build, then deploy
+npm run check  # build, engine tests and generated-page audit
+npm run deploy # check, then deploy to the existing Cloudflare Worker
 ```
 
 ## Design decisions worth knowing
@@ -60,7 +61,7 @@ npm run deploy # test, clean build, then deploy
 
 Built and maintained by Știuriuc Sorin-Marian.
 
-[LinkedIn](https://www.linkedin.com/in/%C8%99tiuriuc-sorin-marian/) ·
+[LinkedIn](https://www.linkedin.com/in/sorin-stiuriuc/) ·
 [GitHub](https://github.com/xsagul) ·
 [dev.to](https://dev.to/sorin_stiuriuc)
 

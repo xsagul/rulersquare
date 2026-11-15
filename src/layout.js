@@ -16,7 +16,6 @@ const NAV = [
   ["/construction-calculators/", "Construction", "concrete"],
   ["/landscaping-calculators/", "Landscaping", "mulch"],
   ["/cost-calculators/", "Costs", "asphalt"],
-  ["/pay-calculators/", "Pay", "paycheck"],
   ["/about/", "About", "info"],
 ];
 
@@ -57,12 +56,12 @@ function layout(page) {
 <meta property="og:image" content="${SITE.url}/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Ruler Square — material, cost and pay calculators">
+<meta property="og:image:alt" content="Ruler Square — material and project cost calculators">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(page.title)}">
 <meta name="twitter:description" content="${esc(page.description)}">
 <meta name="twitter:image" content="${SITE.url}/og.png">
-<meta name="twitter:image:alt" content="Ruler Square — material, cost and pay calculators">
+<meta name="twitter:image:alt" content="Ruler Square — material and project cost calculators">
 <meta name="theme-color" content="#c2410c">
 <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/favicon.png">
@@ -110,7 +109,7 @@ ${page.body}
 </footer>
 <script>window.RS_INDEX=${JSON.stringify(page.index || [])};</script>
 <script src="/assets/nav.js?v=${page.version}" defer></script>
-${/id="(?:material|concrete|wage|paycheck|area|project)-form"/.test(page.body) ? `<script src="/assets/calc-ui.js?v=${page.version}" defer></script>` : ""}
+${/id="(?:material|concrete|area|project)-form"/.test(page.body) ? `<script src="/assets/calc-ui.js?v=${page.version}" defer></script>` : ""}
 ${page.scripts || ""}
 ${page.dev ? `<script src="/assets/devtools.js?v=${page.version}" defer></script>` : ""}
 </body>

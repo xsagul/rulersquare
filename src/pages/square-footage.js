@@ -27,7 +27,7 @@ module.exports = {
   title: "Square Footage Calculator – Area in Sq Ft, Yards & Acres | Ruler Square",
   description: "Free square footage calculator. Add rectangles, circles, triangles and trapezoids to measure any shape, with results in sq ft, sq yards, m² and acres.",
   crumbs: "Square Footage Calculator",
-  lastmod: UPDATED.iso,
+  lastmod: "2026-11-15",
   schema: [
     {
       "@context": "https://schema.org", "@type": "WebApplication",
@@ -122,7 +122,7 @@ module.exports = {
     </div>
   </div>
 </form>
-${byline()}
+${byline({iso:"2026-11-15",text:"November 15, 2026"})}
 
 <div class="prose">
 <h2>How to calculate square footage</h2>
@@ -172,14 +172,8 @@ ${table(["Material or layout", "Add", "Why"], [
 <h2>Frequently asked questions</h2>
 ${faq.map(([q, a]) => `<h3>${q}</h3>\n<p>${a}</p>`).join("\n")}
 
-<h2>Related calculators</h2>
-<div class="grid">
-  <a class="card" href="/concrete-calculator/"><b>Concrete Calculator</b><span>Turn area into cubic yards and bags</span></a>
-  <a class="card" href="/gravel-calculator/"><b>Gravel Calculator</b><span>Area plus depth, in tons and yards</span></a>
-  <a class="card" href="/asphalt-calculator/"><b>Asphalt Calculator</b><span>Tons of hot mix for any paved area</span></a>
-  <a class="card" href="/mulch-calculator/"><b>Mulch Calculator</b><span>Beds by area and depth</span></a>
-  <a class="card" href="/topsoil-calculator/"><b>Topsoil Calculator</b><span>Lawns and garden beds</span></a>
-</div>
+<h2>Next steps for your project</h2>
+<ul class="related-links"><li><a href="/flooring-calculator/">Flooring quantities and boxes</a></li><li><a href="/paint-calculator/">Paint for the room</a></li><li><a href="/cubic-yard-calculator/">Convert area and depth to cubic yards</a></li></ul>
 
 <h2>References</h2>
 <ul class="refs">

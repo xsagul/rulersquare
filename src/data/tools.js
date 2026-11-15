@@ -320,7 +320,7 @@ const TOOLS = [
       ["Should overhead be in cost or markup?", "Either, as long as you are consistent and count it once. Many contractors put allocated overhead into cost, then apply markup purely as profit, which makes the profit figure honest."],
     ],
     sources: [["https://www.sba.gov/", "US Small Business Administration — pricing and costing guidance"]],
-    related: [link("labor-cost-calculator", "Labor Cost Calculator"), link("construction-cost-calculator", "Construction Cost Calculator"), link("pay-rate-calculator", "Pay Rate Calculator")],
+    related: [link("labor-cost-calculator", "Labor Cost Calculator"), link("construction-cost-calculator", "Construction Cost Calculator"), link("construction-cost-calculator", "Construction Cost Calculator")],
   },
   {
     slug: "labor-cost-calculator", kind: "labor-cost", h1: "Labor Cost Calculator",
@@ -348,7 +348,7 @@ const TOOLS = [
       ["How do I calculate my real burden rate?", "Take total annual labor expense including all the items above, divide by total gross wages paid, and subtract one. If you spent $650,000 on labor to pay $500,000 in wages, your burden is 30%."],
     ],
     sources: [["https://www.bls.gov/ncs/ect/", "US Bureau of Labor Statistics — employer costs for employee compensation"], ["https://www.sba.gov/", "US Small Business Administration"]],
-    related: [link("markup-calculator", "Markup Calculator"), link("pay-rate-calculator", "Pay Rate Calculator"), link("construction-cost-calculator", "Construction Cost Calculator")],
+    related: [link("markup-calculator", "Markup Calculator"), link("construction-cost-calculator", "Construction Cost Calculator"), link("construction-cost-calculator", "Construction Cost Calculator")],
   },
   {
     slug: "tank-volume-calculator", kind: "tank-volume", h1: "Tank Volume Calculator",
@@ -381,4 +381,6 @@ const TOOLS = [
   },
 ];
 
+TOOLS.push(...require("./tools-more"));
+for (const c of TOOLS) if (["sod", "pool"].includes(c.kind)) c.category = "landscaping";
 module.exports = { TOOLS };

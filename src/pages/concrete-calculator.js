@@ -49,7 +49,7 @@ module.exports = {
   title: "Concrete Calculator – Cubic Yards, Bags & Cost | Ruler Square",
   description: "Free concrete calculator for slabs, footings, columns and round pads. Get cubic yards, how many 40, 50, 60 or 80 lb bags you need, and the cost.",
   crumbs: "Concrete Calculator",
-  lastmod: UPDATED.iso,
+  lastmod: "2026-11-15",
   schema: [
     {
       "@context": "https://schema.org",
@@ -142,7 +142,7 @@ module.exports = {
     </div>
   </div>
 </form>
-${byline()}
+${byline({iso:"2026-11-15",text:"November 15, 2026"})}
 
 <div class="prose">
 <h2>How to use the concrete calculator</h2>
@@ -194,13 +194,8 @@ ${table(["Bag size", "Yield per bag", "Bags per cubic yard", "Bags per ½ yard"]
 <h2>Frequently asked questions</h2>
 ${faq.map(([q, a]) => `<h3>${q}</h3>\n<p>${a}</p>`).join("\n")}
 
-<h2>Related calculators</h2>
-<div class="grid">
-  <a class="card" href="/gravel-calculator/"><b>Gravel Calculator</b><span>Base course under a slab, in yards and tons</span></a>
-  <a class="card" href="/stone-calculator/"><b>Crushed Stone Calculator</b><span>#57 stone and crusher run for bases</span></a>
-  <a class="card" href="/sand-calculator/"><b>Sand Calculator</b><span>Bedding sand in yards, tons or bags</span></a>
-  <a class="card" href="/fill-dirt-calculator/"><b>Fill Dirt Calculator</b><span>Grading and backfill before you pour</span></a>
-</div>
+<h2>Next steps for your project</h2>
+<ul class="related-links"><li><a href="/gravel-calculator/">Gravel for the base</a></li><li><a href="/concrete-cost-per-yard/">Ready-mix cost per yard</a></li><li><a href="/concrete-slab-cost/">Installed concrete slab cost</a></li></ul>
 
 <h2>References</h2>
 <ul class="refs">

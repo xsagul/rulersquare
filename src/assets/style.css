@@ -303,6 +303,25 @@ h2 > a:hover { color: var(--accent); text-decoration: underline; }
 
 @media (prefers-reduced-motion: reduce) { .hub:hover { transform: none; } }
 
+/* A short home page: three routes into the catalogue, with search above. */
+.hero { padding: 48px 0 20px; }
+.eyebrow { color: var(--accent); font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.hero h1 { font-size: clamp(36px, 6vw, 60px); line-height: 1.08; letter-spacing: -.045em; margin: 14px 0 20px; }
+.hero .lede { max-width: 580px; }
+.hubs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.related-links { display: flex; flex-wrap: wrap; gap: 10px 24px; padding: 0; list-style: none; }
+.related-links li { margin: 0; }
+@media (min-width: 900px) {
+  .grid.tight { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .hero { padding: 24px 0 10px; }
+  .hubs { grid-template-columns: 1fr; }
+  .hubs .hub { display: grid; grid-template-columns: 32px 1fr auto; align-items: center; text-align: left; gap: 12px; padding: 18px; }
+  .hubs .hub .ico { width: 28px; height: 28px; margin: 0; }
+  .related-links { flex-direction: column; gap: 10px; }
+}
+
 /* One value box with its unit selector attached */
 .combo { display: grid; grid-template-columns: 1fr auto; gap: 0; }
 .combo input {

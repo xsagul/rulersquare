@@ -20,6 +20,19 @@ const exampleExpected = {
   "ramp-calculator":24, "framing-calculator":26, "rebar-calculator":20,
   "sod-calculator":2200, "markup-calculator":12000, "labor-cost-calculator":4368,
   "tank-volume-calculator":94.002980174,
+  "carpet-installation-cost":[540,1980],
+  "laminate-flooring-installation-cost":[1000,2400],
+  "tile-installation-cost":[1200,2640],
+  "drywall-installation-cost":[1500,3500],
+  "interior-painting-cost":[1500,6000], "countertop-cost":[1400,5250],
+  "home-addition-cost":[30000,90000], "asphalt-driveway-cost":[3600,5400],
+  "epoxy-garage-floor-cost":[1080,4320], "deck-staining-cost":[504,1260],
+  "stucco-cost":[9540,14490], "vinyl-siding-cost":[6000,24000],
+  "metal-roof-cost":[14400,38400], "spray-foam-insulation-cost":[2750,7500],
+  "sod-installation-cost":[4250,8750], "french-drain-cost":[1000,5000],
+  "linear-feet-calculator":96, "pool-volume-calculator":18192.62337536,
+  "wallpaper-calculator":10, "flooring-calculator":198,
+  "carpet-calculator":22, "concrete-block-calculator":237,
 };
 for (const c of [...require("./src/data/projects").PROJ, ...require("./src/data/costs").COSTS, ...require("./src/data/tools").TOOLS]) {
   const result = require("./src/assets/project").calculate(c.kind, {...c.example.values, costUnit:c.costUnit});
@@ -134,66 +147,6 @@ assert(m("area", { areaFt2: 108, depth: 3, depthUnit: "in", material: "unobtaini
 let bad = m("rect", { length: -5, lengthUnit: "ft", width: "abc", widthUnit: "ft", depth: 3, depthUnit: "in" });
 assert(bad.yd3 === 0 && bad.tons === 0 && bad.orderYd3 === 0 && bad.coverageFt2 === 27 * 4, "bad input -> 0");
 
-// ---------- US paycheck calculator, 2026 ----------
-const pay = require("./src/assets/paycheck.js");
-const T = require("./src/data/tax2026");
-
-// $52,000 single, no state tax. Hand-checked against the 2026 tables.
-let s = pay.calc({ gross: 2000, periodsPerYear: 26, status: "single", stateRatePct: 0 });
-assert(close(s.annualGross, 52000, 1e-6), "paycheck: gross 52,000");
-// 16,100 standard deduction -> 35,900 taxable
-assert(close(s.taxableIncome, 35900, 1e-6), "paycheck: taxable 35,900");
-// 10% x 12,400 = 1,240 ; 12% x 23,500 = 2,820
-assert(close(s.federal, 4060, 0.01), "paycheck: federal 4,060 " + s.federal.toFixed(2));
-assert(close(s.socialSecurity, 3224, 0.01), "paycheck: SS 3,224");
-assert(close(s.medicare, 754, 0.01), "paycheck: medicare 754");
-assert(close(s.annualNet, 43962, 0.01), "paycheck: net 43,962");
-assert(close(s.perPeriodNet, 1690.85, 0.01), "paycheck: 1,690.85 per biweekly cheque");
-assert(close(s.marginalRate, 0.12, 1e-9), "paycheck: marginal 12%");
-
-// Social Security stops at the wage base; Medicare does not.
-let hi = pay.calc({ gross: 300000, periodsPerYear: 1, status: "single", stateRatePct: 0 });
-assert(close(hi.socialSecurity, T.FICA.socialSecurityWageBase * 0.062, 0.01), "paycheck: SS capped at wage base");
-// 1.45% on all 300k, plus 0.9% on the 100k above the 200k threshold
-assert(close(hi.medicare, 300000 * 0.0145 + 100000 * 0.009, 0.01), "paycheck: additional medicare surtax");
-
-// Payroll withholding begins at $200,000 even for a married employee. The
-// final joint-return threshold is reconciled later on Form 8959.
-let hiMar = pay.calc({ gross: 225000, periodsPerYear: 1, status: "married", stateRatePct: 0 });
-assert(close(hiMar.medicare, 225000 * 0.0145 + 25000 * 0.009, 0.01), "paycheck: married Medicare withholding starts at 200k");
-
-// Married thresholds are wider, so the same gross keeps more.
-let mar = pay.calc({ gross: 2000, periodsPerYear: 26, status: "married", stateRatePct: 0 });
-assert(mar.annualNet > s.annualNet, "paycheck: married keeps more than single");
-assert(close(mar.taxableIncome, 52000 - 32200, 1e-6), "paycheck: married standard deduction 32,200");
-
-// A 401(k) cuts federal tax but not FICA — the usual payroll gotcha.
-let k = pay.calc({ gross: 2000, periodsPerYear: 26, status: "single", stateRatePct: 0, pretax401kPct: 10 });
-assert(close(k.socialSecurity, s.socialSecurity, 0.01), "paycheck: 401k does not reduce Social Security");
-assert(k.federal < s.federal, "paycheck: 401k reduces federal tax");
-assert(close(k.pretax401k, 5200, 0.01), "paycheck: 401k 10% of 52,000");
-let kMax = pay.calc({ gross: 300000, periodsPerYear: 1, status: "single", stateRatePct: 0, pretax401kPct: 20 });
-assert(close(kMax.pretax401k, T.RETIREMENT.employee401kLimit, 0.01), "paycheck: 401k capped at 2026 base limit");
-
-// Section 125 style deductions reduce FICA too.
-let sec125 = pay.calc({ gross: 2000, periodsPerYear: 26, status: "single", stateRatePct: 0, pretaxOtherPerPeriod: 100 });
-assert(sec125.socialSecurity < s.socialSecurity, "paycheck: pre-tax health premiums do reduce FICA");
-
-// State rate applies to post-401k wages.
-let tx = pay.calc({ gross: 2000, periodsPerYear: 26, status: "single", stateRatePct: 0 });
-let ca = pay.calc({ gross: 2000, periodsPerYear: 26, status: "single", stateRatePct: 5 });
-assert(close(tx.state, 0, 1e-9), "paycheck: no-tax state pays 0 state tax");
-assert(close(ca.state, 2600, 0.01), "paycheck: 5% state on 52,000 = 2,600");
-
-// Pay frequency changes the cheque, never the annual outcome.
-let wk = pay.calc({ gross: 1000, periodsPerYear: 52, status: "single", stateRatePct: 0 });
-let mo = pay.calc({ gross: 52000 / 12, periodsPerYear: 12, status: "single", stateRatePct: 0 });
-assert(close(wk.annualNet, mo.annualNet, 0.01), "paycheck: frequency does not change annual net");
-
-// Zero and junk input must not produce NaN.
-let z = pay.calc({ gross: "abc", periodsPerYear: 26, status: "nonsense" });
-assert(z.annualNet === 0 && z.federal === 0 && !isNaN(z.effectiveRate), "paycheck: bad input -> 0, no NaN");
-
 // ---------- Square footage / area ----------
 {
 const area = require("./src/assets/area.js");
@@ -236,51 +189,6 @@ let asp = m("rect", { length: 100, lengthUnit: "ft", width: 20, widthUnit: "ft",
 // 2,000 ft2 x 0.25 ft x 145 lb/ft3 / 2,000 = 36.25 tons
 assert(close(asp.tons, 36.25, 0.01), "asphalt: 36.25 tons for 100x20 at 3 in");
 assert(close(asp.yd3, 500 / 27, 0.001), "asphalt: 500 ft3 = 18.52 yd3");
-
-// ---------- Wage and salary conversion ----------
-{
-const wage = require("./src/assets/wage.js");
-
-// $65,000 a year at 40 h/week, all 52 weeks paid -> 2,080 hours
-let sal = wage.calc({ amount: 65000, per: "year", hoursPerWeek: 40, daysPerWeek: 5 });
-assert(close(sal.hoursPerYear, 2080, 1e-9), "wage: 2,080 hours a year");
-assert(close(sal.hourly, 31.25, 0.001), "wage: $65k = $31.25/hr");
-assert(close(sal.weekly, 1250, 0.01), "wage: $1,250 a week");
-assert(close(sal.biweekly, 2500, 0.01), "wage: $2,500 every two weeks");
-assert(close(sal.monthly, 65000 / 12, 0.01), "wage: monthly = annual/12");
-
-// Unpaid leave shortens the paid year and lifts the real hourly rate.
-let unpaid = wage.calc({ amount: 65000, per: "year", hoursPerWeek: 40, unpaidWeeks: 2 });
-assert(close(unpaid.hoursPerYear, 2000, 1e-9), "wage: 2 unpaid weeks -> 2,000 hours");
-assert(close(unpaid.hourly, 32.5, 0.001), "wage: real rate rises to $32.50");
-
-// Hourly -> annual, with overtime at 1.5x
-let hr = wage.calc({ amount: 22, per: "hour", hoursPerWeek: 40 });
-assert(close(hr.annual, 45760, 0.01), "wage: $22/hr = $45,760");
-let ot = wage.calc({ amount: 22, per: "hour", hoursPerWeek: 40, overtimeHours: 5, overtimeMult: 1.5 });
-assert(close(ot.annual, 54340, 0.01), "wage: +5h OT = $54,340 " + ot.annual.toFixed(2));
-assert(close(ot.overtimePay, 8580, 0.01), "wage: overtime worth $8,580");
-
-// Biweekly (26) and semi-monthly (24) describe the same salary differently.
-let wk = wage.calc({ amount: 1400, per: "week", hoursPerWeek: 40 });
-assert(close(wk.annual, 72800, 0.01), "wage: $1,400/wk = $72,800");
-assert(close(wk.biweekly, 2800, 0.01), "wage: biweekly $2,800");
-assert(close(wk.semimonthly, 72800 / 24, 0.01), "wage: semi-monthly differs from biweekly");
-assert(wk.semimonthly > wk.biweekly, "wage: 24 cheques are larger than 26");
-assert(close(wk.hourly, 35, 0.001), "wage: $1,400/wk at 40h = $35/hr");
-
-// Part-time uses the real divisor, not 2,080.
-let pt = wage.calc({ amount: 32500, per: "year", hoursPerWeek: 25 });
-assert(close(pt.hourly, 25, 0.001), "wage: part-time $32,500 at 25h = $25/hr");
-
-// Day rate
-let day = wage.calc({ amount: 400, per: "day", daysPerWeek: 5, hoursPerWeek: 40, unpaidWeeks: 4 });
-assert(close(day.annual, 400 * 5 * 48, 0.01), "wage: $400/day over 48 paid weeks = $96,000");
-
-// Junk input stays at zero.
-let bad = wage.calc({ amount: "abc", per: "year" });
-assert(bad.annual === 0 && bad.hourly === 0, "wage: bad input -> 0");
-}
 
 // ---------- New trade tools ----------
 {
@@ -377,6 +285,32 @@ let threw = false;
 try { calculate("feet-inches", { aFeet: 1, aInches: 0, bFeet: 5, bInches: 0, operation: "subtract" }); }
 catch (e) { threw = true; }
 assert(threw, "feet-inches: negative result throws");
+}
+
+// ---------- Unit conversion on measured fields ----------
+// Boundary cases for the new buying calculators: the quoted room area alone
+// is not always the number of full packages a customer must purchase.
+{
+  const { calculate, convertUnits } = require("./src/assets/project");
+  const value = (kind, v, label) => calculate(kind, v).rows.find(r => r.label === label).value;
+  assert(close(value("linear-feet", {mode:"area",area:100,boardWidth:6,waste:10}, "Linear feet"), 220, 1e-9), "linear feet: 100 ft2 of 6-inch boards plus 10% needs 220 ft");
+  const roundPool = {shape:"round",diameter:24,shallow:4,deep:4};
+  assert(close(value("pool", roundPool, "Cubic feet"), 1809.557368, 1e-6), "pool: 24-foot round pool at 4-foot depth");
+  assert(close(value("pool", {shape:"oval",length:24,width:12,shallow:3,deep:5}, "Cubic feet"), 904.778684, 1e-6), "pool: oval surface uses elliptical area and average depth");
+  const paper = {wallWidth:44,height:8,rollWidth:20.5,rollLength:33,repeat:24,trim:4,waste:0};
+  assert(value("wallpaper", paper, "Rolls to buy") === 9, "wallpaper: full-repeat allowance gives three full strips per roll");
+  assert(value("wallpaper", {...paper,repeat:33}, "Rolls to buy") === 13, "wallpaper: a longer repeat crosses the whole-strip boundary");
+  let rejected = false;
+  try { calculate("wallpaper", {...paper,rollLength:8}); } catch (e) { rejected = /longer than the roll/.test(e.message); }
+  assert(rejected, "wallpaper: a strip longer than the roll is rejected");
+  const floor = {length:12,width:15,boxCoverage:20,waste:10,price:3};
+  assert(value("flooring", floor, "Boxes to buy") === 10, "flooring: 198 ft2 rounds up to ten 20-ft2 boxes");
+  assert(value("flooring", floor, "Material cost") === 600, "flooring: price covers 200 purchased ft2 rather than 198 needed");
+  assert(close(value("flooring", {...floor,boxCoverage:0}, "Material cost"), 594, 1e-9), "flooring: without boxes price uses the allowance-adjusted area");
+  assert(value("carpet", {length:12,width:15,rollWidth:12,waste:0}, "Seams") === 0, "carpet: rotating one roll width spans the room");
+  assert(value("carpet", {length:13,width:15,rollWidth:12,waste:0}, "Seams") === 1, "carpet: both sides wider than the roll require a seam");
+  const block = convertUnits({area:100/9,areaUnit:"yd2",unitLength:15.625,unitHeight:7.625,joint:0.375,waste:5}, {area:"ft2"});
+  assert(value("brick", block, "Units to buy") === 119, "CMU: 100 ft2 in square yards orders 119 blocks with 5% spare");
 }
 
 // ---------- Unit conversion on measured fields ----------
