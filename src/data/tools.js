@@ -17,7 +17,7 @@ const TOOLS = [
   {
     slug: "feet-and-inches-calculator", kind: "feet-inches", h1: "Feet and Inches Calculator",
     title: "Feet and Inches Calculator — Add, Subtract & Convert",
-    description: "Add or subtract feet and inches, then convert the result to decimal feet, inches, yards, centimetres and metres. Built for tape-measure arithmetic.",
+    description: "Add or subtract feet and inches, then convert the result to decimal feet, inches, yards, centimeters and meters. Built for tape-measure arithmetic.",
     lede: "Add or subtract two tape-measure readings without converting anything by hand.",
     fields: [
       n("aFeet", "First, feet", "ft", 0, { min: 0, group: "a" }),
@@ -46,13 +46,13 @@ const TOOLS = [
   {
     slug: "cubic-feet-calculator", kind: "cubic-feet", h1: "Cubic Feet Calculator",
     title: "Cubic Feet Calculator — Volume in ft³, Yards & Gallons",
-    description: "Calculate cubic feet from length, width and height in any unit, with conversions to cubic yards, cubic metres, US gallons and litres.",
+    description: "Calculate cubic feet from length, width and height in any unit, with conversions to cubic yards, cubic meters, US gallons and liters.",
     lede: "Three dimensions into cubic feet, and every other volume unit.",
     fields: [
       n("length", "Length", "", undefined, { min: 0 }),
       n("width", "Width", "", undefined, { min: 0 }),
       n("height", "Height or depth", "", undefined, { min: 0 }),
-      n("unit", "Units", "", "ft", { options: [["in", "inches"], ["ft", "feet"], ["yd", "yards"], ["cm", "centimetres"], ["m", "metres"]] }),
+      n("unit", "Units", "", "ft", { options: [["in", "inches"], ["ft", "feet"], ["yd", "yards"], ["cm", "centimeters"], ["m", "meters"]] }),
     ],
     advanced: [waste(0)],
     methodTitle: "How to calculate cubic feet",
@@ -61,7 +61,7 @@ const TOOLS = [
     example: {
       title: "Example: a 4 × 3 × 2 ft crate",
       values: { length: 4, width: 3, height: 2, unit: "ft", waste: 0 },
-      text: "Four by three by two is 24 cubic feet. That is 0.889 cubic yards, 0.68 cubic metres, or about 180 US gallons if you filled it with water — which would weigh roughly 1,500 pounds, a useful sanity check before you plan to lift anything.",
+      text: "Four by three by two is 24 cubic feet. That is 0.889 cubic yards, 0.68 cubic meters, or about 180 US gallons if you filled it with water — which would weigh roughly 1,500 pounds, a useful sanity check before you plan to lift anything.",
     },
     buy: "<p>Shipping and freight quotes often use cubic feet, while bulk materials use cubic yards and liquids use gallons. Having all four in front of you makes it easy to check that a quote is for the volume you think it is.</p><p>Volume tells you nothing about weight on its own. A cubic foot of water is 62 lb; a cubic foot of gravel is about 105 lb; a cubic foot of packing foam is under 2 lb.</p>",
     faq: [
@@ -352,9 +352,9 @@ const TOOLS = [
   },
   {
     slug: "tank-volume-calculator", kind: "tank-volume", h1: "Tank Volume Calculator",
-    title: "Tank Volume Calculator — Gallons, Litres & Capacity",
-    description: "Calculate tank capacity in US gallons, imperial gallons, litres and cubic feet for cylindrical or rectangular tanks, with water weight when full.",
-    lede: "Find a tank's capacity in gallons, litres and cubic feet.",
+    title: "Tank Volume Calculator — Gallons, Liters & Capacity",
+    description: "Calculate tank capacity in US gallons, imperial gallons, liters and cubic feet for cylindrical or rectangular tanks, with water weight when full.",
+    lede: "Find a tank's capacity in gallons, liters and cubic feet.",
     fields: [
       n("shape", "Tank shape", "", "cylinder", { options: [["cylinder", "Cylindrical"], ["rectangle", "Rectangular"]] }),
       n("diameter", "Diameter, cylindrical only", "in", 0, { min: 0, step: "any" }),
@@ -368,7 +368,7 @@ const TOOLS = [
     example: {
       title: "Example: a 24-inch cylinder, 48 inches tall",
       values: { shape: "cylinder", diameter: 24, height: 48, length: 0, width: 0 },
-      text: "A 24-inch diameter gives a 12-inch radius, so the area is π × 144 = 452.4 square inches. Times 48 inches of height is 21,715 cubic inches, or 12.57 cubic feet. That is about 94 US gallons, 356 litres, and roughly 785 pounds of water when full — which is what matters for whatever it is standing on.",
+      text: "A 24-inch diameter gives a 12-inch radius, so the area is π × 144 = 452.4 square inches. Times 48 inches of height is 21,715 cubic inches, or 12.57 cubic feet. That is about 94 US gallons, 356 liters, and roughly 785 pounds of water when full — which is what matters for whatever it is standing on.",
     },
     buy: "<p>Use internal dimensions. A tank's stated size is often the external measurement, and wall thickness matters on a small tank.</p><p>Usable capacity is always less than full capacity. Allow for freeboard at the top, and for the height of any outlet above the floor — liquid below the outlet never comes out.</p><p>Water is 8.34 lb per US gallon. A full 100-gallon tank weighs over 800 pounds before you count the tank itself, so check what it is sitting on.</p>",
     faq: [

@@ -142,7 +142,7 @@ const BUILD = {
         return [`${l} × ${w} × ${h} in`, num(value("cubic-feet", x, "Volume"), 2), num(value("cubic-feet", x, "US gallons"), 1)]; }),
       "A cubic foot is 12 × 12 × 12 inches, so divide cubic inches by 1,728."),
     chart("conversions", "Conversions", "One cubic foot in other units", "", ["Unit", "Equal to 1 ft³"],
-      [["Cubic inches", "1,728"], ["Cubic yards", num(value("cubic-feet", { length: 1, width: 1, height: 1, unit: "ft", waste: 0 }, "Cubic yards"), 4)], ["Cubic metres", num(value("cubic-feet", { length: 1, width: 1, height: 1, unit: "ft", waste: 0 }, "Cubic metres"), 4)], ["US gallons", num(value("cubic-feet", { length: 1, width: 1, height: 1, unit: "ft", waste: 0 }, "US gallons"), 2)], ["Litres", num(value("cubic-feet", { length: 1, width: 1, height: 1, unit: "ft", waste: 0 }, "Litres"), 2)]], ""),
+      [["Cubic inches", "1,728"], ["Cubic yards", num(value("cubic-feet", { length: 1, width: 1, height: 1, unit: "ft", waste: 0 }, "Cubic yards"), 4)], ["Cubic meters", num(value("cubic-feet", { length: 1, width: 1, height: 1, unit: "ft", waste: 0 }, "Cubic meters"), 4)], ["US gallons", num(value("cubic-feet", { length: 1, width: 1, height: 1, unit: "ft", waste: 0 }, "US gallons"), 2)], ["Liters", num(value("cubic-feet", { length: 1, width: 1, height: 1, unit: "ft", waste: 0 }, "Liters"), 2)]], ""),
   ],
   "cubic-yard-calculator": c => {
     const depths = [2, 3, 4, 6];
@@ -209,9 +209,9 @@ const BUILD = {
   },
   "tank-volume-calculator": c => [chart("chart", "Gallons per foot", "Gallons per foot of height in round tanks",
     "Capacity of a vertical cylinder for every foot of depth.",
-    ["Inside diameter", "Gallons per foot", "Litres per foot"],
+    ["Inside diameter", "Gallons per foot", "Liters per foot"],
     [12, 18, 24, 36, 48, 60, 72, 96].map(d => { const x = { shape: "cylinder", diameter: d, height: 12, length: 0, width: 0 };
-      return [`${d} in`, num(value("tank-volume", x, "Capacity"), 1), num(value("tank-volume", x, "Litres"), 0)]; }),
+      return [`${d} in`, num(value("tank-volume", x, "Capacity"), 1), num(value("tank-volume", x, "Liters"), 0)]; }),
     "Multiply by the liquid depth in feet. Horizontal tanks do not fill linearly.")],
 
   "drywall-calculator": c => {

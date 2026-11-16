@@ -8,12 +8,12 @@ const { byline, authorRef, UPDATED } = require("../author");
  * product spec or a trade constant keeps its fixed unit. Nominal lumber
  * thickness is always inches, so offering yards there would be noise. */
 const UNIT_SETS = {
-  length: [["in", "inches"], ["ft", "feet"], ["yd", "yards"], ["cm", "cm"], ["m", "metres"]],
-  area: [["ft2", "sq feet"], ["in2", "sq inches"], ["yd2", "sq yards"], ["m2", "sq metres"]],
+  length: [["in", "inches"], ["ft", "feet"], ["yd", "yards"], ["cm", "cm"], ["m", "meters"]],
+  area: [["ft2", "sq feet"], ["in2", "sq inches"], ["yd2", "sq yards"], ["m2", "sq meters"]],
   // Suppliers quote ready-mix by the cubic yard, but our own concrete
-  // calculator hands you cubic feet and cubic metres too, so a visitor
+  // calculator hands you cubic feet and cubic meters too, so a visitor
   // carrying either should not have to convert by hand to price the order.
-  volume: [["yd3", "cubic yards"], ["ft3", "cubic feet"], ["m3", "cubic metres"]],
+  volume: [["yd3", "cubic yards"], ["ft3", "cubic feet"], ["m3", "cubic meters"]],
 };
 
 /* The unit a measured field must reach the engine in, derived from its display

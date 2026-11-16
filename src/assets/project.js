@@ -106,7 +106,7 @@
         const total = v.operation === "subtract" ? a - b : a + b;
         if (total < 0) throw new Error("The result is negative. Check which measurement is larger.");
         const ft = Math.floor(total / 12), inch = total - ft * 12;
-        rows = [row("Result", ft, "ft " + inch.toFixed(3).replace(/\.?0+$/, "") + " in"), row("Total inches", total, "in", 3), row("Decimal feet", total / 12, "ft", 4), row("Yards", total / 36, "yd", 4), row("Centimetres", total * 2.54, "cm", 1), row("Metres", total * 0.0254, "m", 3)];
+        rows = [row("Result", ft, "ft " + inch.toFixed(3).replace(/\.?0+$/, "") + " in"), row("Total inches", total, "in", 3), row("Decimal feet", total / 12, "ft", 4), row("Yards", total / 36, "yd", 4), row("Centimeters", total * 2.54, "cm", 1), row("Meters", total * 0.0254, "m", 3)];
         note = "Exact arithmetic on the values entered. Fractions of an inch are shown as decimals; a tape measure reads sixteenths, so 0.0625 in is 1/16.";
         break;
       }
@@ -114,7 +114,7 @@
         const perFoot = { in: 1 / 12, ft: 1, yd: 3, cm: 0.032808399, m: 3.280839895 }[v.unit] || 1;
         const l = v.length * perFoot, w = v.width * perFoot, h = v.height * perFoot;
         needed = l * w * h * extra;
-        rows = [row("Volume", needed, "ft³", 2), row("Cubic yards", needed / 27, "yd³", 3), row("Cubic metres", needed * 0.028316846592, "m³", 3), row("US gallons", needed * 7.48051948, "gal", 1), row("Litres", needed * 28.316846592, "L", 1), row("Volume before allowance", l * w * h, "ft³", 2)];
+        rows = [row("Volume", needed, "ft³", 2), row("Cubic yards", needed / 27, "yd³", 3), row("Cubic meters", needed * 0.028316846592, "m³", 3), row("US gallons", needed * 7.48051948, "gal", 1), row("Liters", needed * 28.316846592, "L", 1), row("Volume before allowance", l * w * h, "ft³", 2)];
         note = "Volume only. Weight depends on what fills the space — ask your supplier for the density before converting to tons.";
         break;
       }
@@ -213,7 +213,7 @@
           ? Math.PI * Math.pow(v.diameter / 24, 2) * (v.height / 12)
           : (v.length / 12) * (v.width / 12) * (v.height / 12);
         const gal = ft3 * 7.48051948;
-        rows = [row("Capacity", gal, "US gal", 1), row("Litres", ft3 * 28.316846592, "L", 1), row("Cubic feet", ft3, "ft³", 3), row("Imperial gallons", gal * 0.8326741846, "imp gal", 1), row("Water weight when full", gal * 8.345, "lb", 0)];
+        rows = [row("Capacity", gal, "US gal", 1), row("Liters", ft3 * 28.316846592, "L", 1), row("Cubic feet", ft3, "ft³", 3), row("Imperial gallons", gal * 0.8326741846, "imp gal", 1), row("Water weight when full", gal * 8.345, "lb", 0)];
         note = "Full internal capacity from the dimensions entered. Usable volume is lower once you allow for fittings, freeboard and any inlet or outlet height.";
         break;
       }
@@ -223,7 +223,7 @@
         const fromArea = v.mode === "area";
         const base = fromArea ? v.area * 12 / v.boardWidth : v.pieces * v.length;
         needed = base * extra;
-        rows = [row("Linear feet", needed, "ft", 1), row("Linear yards", needed / 3, "yd", 1), row("Linear metres", needed * 0.3048, "m", 1), row("Total inches", needed * 12, "in", 0), row("Before allowance", base, "ft", 1), row("Material cost", needed * (v.price || 0), "$", 2)];
+        rows = [row("Linear feet", needed, "ft", 1), row("Linear yards", needed / 3, "yd", 1), row("Linear meters", needed * 0.3048, "m", 1), row("Total inches", needed * 12, "in", 0), row("Before allowance", base, "ft", 1), row("Material cost", needed * (v.price || 0), "$", 2)];
         note = fromArea
           ? "Area divided by the board’s face width. Use the exposed width once installed, not the nominal size: a 1×6 covers 5.5 inches, less if it laps or has a tongue."
           : "A linear foot is 12 inches of length, whatever the width or thickness. It is not a board foot (volume) or a square foot (area).";
@@ -238,7 +238,7 @@
           : v.length * v.width;
         const ft3 = surface * avg;
         const gal = ft3 * 7.48051948;
-        rows = [row("Pool volume", gal, "US gal", 0), row("Litres", ft3 * 28.316846592, "L", 0), row("Cubic feet", ft3, "ft³", 1), row("Average depth", avg, "ft", 2), row("Water surface", surface, "ft²", 1), row("Water weight", gal * 8.345, "lb", 0)];
+        rows = [row("Pool volume", gal, "US gal", 0), row("Liters", ft3 * 28.316846592, "L", 0), row("Cubic feet", ft3, "ft³", 1), row("Average depth", avg, "ft", 2), row("Water surface", surface, "ft²", 1), row("Water weight", gal * 8.345, "lb", 0)];
         note = "Water depth, not wall height: measure from the floor to the waterline. A hopper bottom, steps or a bench change the real volume, so treat this as a dosing estimate and adjust from test results.";
         break;
       }
