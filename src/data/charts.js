@@ -126,7 +126,7 @@ const BUILD = {
       ["Rise", "Ramp run", "Sloped length", "Intermediate landings"],
       [6, 12, 18, 24, 30, 36, 48].map(r => { const x = { ...v, rise: r, slope: 12 };
         return [`${r} in`, num(value("ramp", x, "Ramp run"), 1) + " ft", num(value("ramp", x, "Sloped length"), 2) + " ft", num(value("ramp", x, "Intermediate landings by rise"))]; }),
-      "Top and bottom landings are always needed in addition. Geometry only, not a compliance check.")];
+      "Top and bottom landings are always required in addition; verify local ADA/IRC amendments.")];
   },
   "board-foot-calculator": c => [chart("chart", "Common lumber", "Board feet in common lumber sizes",
     "One piece of each nominal size, the way a lumberyard quotes it.",
@@ -153,12 +153,13 @@ const BUILD = {
       "One cubic yard covers 324 ft² at 1 inch deep; divide 324 by the depth in inches for the coverage of a yard.")];
   },
   "feet-and-inches-calculator": c => [
-    chart("chart", "Inches to feet", "Inches as decimal feet", "For entering a tape reading into anything that wants decimal feet.",
-      ["Inches", "Decimal feet"],
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(i => [`${i} in`, num(value("feet-inches", { aFeet: 0, aInches: i, operation: "add", bFeet: 0, bInches: 0 }, "Decimal feet"), 4)]), ""),
-    chart("fractions", "Fractions", "Fractions of an inch as decimals", "The marks on a tape measure, in sixteenths.",
-      ["Fraction", "Decimal inch"],
-      [[1, 16], [1, 8], [3, 16], [1, 4], [5, 16], [3, 8], [7, 16], [1, 2], [9, 16], [5, 8], [11, 16], [3, 4], [13, 16], [7, 8], [15, 16]].map(([a, b]) => [`${a}/${b}`, num(a / b, 4)]), ""),
+    chart("chart", "Inches to decimal ft", "Inches to decimal feet & metric chart", "Quick reference for converting tape-measure inches (1–12 in) directly to decimal feet, centimeters and millimeters.",
+      ["Inches", "Decimal feet", "Centimeters", "Millimeters"],
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => [`${i} in`, num(i / 12, 4) + " ft", num(i * 2.54, 2) + " cm", num(i * 25.4, 1) + " mm"]),
+      "Divide any inch reading by 12 for decimal feet (for example, 5 in = 0.4167 ft and 10 in = 0.8333 ft)."),
+    chart("fractions", "Fractions chart", "Fractions of an inch in decimals & feet", "Every 1/16-inch mark on a standard US tape measure converted to decimal inches, decimal feet and millimeters.",
+      ["Fraction", "Decimal inch", "Decimal feet", "Millimeters"],
+      [[1, 16], [1, 8], [3, 16], [1, 4], [5, 16], [3, 8], [7, 16], [1, 2], [9, 16], [5, 8], [11, 16], [3, 4], [13, 16], [7, 8], [15, 16]].map(([a, b]) => [`${a}/${b} in`, num(a / b, 4), num((a / b) / 12, 5) + " ft", num((a / b) * 25.4, 2) + " mm"]), ""),
   ],
   "framing-calculator": c => {
     const v = { ...c.example.values, corners: 0, waste: 0 };

@@ -65,6 +65,7 @@ module.exports = {
 <template id="section-tpl">
   <div class="section">
     <div class="section-head">
+      <button type="button" class="section-sign" data-sign="1" title="Toggle Add area or Subtract cutout">+ Add</button>
       <div class="select">
         <select data-f="shape" aria-label="Shape">
           <option value="rect">Rectangle</option>
@@ -127,9 +128,10 @@ module.exports = {
       <li><span>Square meters</span><b id="r-m2">—</b></li>
       <li><span>Acres</span><b id="r-acres">—</b></li>
       <li><span>Roofing squares <span class="sub">(100 ft&sup2;)</span></span><b id="r-squares">—</b></li>
+      <li><span>Perimeter <span class="sub">(added rectangles/circles)</span></span><b id="r-perim">—</b></li>
     </ul>
     <div class="cost" id="r-cost-box" hidden>Estimated cost: <b id="r-cost"></b></div>
-    <p class="tip">Add a section for each part of an irregular space. Areas are summed automatically.</p>
+    <p class="tip">Click <b>+ Add</b> on any section to switch it to <b>− Cutout</b> (subtract closets, islands or openings automatically).</p>
     </div>
   </section>
 </form>

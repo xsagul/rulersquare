@@ -35,13 +35,31 @@
     }
   }
 
+  function sectionPerim(sec) {
+    var u = sec.unit || "ft";
+    switch (sec.shape) {
+      case "rect": {
+        var l = toFeet(sec.a, u), w = toFeet(sec.b, u);
+        return l > 0 && w > 0 ? 2 * (l + w) : 0;
+      }
+      case "circle":
+        return Math.PI * toFeet(sec.a, u);
+      default:
+        return 0;
+    }
+  }
+
   function calc(sections, opts) {
     opts = opts || {};
     var ft2 = 0;
+    var perim = 0;
     for (var i = 0; i < sections.length; i++) {
       var qty = Math.max(1, Math.floor(num(sections[i].qty)) || 1);
-      ft2 += sectionFt2(sections[i]) * qty;
+      var sign = Number(sections[i].sign) === -1 ? -1 : 1;
+      ft2 += sectionFt2(sections[i]) * qty * sign;
+      if (sign === 1) { perim += sectionPerim(sections[i]) * qty; }
     }
+    ft2 = Math.max(0, ft2);
     var waste = Math.min(50, Math.max(0, parseFloat(opts.wastePct) || 0));
     var ft2w = ft2 * (1 + waste / 100);
     var pricePerFt2 = num(opts.pricePerFt2);
@@ -53,6 +71,7 @@
       m2: ft2w / FT2_PER_M2,
       acres: ft2w / FT2_PER_ACRE,
       squares: ft2w / 100,
+      perimeterFt: perim,
       cost: pricePerFt2 > 0 ? ft2w * pricePerFt2 : null,
     };
   }
@@ -74,7 +93,9 @@
   function readSections() {
     return Array.prototype.map.call(list.querySelectorAll(".section"), function (el) {
       var get = function (n) { var f = el.querySelector('[data-f="' + n + '"]'); return f ? f.value : ""; };
-      return { shape: get("shape"), a: get("a"), b: get("b"), c: get("c"), unit: get("unit"), qty: get("qty") };
+      var signBtn = el.querySelector(".section-sign");
+      var sign = signBtn ? Number(signBtn.dataset.sign) : 1;
+      return { shape: get("shape"), a: get("a"), b: get("b"), c: get("c"), unit: get("unit"), qty: get("qty"), sign: sign };
     });
   }
 
@@ -110,11 +131,25 @@
     el.querySelector('[data-f="qty"]').required = true;
     if (prefill) {
       Object.keys(prefill).forEach(function (k) {
+        if (k === "sign") {
+          var sb = el.querySelector(".section-sign");
+          if (sb && prefill.sign === -1) { sb.dataset.sign = "-1"; sb.textContent = "− Cutout"; }
+          return;
+        }
         var f = el.querySelector('[data-f="' + k + '"]');
         if (f) { f.value = prefill[k]; }
       });
     }
     syncFields(el);
+    var signBtn = el.querySelector(".section-sign");
+    if (signBtn) {
+      signBtn.addEventListener("click", function () {
+        var next = signBtn.dataset.sign === "-1" ? "1" : "-1";
+        signBtn.dataset.sign = next;
+        signBtn.textContent = next === "-1" ? "− Cutout" : "+ Add";
+        update(false);
+      });
+    }
     el.querySelector(".section-remove").addEventListener("click", function () {
       if (list.querySelectorAll(".section").length > 1) { el.remove(); update(false); }
     });
@@ -144,6 +179,7 @@
     set("r-m2", fmt(r.m2, 2) + " m²");
     set("r-acres", r.acres >= 0.001 ? fmt(r.acres, 4) + " acres" : "—");
     set("r-squares", fmt(r.squares, 2) + " squares");
+    set("r-perim", r.perimeterFt > 0 ? fmt(r.perimeterFt, 1) + " ft (" + fmt(r.perimeterFt * 0.3048, 1) + " m)" : "—");
 
     var costBox = document.getElementById("r-cost-box");
     if (costBox) {

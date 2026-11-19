@@ -23,14 +23,17 @@
   };
 
   /* Returns true once every visible, enabled required field has a valid value.
-   * Inputs remain blank until the visitor types, then compute live immediately. */
+   * If a form allows partial entry (e.g. inches-only on Feet & Inches), returns
+   * true once at least one visible numeric input has been filled in. */
   window.RSReadyToCalc = function (form) {
     if (!form) { return false; }
     var els = Array.from(form.querySelectorAll("input,select"));
     var hasRequired = false;
+    var hasAnyNum = false;
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
       if (el.disabled || el.type === "hidden" || el.type === "radio" || el.closest("[hidden]")) { continue; }
+      if (el.type === "number" && el.value !== "") { hasAnyNum = true; }
       if (el.required) {
         hasRequired = true;
         if (el.value === "" || !el.checkValidity()) { return false; }
@@ -38,7 +41,7 @@
         return false;
       }
     }
-    return hasRequired;
+    return hasRequired ? true : hasAnyNum;
   };
 
   window.RSValidate = function (form, report) {
@@ -215,12 +218,14 @@
         '<text x="160" y="140" text-anchor="middle" font-size="13" fill="var(--muted)">' + txt + "</text>");
     }
     if (kind === "roof-pitch") {
+      var pitch = find("Pitch");
       var angle = find("Angle");
       var rafter = find("Rafter length");
       if (angle === null || !rafter) { return ""; }
       var risePx = Math.max(12, Math.min(96, 180 * Math.tan(angle * Math.PI / 180)));
       var baseY = 114;
-      var txt2 = v.rise + "/12 pitch · " + angle.toFixed(1) + "° · " + rafter.toFixed(2) + " ft rafter";
+      var pLabel = pitch !== null ? Number(pitch.toFixed(2)) : v.rise;
+      var txt2 = pLabel + "/12 pitch · " + angle.toFixed(1) + "° · " + rafter.toFixed(2) + " ft rafter";
       return svgWrap("0 0 320 140", txt2,
         '<polygon points="40,' + baseY + " 260," + baseY + " 260," + (baseY - risePx).toFixed(1) + '" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>' +
         '<text x="160" y="134" text-anchor="middle" font-size="13" fill="var(--muted)">' + txt2 + "</text>");

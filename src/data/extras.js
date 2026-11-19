@@ -274,6 +274,27 @@ ${table(["Appliance", "Running watts", "Extra starting surge"], [
   ["Electric space heater", "1,500 W", "0 W"],
   ["LED lights, Wi-Fi, TV & laptops", "300–500 W", "0 W"],
 ])}`,
+
+  "river-rock-calculator": `
+<h2 id="rock-sizes">River rock depth &amp; coverage by stone size (1″, 2″ &amp; 3″)</h2>
+<p>Spread river rock at least <strong>twice the stone diameter</strong> so weed fabric stays hidden between rounded stones.</p>
+${table(["Stone size", "Recommended depth", "Coverage per yd³", "Coverage per ton"], [
+  ["¾–1 in small river rock", "2–3 in", "108–162 ft²", "80–120 ft²"],
+  ["1–2 in medium river rock", "3–4 in", "81–108 ft²", "60–80 ft²"],
+  ["2–3 in river cobble (2 inch)", "4–5 in", "65–81 ft²", "48–60 ft²"],
+  ["3–5 in large cobble / creek", "6 in", "54 ft²", "40 ft²"],
+])}`,
+
+  "mulch-calculator": `
+<h2 id="tree-rings">Circular tree ring mulch chart</h2>
+<p>Cubic yards and 2 cu ft bags for round tree rings and circular garden beds (use the <b>Circle</b> tab above for custom diameters).</p>
+${table(["Circle diameter", "Area", "At 2 in deep", "At 3 in deep", "2 ft³ bags (3 in)"], [
+  [4, 12.6], [6, 28.3], [8, 50.3], [10, 78.5], [12, 113.1], [16, 201.1],
+].map(([d, a]) => {
+  const y2 = a * 2 / 324;
+  const y3 = a * 3 / 324;
+  return [`${d} ft circle`, `${a.toFixed(0)} ft²`, `${y2.toFixed(2)} yd³`, `${y3.toFixed(2)} yd³`, `${Math.ceil(y3 * 27 / 2)} bags`];
+}))}`,
 };
 
 module.exports = { EXTRAS };

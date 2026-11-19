@@ -216,19 +216,45 @@
         note = "1 cubic yard = 27 cubic feet = 0.765 cubic meters. Use the Cubic Yards to Tons calculator to convert volume to weight.";
         break;
       case "feet-inches": {
-        const a = v.aFeet * 12 + v.aInches, b = v.bFeet * 12 + v.bInches;
-        const total = v.operation === "subtract" ? a - b : a + b;
+        const a = (v.aFeet || 0) * 12 + (v.aInches || 0) + (v.aFrac || 0);
+        const b = (v.bFeet || 0) * 12 + (v.bInches || 0) + (v.bFrac || 0);
+        const op = v.operation || "add";
+        let total;
+        if (op === "subtract") total = a - b;
+        else if (op === "multiply") {
+          const f = v.factor || 0;
+          if (f <= 0) throw new Error("Enter a multiplier greater than 0.");
+          total = a * f;
+        } else if (op === "divide") {
+          const f = v.factor || 0;
+          if (f <= 0) throw new Error("Enter a divisor greater than 0.");
+          total = a / f;
+        } else if (op === "convert") total = a;
+        else total = a + b;
         if (total < 0) throw new Error("The result is negative. Check which measurement is larger.");
-        const ft = Math.floor(total / 12), inch = total - ft * 12;
+        if (total === 0 && op === "convert") throw new Error("Enter feet, inches, or a fraction to convert.");
+        const toFrac16 = rem => {
+          const whole = Math.floor(rem + 1e-9);
+          const s16 = Math.round((rem - whole) * 16);
+          if (s16 === 0) return String(whole);
+          if (s16 === 16) return String(whole + 1);
+          let n = s16, d = 16;
+          while (n % 2 === 0 && d > 1) { n /= 2; d /= 2; }
+          return (whole ? whole + " " : "") + n + "/" + d;
+        };
+        let ft = Math.floor(total / 12 + 1e-9);
+        let inch = Math.max(0, total - ft * 12);
+        let fracStr = toFrac16(inch);
+        if (fracStr === "12") { ft += 1; fracStr = "0"; }
         rows = [
-          row("Result", ft, "ft " + inch.toFixed(3).replace(/\.?0+$/, "") + " in"),
-          row("Total inches", total, "in", 3),
+          row("Result", ft, "ft " + fracStr + " in"),
           row("Decimal feet", total / 12, "ft", 4),
+          row("Total inches", total, "in", 3),
           row("Yards", total / 36, "yd", 4),
-          row("Centimeters", total * 2.54, "cm", 1),
-          row("Meters", total * 0.0254, "m", 3),
+          row("Centimeters", total * 2.54, "cm", 2),
+          row("Meters", total * 0.0254, "m", 4),
         ];
-        note = "Tape measures read in sixteenths: 0.0625 = 1/16, 0.125 = 1/8, 0.25 = 1/4, 0.5 = 1/2 inch.";
+        note = "Rounded to the nearest 1/16 inch for tape-measure marking; decimal feet and metric values are exact.";
         break;
       }
       case "cubic-feet": {
@@ -260,18 +286,29 @@
         break;
       }
       case "roof-pitch": {
-        const angle = Math.atan(v.rise / 12) * 180 / Math.PI;
-        const multiplier = Math.sqrt(v.rise * v.rise + 144) / 12;
+        const isRiseRun = v.mode === "rise-run";
+        const pitch12 = isRiseRun ? (v.totalRise / v.run) * 12 : v.rise;
+        const totalRiseFt = isRiseRun ? v.totalRise : v.run * v.rise / 12;
+        const angle = Math.atan(pitch12 / 12) * 180 / Math.PI;
+        const slopePct = (pitch12 / 12) * 100;
+        const multiplier = Math.sqrt(pitch12 * pitch12 + 144) / 12;
         const rafter = v.run * multiplier;
         rows = [
-          row("Pitch", v.rise, "in 12"),
+          row("Pitch", pitch12, "in 12", isRiseRun ? 2 : 0),
           row("Angle", angle, "°", 2),
+          row("Slope percentage", slopePct, "%", 1),
           row("Slope multiplier", multiplier, "", 4),
           row("Rafter length", rafter, "ft", 2),
-          row("Total rise over this run", v.run * v.rise / 12, "ft", 2),
-          row("Sloped area per ft² of footprint", multiplier, "ft²", 4),
+          row("Total rise over this run", totalRiseFt, "ft", 2),
         ];
-        note = "Rafter length covers the horizontal run from wall plate to ridge center. Add eave overhang and adjust for ridge board thickness.";
+        if (v.footprint > 0) {
+          const slopedArea = v.footprint * multiplier;
+          rows.push(
+            row("Sloped roof area", slopedArea, "ft²", 0),
+            row("Roofing squares", slopedArea / 100, "squares", 2)
+          );
+        }
+        note = "Rafter length covers the horizontal run from wall plate to ridge center. Add eave overhang and adjust for half the ridge board thickness.";
         break;
       }
       case "stair": {
@@ -279,16 +316,22 @@
         const riser = v.totalRise / risers;
         const treads = risers - 1;
         const totalRun = treads * v.treadDepth;
-        const stringer = Math.sqrt(v.totalRise * v.totalRise + totalRun * totalRun);
+        const stringerIn = Math.sqrt(v.totalRise * v.totalRise + totalRun * totalRun);
+        const stringerFt = stringerIn / 12;
+        const stdBoards = [8, 10, 12, 14, 16, 18, 20];
+        const boardToBuy = stdBoards.find(l => l >= stringerFt) || ceil(stringerFt);
+        const comfort = 2 * riser + v.treadDepth;
+        const ircOk = riser <= 7.751 && v.treadDepth >= 10;
         rows = [
           row("Risers", risers),
           row("Actual riser height", riser, "in", 3),
           row("Treads", treads),
           row("Total run", totalRun / 12, "ft", 2),
-          row("Stringer length", stringer / 12, "ft", 2),
-          row("Rise plus run check", riser + v.treadDepth, "in", 2),
+          row("Stringer length", stringerFt, "ft", 2),
+          row("2×12 stringer board to buy", boardToBuy, "ft"),
+          row("Comfort rule (2R + T)", comfort, "in", 2),
         ];
-        note = "IRC residential limits: 7¾ in max riser, 10 in min tread, ⅜ in max variation within one flight. Measure between finished floors.";
+        note = (ircOk ? "Meets IRC R311.7 limits (≤7¾ in riser, ≥10 in tread). " : "Check IRC R311.7 limits (7¾ in max riser, 10 in min tread). ") + "Ideal comfort range for 2R + T is 24–25 in. Maintain at least 6 ft 8 in (80 in) vertical headroom.";
         break;
       }
       case "brick": {
@@ -500,17 +543,30 @@
         const quantity = v.quantity || v.length * v.width;
         if (v.high < v.low) throw new Error("The high unit price must be at least the low unit price.");
         const extras = (v.delivery || 0) + (v.removal || 0) + (v.other || 0);
-        const low = quantity * v.low + extras;
-        const high = quantity * v.high + extras;
+        const workLow = quantity * v.low;
+        const workHigh = quantity * v.high;
+        const low = workLow + extras;
+        const high = workHigh + extras;
         rows = [
           row("Planning range", [low * extra, high * extra], "$", 0),
           row("Measured quantity", quantity, v.costUnit || "ft²", 2),
           row("Unit rate applied", [v.low, v.high], "$/" + (v.costUnit || "ft²"), 2),
-          row("Work before extras", [quantity * v.low, quantity * v.high], "$", 0),
-          row("Separate extras", extras, "$", 0),
-          row("Contingency", v.waste || 0, "%"),
+          row("Work before extras", [workLow, workHigh], "$", 0),
         ];
-        note = "Estimate from the rates above, before sales tax. Get 2–3 itemized local bids with matching scope before signing.";
+        const laborShare = v.costUnit === "yd³" ? 0 : (typeof v.laborShare === "number" ? v.laborShare : 0.5);
+        if (laborShare > 0 && laborShare < 1) {
+          const matPct = Math.round((1 - laborShare) * 100);
+          const labPct = Math.round(laborShare * 100);
+          rows.push(
+            row(`Est. materials (~${matPct}%)`, [workLow * (1 - laborShare), workHigh * (1 - laborShare)], "$", 0),
+            row(`Est. labor (~${labPct}%)`, [workLow * laborShare, workHigh * laborShare], "$", 0)
+          );
+        }
+        rows.push(
+          row("Separate extras", extras, "$", 0),
+          row("Contingency", v.waste || 0, "%")
+        );
+        note = "Estimate from the rates above, before sales tax. Compare 2–3 itemized local bids with matching scope before signing.";
         break;
       }
 
@@ -1071,6 +1127,7 @@
     });
     convertUnits(values, cfg.unitBase);
     values.costUnit = cfg.costUnit;
+    if (typeof cfg.laborShare === "number") values.laborShare = cfg.laborShare;
     try {
       const result = calculate(cfg.kind, values);
       error.hidden = true;
@@ -1150,6 +1207,7 @@
   if (resetBtn) {
     resetBtn.addEventListener("click", () => {
       form.reset();
+      form.querySelectorAll("[data-appliance]").forEach(b => { b.classList.remove("on"); b.setAttribute("aria-pressed", "false"); });
       submitted = false;
       syncFields();
       output.hidden = true;
@@ -1160,11 +1218,28 @@
     });
   }
   form.addEventListener("click", e => {
+    const app = e.target.closest("[data-appliance]");
+    if (app) {
+      app.classList.toggle("on");
+      app.setAttribute("aria-pressed", app.classList.contains("on") ? "true" : "false");
+      let totalRun = 0, maxSurge = 0;
+      form.querySelectorAll("[data-appliance].on").forEach(b => {
+        totalRun += Number(b.dataset.run) || 0;
+        maxSurge = Math.max(maxSurge, Number(b.dataset.surge) || 0);
+      });
+      const rEl = form.elements.namedItem("runningWatts");
+      const sEl = form.elements.namedItem("largestSurge");
+      if (rEl) rEl.value = totalRun > 0 ? totalRun : "";
+      if (sEl) sEl.value = maxSurge;
+      update(false);
+      return;
+    }
     const chip = e.target.closest("[data-preset]");
     if (!chip) return;
     try {
       const data = JSON.parse(chip.getAttribute("data-preset"));
       form.reset();
+      form.querySelectorAll("[data-appliance]").forEach(b => { b.classList.remove("on"); b.setAttribute("aria-pressed", "false"); });
       Object.entries(data).forEach(([k, val]) => {
         const input = form.elements.namedItem(k);
         if (input) input.value = val;

@@ -10,36 +10,57 @@ const ICS = "https://codes.iccsafe.org/";
 const AWC = "https://awc.org/";
 const ADA = "https://www.ada.gov/law-and-regs/design-standards/2010-stds/";
 
+const FRACS = [
+  [0, "0"], [0.0625, "1/16\""], [0.125, "1/8\""], [0.1875, "3/16\""],
+  [0.25, "1/4\""], [0.3125, "5/16\""], [0.375, "3/8\""], [0.4375, "7/16\""],
+  [0.5, "1/2\""], [0.5625, "9/16\""], [0.625, "5/8\""], [0.6875, "11/16\""],
+  [0.75, "3/4\""], [0.8125, "13/16\""], [0.875, "7/8\""], [0.9375, "15/16\""],
+];
+
 const TOOLS = [
   {
     slug: "feet-and-inches-calculator", kind: "feet-inches", h1: "Feet and Inches Calculator",
-    title: "Feet & Inches Calculator – Add & Subtract",
-    description: "Add or subtract feet and inches, then convert instantly to decimal feet, total inches, yards, centimeters and meters.",
-    lede: "Add or subtract tape-measure readings and convert to decimal feet or metric.",
+    title: "Feet & Inches Calculator – Fractions & Decimals",
+    description: "Add, subtract, multiply, divide or convert feet, inches and fractions (1/16\") to decimal feet, total inches, yards, cm and meters.",
+    lede: "Add, subtract, multiply, divide or convert feet, inches and fractions to decimal feet.",
     fields: [
-      n("aFeet", "First reading — feet", "ft", undefined, { min: 0, group: "a" }),
-      n("aInches", "First reading — inches", "in", 0, { min: 0, step: "any", group: "a" }),
-      n("operation", "Operation", "", "add", { options: [["add", "Add (+)"], ["subtract", "Subtract (−)"]] }),
-      n("bFeet", "Second reading — feet", "ft", undefined, { min: 0, group: "b" }),
-      n("bInches", "Second reading — inches", "in", 0, { min: 0, step: "any", group: "b" }),
+      n("operation", "Operation", "", "add", {
+        options: [
+          ["add", "Add (+)"],
+          ["subtract", "Subtract (−)"],
+          ["multiply", "Multiply (×)"],
+          ["divide", "Divide (÷)"],
+          ["convert", "Convert to decimal feet & metric"],
+        ],
+      }),
+      n("aFeet", "1st — feet", "ft", undefined, { min: 0, optional: true, placeholder: "0", group: "a" }),
+      n("aInches", "1st — inches", "in", undefined, { min: 0, step: "any", optional: true, placeholder: "0", group: "a" }),
+      n("aFrac", "Fraction", "", 0, { options: FRACS, group: "a" }),
+      n("bFeet", "2nd — feet", "ft", undefined, { min: 0, optional: true, placeholder: "0", group: "b", showIf: ["operation", "add|subtract"] }),
+      n("bInches", "2nd — inches", "in", undefined, { min: 0, step: "any", optional: true, placeholder: "0", group: "b", showIf: ["operation", "add|subtract"] }),
+      n("bFrac", "Fraction", "", 0, { options: FRACS, group: "b", showIf: ["operation", "add|subtract"] }),
+      n("factor", "Multiply or divide by", "", undefined, { min: 0.0001, step: "any", showIf: ["operation", "multiply|divide"] }),
     ],
     presets: [
-      ["8' 7\" − 3' 11\"", { aFeet: 8, aInches: 7, operation: "subtract", bFeet: 3, bInches: 11 }],
-      ["12' 6\" + 9' 8.5\"", { aFeet: 12, aInches: 6, operation: "add", bFeet: 9, bInches: 8.5 }],
+      ["8' 7\" − 3' 11\"", { operation: "subtract", aFeet: 8, aInches: 7, aFrac: 0, bFeet: 3, bInches: 11, bFrac: 0 }],
+      ["5' 3⅜\" + 2' 1½\"", { operation: "add", aFeet: 5, aInches: 3, aFrac: 0.375, bFeet: 2, bInches: 1, bFrac: 0.5 }],
+      ["10 in → decimal ft", { operation: "convert", aFeet: 0, aInches: 10, aFrac: 0 }],
+      ["12' 6\" ÷ 3 sections", { operation: "divide", aFeet: 12, aInches: 6, aFrac: 0, factor: 3 }],
     ],
-    methodTitle: "How to calculate feet and inches",
-    method: "Convert both readings to total inches (feet × 12 + inches), add or subtract, then divide by 12 to return whole feet and remaining inches without manual borrowing errors.",
-    formula: "Total inches = feet × 12 + inches<br>Feet = floor(total ÷ 12) &nbsp;•&nbsp; Inches = remainder",
+    methodTitle: "How to calculate feet, inches and decimal feet",
+    method: "Convert every measurement to total inches (feet × 12 + inches + fraction), perform the addition, subtraction, multiplication or division, then divide by 12 for decimal feet or split back into feet, whole inches and sixteenths for your tape measure.",
+    formula: "Total inches = (feet × 12) + inches + fraction<br>Decimal feet = total inches ÷ 12 &nbsp;•&nbsp; Metric cm = total inches × 2.54",
     example: {
       title: "Example: 8 ft 7 in minus 3 ft 11 in",
-      values: { aFeet: 8, aInches: 7, operation: "subtract", bFeet: 3, bInches: 11 },
-      text: "8 ft 7 in = 103 inches and 3 ft 11 in = 47 inches. 103 − 47 = 56 inches = 4 ft 8 in (4.6667 decimal feet).",
+      values: { aFeet: 8, aInches: 7, aFrac: 0, operation: "subtract", bFeet: 3, bInches: 11, bFrac: 0 },
+      text: "8 ft 7 in = 103 inches and 3 ft 11 in = 47 inches. 103 − 47 = 56 inches = 4 ft 8 in (4.6667 decimal feet, or 1.4224 meters).",
     },
-    buy: "<p>Tape measures mark sixteenths: <strong>0.0625 = 1/16</strong>, <strong>0.125 = 1/8</strong>, <strong>0.25 = 1/4</strong>, <strong>0.375 = 3/8</strong>, <strong>0.5 = 1/2</strong>, <strong>0.75 = 3/4</strong>. Always keep saw-blade kerf (about ⅛ inch) on the waste side of your mark.</p>",
+    buy: "<p>To convert any inches measurement into <strong>decimal feet</strong> for blueprints, surveying, or spreadsheets, divide inches by 12: <strong>5 inches = 0.4167 ft</strong>, <strong>6 inches = 0.5000 ft</strong>, and <strong>10 inches = 0.8333 ft</strong>. Always keep saw-blade kerf (⅛ inch) on the waste side of your cut mark.</p>",
     faq: [
+      ["What is 10 inches in decimal feet?", "10 inches equals 0.8333 decimal feet (10 ÷ 12 = 0.8333 ft). For example, 5 ft 10 in is 5.8333 ft."],
+      ["What is 5 inches in decimal feet?", "5 inches equals 0.4167 decimal feet (5 ÷ 12 = 0.4167 ft). For example, 8 ft 5 in is 8.4167 ft."],
       ["How do I subtract when the second inches value is larger?", "Borrow 1 foot (12 inches) from the feet column: 8 ft 7 in becomes 7 ft 19 in, then subtract 3 ft 11 in to get 4 ft 8 in."],
-      ["What is 0.375 of an inch as a fraction?", "Three eighths (⅜ in). Multiply any decimal inch by 16 to find sixteenths: 0.375 × 16 = 6/16 = 3/8."],
-      ["How do I convert feet and inches to decimal feet?", "Divide the inches by 12 and add to whole feet: 6 ft 9 in = 6 + (9 ÷ 12) = 6.75 ft."],
+      ["How do I convert decimal inches back to tape-measure fractions?", "Multiply the decimal part by 16 and round to the nearest whole sixteenth: 0.375 × 16 = 6/16 = 3/8 inch."],
     ],
     sources: [[AWC, "American Wood Council — dimensional layout references"]],
     related: [sqft, link("linear-feet-calculator", "Linear Feet Calculator"), link("board-foot-calculator", "Board Foot Calculator"), link("stair-calculator", "Stair Calculator")],
@@ -114,17 +135,28 @@ const TOOLS = [
   },
   {
     slug: "roof-pitch-calculator", kind: "roof-pitch", h1: "Roof Pitch Calculator",
-    title: "Roof Pitch Calculator – Angle & Rafters",
-    description: "Convert roof pitch (rise/12) to angle in degrees, slope multiplier and rafter length from horizontal run. Includes 1/12–12/12 chart.",
-    lede: "Convert roof pitch to degrees, area multiplier and rafter length.",
+    title: "Roof Pitch Calculator – Angle, Rise & Rafters",
+    description: "Calculate roof pitch (X/12), degrees, slope %, rafter length and sloped roof area from rise and run or pitch ratio.",
+    lede: "Calculate roof pitch, angle, slope %, rafter length and sloped roof area.",
     fields: [
-      n("rise", "Rise per 12 in of run", "in", undefined, { min: 0, step: "any", hint: "e.g. 4, 6 or 8 for 4/12, 6/12 or 8/12 pitch" }),
-      n("run", "Horizontal run (wall to ridge)", "ft", undefined, { min: 0 }),
+      n("mode", "What do you know?", "", "pitch", {
+        options: [
+          ["pitch", "Roof pitch (rise per 12 in) & horizontal run"],
+          ["rise-run", "Measured total rise & horizontal run"],
+        ],
+      }),
+      n("rise", "Rise per 12 in of run", "in", undefined, { min: 0, step: "any", hint: "e.g. 4, 6 or 8 for 4/12, 6/12 or 8/12 pitch", showIf: ["mode", "pitch"] }),
+      n("totalRise", "Total vertical rise (wall plate to ridge)", "ft", undefined, { min: 0.001, step: "any", showIf: ["mode", "rise-run"] }),
+      n("run", "Horizontal run (wall to ridge)", "ft", undefined, { min: 0.001, hint: "Half the building span for a symmetrical gable roof." }),
     ],
+    advanced: [
+      n("footprint", "Roof footprint area (optional)", "ft²", "", { min: 0, optional: true, hint: "Enter horizontal footprint to get exact sloped roof area & squares." }),
+    ],
+    optionsLabel: "Optional sloped roof area",
     presets: [
-      ["4/12 pitch, 14 ft run", { rise: 4, run: 14 }],
-      ["6/12 pitch, 14 ft run", { rise: 6, run: 14 }],
-      ["8/12 pitch, 16 ft run", { rise: 8, run: 16 }],
+      ["6/12 pitch, 14 ft run", { mode: "pitch", rise: 6, run: 14 }],
+      ["8/12 pitch, 16 ft run", { mode: "pitch", rise: 8, run: 16 }],
+      ["7 ft rise over 14 ft run", { mode: "rise-run", totalRise: 7, run: 14 }],
     ],
     methodTitle: "How to calculate roof pitch, angle and rafter length",
     method: "US roof pitch is expressed as vertical rise per 12 inches of horizontal run (e.g., 6/12). That ratio directly determines roof angle, sloped-area multiplier, and theoretical rafter length.",

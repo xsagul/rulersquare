@@ -55,7 +55,7 @@ const NEW = [...PROJ, ...COSTS, ...TOOLS].map(c =>
 const ALL = [].concat(CONCRETE, AGGREGATE, SOIL, NEW);
 
 const HUBS = [
-  ["/construction-calculators/", "Construction", "concrete", "construction", "Concrete, framing, drywall, roofing & trim"],
+  ["/construction-calculators/", "Construction", "construction", "construction", "Concrete, framing, drywall, roofing & trim"],
   ["/landscaping-calculators/", "Landscaping", "mulch", "landscaping", "Gravel, soil, mulch, lawn seed & pavers"],
   ["/home-systems-calculators/", "Home Systems", "hvac", "systems", "HVAC BTU, firewood, generators & water"],
   ["/cost-calculators/", "Project Costs", "cost", "cost", "2026 installed rates & material budgets"],
@@ -65,25 +65,23 @@ const HUBS = [
 ]);
 
 const POPULAR = [
-  ["/concrete-calculator/", "Concrete Calculator", "concrete", "construction", "Yards, bags & ready-mix cost"],
+  ["/concrete-calculator/", "Concrete Calculator", "concrete", "construction", "Yards, bags, weight & cost"],
+  ["/feet-and-inches-calculator/", "Feet & Inches", "ruler", "construction", "Add, subtract, fractions & decimal ft"],
   ["/gravel-calculator/", "Gravel Calculator", "gravel", "landscaping", "Tons, cubic yards & truckloads"],
-  ["/square-footage-calculator/", "Square Footage", "sqft", "construction", "Any shape in ft², yd² & acres"],
-  ["/mulch-calculator/", "Mulch Calculator", "mulch", "landscaping", "Bulk yards & 2 cu ft bags"],
-  ["/raised-bed-soil-calculator/", "Raised Bed Soil", "garden", "landscaping", "Cubic feet, bags & soil mix"],
+  ["/square-footage-calculator/", "Square Footage", "sqft", "construction", "Any shape, cutouts & perimeter"],
+  ["/mulch-calculator/", "Mulch Calculator", "mulch", "landscaping", "Bulk yards, bags & tree rings"],
+  ["/raised-bed-soil-calculator/", "Raised Bed Soil", "garden", "landscaping", "Cubic feet, bags & 60/30/10 mix"],
   ["/btu-calculator/", "BTU Calculator", "hvac", "systems", "Room AC, mini-split & heat"],
-  ["/feet-and-inches-calculator/", "Feet & Inches", "ruler", "construction", "Add & subtract tape readings"],
-  ["/concrete-slab-cost/", "Concrete Slab Cost", "cost", "cost", "2026 installed 4 in & 6 in rates"],
+  ["/concrete-slab-cost/", "Concrete Slab Cost", "cost", "cost", "2026 installed & DIY estimates"],
 ];
 
 const QUICK_LINKS = [
   ["/concrete-calculator/", "Concrete"],
+  ["/feet-and-inches-calculator/", "Feet & Inches"],
   ["/gravel-calculator/", "Gravel"],
   ["/square-footage-calculator/", "Square Footage"],
   ["/stair-calculator/", "Stairs"],
-  ["/baluster-spacing-calculator/", "Balusters"],
-  ["/raised-bed-soil-calculator/", "Raised Bed"],
   ["/btu-calculator/", "AC BTU"],
-  ["/concrete-slab-cost/", "Slab Cost"],
 ];
 
 /* Every calculator organized into balanced subgroup cards so both visitors and
@@ -146,7 +144,7 @@ const home = {
   <div class="search">
     <label class="sr-only" for="q">Search calculators</label>
     ${ICONS.search}
-    <input id="q" type="search" autocomplete="off" placeholder="Search ${ALL.length} calculators — try &quot;concrete&quot;, &quot;btu&quot;, &quot;gutter&quot; or &quot;mulch&quot;">
+    <input id="q" type="search" autocomplete="off" placeholder="Search ${ALL.length} calculators (concrete, BTU, mulch…)">
   </div>
   <div class="quick-links" aria-label="Quick access">${QUICK_LINKS.map(([href, label]) => `<a href="${href}">${label}</a>`).join("")}</div>
   <ul class="search-hits" id="hits" hidden></ul>
@@ -164,15 +162,21 @@ const home = {
 </div>
 <div class="grid tight">
   ${POPULAR.map(([href, title, icon, cat, desc]) =>
-    `<a class="card pop-card" data-cat="${cat}" href="${href}"><span class="ico-badge">${ICONS[icon]}</span><div><b>${title}</b><span>${desc}</span></div></a>`).join("\n  ")}
+    `<a class="card pop-card" data-cat="${cat}" href="${href}"><span class="ico-badge">${ICONS[icon]}</span><div class="pop-body"><b>${title}</b><span class="pop-desc">${desc}</span></div></a>`).join("\n  ")}
 </div>
 
 <section class="directory-section" id="all-calculators">
   <div class="section-head-row">
     <h2>All ${ALL.length} calculators by trade &amp; topic</h2>
-    <span class="note">Every tool is one click away</span>
+    <div class="dir-filters" role="group" aria-label="Filter directory by category">
+      <button type="button" class="dir-filter active" data-filter="all">All (${ALL.length})</button>
+      <button type="button" class="dir-filter" data-filter="construction">Construction</button>
+      <button type="button" class="dir-filter" data-filter="landscaping">Landscaping</button>
+      <button type="button" class="dir-filter" data-filter="systems">Home Systems</button>
+      <button type="button" class="dir-filter" data-filter="cost">Project Costs</button>
+    </div>
   </div>
-  <div class="directory">
+  <div class="directory" id="directory-grid">
     ${fullDirectory()}
   </div>
 </section>

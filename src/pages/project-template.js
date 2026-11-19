@@ -47,12 +47,26 @@ function fields(list) {
   for (let i = 0; i < list.length; i++) {
     const g = list[i].group;
     if (!g) { out.push(field(list[i])); continue; }
-    const run = [];
-    while (i < list.length && list[i].group === g) { run.push(field(list[i])); i++; }
+    const items = [];
+    while (i < list.length && list[i].group === g) { items.push(list[i]); i++; }
     i--;
-    out.push(`<div class="field-pair">${run.join("")}</div>`);
+    const cls = items.length >= 3 ? "field-triple" : "field-pair";
+    const firstShow = items[0].showIf;
+    const sameShow = firstShow && items.every(x => x.showIf && x.showIf[0] === firstShow[0] && x.showIf[1] === firstShow[1]);
+    const showAttr = sameShow ? ` data-show-field="${esc(firstShow[0])}" data-show-value="${esc(firstShow[1])}"` : "";
+    const run = items.map(x => field(sameShow ? { ...x, showIf: undefined } : x));
+    out.push(`<div class="${cls}"${showAttr}>${run.join("")}</div>`);
   }
   return out.join("\n");
+}
+
+function pickerHtml(picker) {
+  if (!picker || !picker.length) return "";
+  return `<div class="appliance-picker">
+    <p class="appliance-picker-title">Quick appliance checklist (tap to add watts)</p>
+    <div class="appliance-grid">${picker.map(([name, runW, surgeW]) =>
+      `<button type="button" class="appliance-chip" data-appliance data-run="${runW}" data-surge="${surgeW}" aria-pressed="false">${esc(name)} <small>${runW}W${surgeW ? ` (+${surgeW}W)` : ""}</small></button>`).join("")}</div>
+  </div>`;
 }
 
 function unitBase(c) {
@@ -81,7 +95,7 @@ const MEASURED = {
   "cubic-yard-calculator": ["length", "width", "depth"],
   "board-foot-calculator": ["length"],
   "stair-calculator": ["totalRise"],
-  "roof-pitch-calculator": ["run"],
+  "roof-pitch-calculator": ["run", "totalRise", "footprint:area"],
   "brick-calculator": ["area"],
   "ramp-calculator": ["rise", "width"],
   "framing-calculator": ["length"],
@@ -276,6 +290,7 @@ function projectPage(c) {
     scripts: `<script type="application/json" id="project-config">${JSON.stringify({
       kind: c.kind,
       costUnit: c.costUnit,
+      laborShare: c.laborShare,
       example: c.example.values,
       unitBase: unitBase(c),
       presetMaps: c.presetMaps,
@@ -284,6 +299,7 @@ function projectPage(c) {
 <form class="calc" id="project-form" novalidate>
   <div class="calc-inputs">
     <p class="calc-step">Your project</p>
+    ${pickerHtml(c.picker)}
     ${fields(c.fields)}
     ${c.advanced?.length ? `<details class="calc-options"><summary>${esc(c.optionsLabel || "Waste, sizes & optional cost")}</summary><div class="options-body">${fields(c.advanced)}</div></details>` : ""}
     <p class="form-error" id="form-error" role="alert" hidden></p>

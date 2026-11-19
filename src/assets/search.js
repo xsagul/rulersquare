@@ -53,4 +53,22 @@
 
   var query = new URLSearchParams(window.location.search).get("q");
   if (query) { input.value = query; run(); }
+
+  /* Homepage directory category filter pills (all 97 links stay visible on load) */
+  var filterBar = document.querySelector(".dir-filters");
+  var dirGrid = document.getElementById("directory-grid");
+  if (filterBar && dirGrid) {
+    filterBar.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-filter]");
+      if (!btn) return;
+      var cat = btn.dataset.filter;
+      filterBar.querySelectorAll("[data-filter]").forEach(function (b) {
+        b.classList.toggle("active", b === btn);
+        b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+      });
+      dirGrid.querySelectorAll(".dir-card").forEach(function (card) {
+        card.hidden = cat !== "all" && card.dataset.cat !== cat;
+      });
+    });
+  }
 })();

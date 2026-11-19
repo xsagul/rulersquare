@@ -13,7 +13,7 @@ const LOGO = `<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
 </svg>`;
 
 const NAV = [
-  ["/construction-calculators/", "Construction", "concrete"],
+  ["/construction-calculators/", "Construction", "construction"],
   ["/landscaping-calculators/", "Landscaping", "mulch"],
   ["/home-systems-calculators/", "Home Systems", "hvac"],
   ["/cost-calculators/", "Costs", "cost"],

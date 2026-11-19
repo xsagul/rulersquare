@@ -185,6 +185,7 @@ module.exports = {
     <ul class="results-list">
       <li><span>Cubic feet</span><b><span id="r-ft3">0</span> ft³</b></li>
       <li><span>Cubic meters</span><b><span id="r-m3">0</span> m³</b></li>
+      <li><span>Estimated weight <span class="sub">(150 lb/ft³)</span></span><b id="r-weight">—</b></li>
       <li><span>Order ready-mix <span class="sub">(¼ yd steps)</span></span><b id="r-order">—</b></li>
       <li><span>80 lb bags</span><b id="r-bag80">—</b></li>
       <li><span>60 lb bags</span><b id="r-bag60">—</b></li>

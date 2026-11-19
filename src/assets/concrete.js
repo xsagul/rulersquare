@@ -73,6 +73,8 @@
       ft3WithWaste: ft3w,
       yd3WithWaste: yd3w,
       m3WithWaste: ft3w * M3_PER_FT3,
+      weightLb: ft3w * 150,
+      weightTons: ft3w * 150 / 2000,
       bags: BAGS.map(function (b) {
         return { lb: b.lb, count: ft3w > 0 ? Math.ceil(ft3w / b.yield - 1e-9) : 0 };
       }),
@@ -126,8 +128,11 @@
     set("r-yd3", fmt(r.yd3WithWaste, 2));
     set("r-ft3", fmt(r.ft3WithWaste, 1));
     set("r-m3", fmt(r.m3WithWaste, 2));
+    set("r-weight", r.weightLb > 0 ? fmt(r.weightLb, 0) + " lb (" + fmt(r.weightTons, 2) + " tons)" : "—");
     set("r-order", r.orderYd3 > 0 ? fmt(r.orderYd3, 2) + " yd³" : "—");
-    r.bags.forEach(function (b) { set("r-bag" + b.lb, b.count ? fmt(b.count, 0) + " bags" : "—"); });
+    r.bags.forEach(function (b) {
+      set("r-bag" + b.lb, b.count ? fmt(b.count, 0) + " bags (" + fmt(b.count * b.lb, 0) + " lb)" : "—");
+    });
     var costBox = document.getElementById("r-cost-box");
     if (costBox) {
       if (r.cost !== null && r.yd3WithWaste > 0) {

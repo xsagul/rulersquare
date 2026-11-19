@@ -494,4 +494,36 @@ assert(studs(ft) === studs(yd) && studs(ft) === 19, "units: 24 ft and 8 yd both 
   assert(val(calculate("bathroom-fan", { length: 5, width: 8, height: 8, fixtures: 2, jettedTub: 0 }), "Minimum fan airflow") === 50, "bathroom-fan: 40 ft2 enforces 50 CFM HVI minimum");
   assert(val(calculate("bathroom-fan", { length: 12, width: 10, height: 8, fixtures: 3, jettedTub: 1 }), "Minimum fan airflow") === 250, "bathroom-fan: >100 ft2 adds 100 CFM for jetted tub");
   assert(close(val(calculate("acreage", { length: 435.6, width: 100 }), "Total acreage"), 1, 1e-6), "acreage: 435.6 x 100 ft = 1.0000 acre");
+
+  // Competitor-parity & GSC-winner engine upgrades
+  const fiFrac = calculate("feet-inches", { operation: "add", aFeet: 5, aInches: 3, aFrac: 0.375, bFeet: 2, bInches: 1, bFrac: 0.5 });
+  assert(fiFrac.rows[0].value === 7 && fiFrac.rows[0].unit === "ft 4 7/8 in", "feet-inches fractions: 5' 3 3/8\" + 2' 1 1/2\" = 7 ft 4 7/8 in");
+  const fiConv = calculate("feet-inches", { operation: "convert", aFeet: 0, aInches: 10, aFrac: 0 });
+  assert(close(val(fiConv, "Decimal feet"), 10 / 12, 1e-6), "feet-inches convert: 10 in = 0.8333 decimal ft");
+  const fiDiv = calculate("feet-inches", { operation: "divide", aFeet: 12, aInches: 6, aFrac: 0, factor: 3 });
+  assert(close(val(fiDiv, "Total inches"), 50, 1e-9), "feet-inches divide: 12'6\" / 3 = 50 in");
+  const fiMul = calculate("feet-inches", { operation: "multiply", aFeet: 2, aInches: 6, aFrac: 0, factor: 4 });
+  assert(close(val(fiMul, "Total inches"), 120, 1e-9), "feet-inches multiply: 2'6\" x 4 = 120 in");
+
+  const cw = calc("slab", { length: 10, lengthUnit: "ft", width: 12, widthUnit: "ft", thickness: 4, thicknessUnit: "in", qty: 1, waste: 10 });
+  assert(close(cw.weightLb, 6600, 0.1) && close(cw.weightTons, 3.3, 0.01), "concrete weight: 44 ft3 = 6,600 lb (3.30 tons)");
+
+  const areaMod = require("./src/assets/area.js");
+  const cut = areaMod.calc([
+    { shape: "rect", a: 16, b: 12, unit: "ft", sign: 1 },
+    { shape: "rect", a: 4, b: 3, unit: "ft", sign: -1 },
+  ], {});
+  assert(close(cut.ft2, 180, 1e-9) && close(cut.perimeterFt, 56, 1e-9), "area cutout & perimeter: 16x12 minus 4x3 = 180 ft2, 56 ft perimeter");
+
+  const rpRR = calculate("roof-pitch", { mode: "rise-run", totalRise: 7, run: 14, footprint: 2000 });
+  assert(close(val(rpRR, "Pitch"), 6, 1e-6) && close(val(rpRR, "Slope percentage"), 50, 1e-6), "roof-pitch rise-run: 7 ft over 14 ft = 6/12 (50%)");
+  assert(close(val(rpRR, "Sloped roof area"), 2000 * Math.sqrt(180) / 12, 0.1), "roof-pitch footprint: 2000 ft2 @ 6/12 = 2236.1 ft2");
+
+  const st2 = calculate("stair", { totalRise: 108, maxRiser: 7.75, treadDepth: 10 });
+  assert(val(st2, "2×12 stringer board to buy") === 16, "stair: 14.08 ft stringer recommends 16 ft 2x12 board");
+
+  const costInst = calculate("cost", { length: 20, width: 20, low: 6.5, high: 10.5, costUnit: "ft²" });
+  assert(costInst.rows.some(r => /Est\. labor/.test(r.label)), "cost: installed projects show labor/material split");
+  const costYd = calculate("cost", { quantity: 6, low: 160, high: 195, costUnit: "yd³" });
+  assert(!costYd.rows.some(r => /Est\. labor/.test(r.label)), "cost: ready-mix per yd3 omits labor split");
 }

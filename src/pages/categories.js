@@ -30,7 +30,7 @@ const CATEGORIES = [
       group("Carpentry, framing, decks & trim", "deck", ["framing", "board-foot", "plywood", "deck", "deck-stain", "fence", "stair", "baluster-spacing", "ramp", "board-and-batten", "wainscoting", "baseboard", "crown-molding"]),
       group("Roofing, siding & gutters", "roofing", ["roofing", "metal-roofing", "roof-pitch", "gutter-size", "siding"]),
       {
-        name: "Driveways & base layers", icon: "gravel",
+        name: "Driveways & base layers", icon: "asphalt",
         items: [
           material("asphalt", "Asphalt Calculator", "Hot-mix asphalt in US tons"),
           material("road-base", "Road Base Calculator", "Crusher run with compaction"),
