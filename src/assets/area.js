@@ -1,7 +1,5 @@
 /* Ruler Square — square footage calculator.
- *
- * Real rooms and yards are rarely one rectangle, so this adds up sections.
- * Everything is converted to feet first and reported in ft², yd², m² and acres.
+ * Measurement boxes stay empty on load; computes live once required fields are filled.
  */
 (function () {
   "use strict";
@@ -19,26 +17,24 @@
     return num(v) * (FT_PER[unit] || 1);
   }
 
-  /* Area of one section, in square feet. */
   function sectionFt2(sec) {
     var u = sec.unit || "ft";
     switch (sec.shape) {
       case "rect":
         return toFeet(sec.a, u) * toFeet(sec.b, u);
-      case "circle":
-        var r = toFeet(sec.a, u) / 2;       // a = diameter
+      case "circle": {
+        var r = toFeet(sec.a, u) / 2;
         return Math.PI * r * r;
+      }
       case "triangle":
-        return toFeet(sec.a, u) * toFeet(sec.b, u) / 2;  // base x height
+        return toFeet(sec.a, u) * toFeet(sec.b, u) / 2;
       case "trapezoid":
-        // a and b are the parallel sides, c the height between them
         return (toFeet(sec.a, u) + toFeet(sec.b, u)) * toFeet(sec.c, u) / 2;
       default:
         return 0;
     }
   }
 
-  /* sections: [{shape, a, b, c, unit, qty}] */
   function calc(sections, opts) {
     opts = opts || {};
     var ft2 = 0;
@@ -46,7 +42,6 @@
       var qty = Math.max(1, Math.floor(num(sections[i].qty)) || 1);
       ft2 += sectionFt2(sections[i]) * qty;
     }
-    // Flooring and tile are bought with an allowance for cuts and breakage.
     var waste = Math.min(50, Math.max(0, parseFloat(opts.wastePct) || 0));
     var ft2w = ft2 * (1 + waste / 100);
     var pricePerFt2 = num(opts.pricePerFt2);
@@ -57,7 +52,7 @@
       yd2: ft2w / FT2_PER_YD2,
       m2: ft2w / FT2_PER_M2,
       acres: ft2w / FT2_PER_ACRE,
-      squares: ft2w / 100,          // roofing "square" = 100 ft²
+      squares: ft2w / 100,
       cost: pricePerFt2 > 0 ? ft2w * pricePerFt2 : null,
     };
   }
@@ -66,14 +61,13 @@
   if (typeof module !== "undefined" && module.exports) { module.exports = api; }
   if (typeof document === "undefined") { return; }
 
-  // ---------- UI ----------
   function fmt(n, d) {
     return n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   }
   var form = document.getElementById("area-form");
   if (!form) { return; }
 
-  var calculated = false;
+  var submitted = false;
   var list = document.getElementById("sections");
   var tpl = document.getElementById("section-tpl");
 
@@ -84,7 +78,6 @@
     });
   }
 
-  /* Each shape needs a different set of boxes; relabel rather than rebuild. */
   function syncFields(el) {
     var shape = el.querySelector('[data-f="shape"]').value;
     var labels = {
@@ -98,6 +91,7 @@
       if (!wrap) { return; }
       var input = wrap.querySelector("input");
       input.required = !!labels[i];
+      input.disabled = !labels[i];
       input.min = "0.001";
       input.max = "10000000";
       input.setAttribute("aria-label", labels[i] || "Unused dimension");
@@ -110,27 +104,33 @@
     });
   }
 
-  function addSection() {
+  function addSection(prefill) {
     var el = tpl.content.firstElementChild.cloneNode(true);
     el.querySelector('[data-f="qty"]').setAttribute("aria-label", "Number of identical sections");
     el.querySelector('[data-f="qty"]').required = true;
+    if (prefill) {
+      Object.keys(prefill).forEach(function (k) {
+        var f = el.querySelector('[data-f="' + k + '"]');
+        if (f) { f.value = prefill[k]; }
+      });
+    }
     syncFields(el);
     el.querySelector(".section-remove").addEventListener("click", function () {
-      if (list.querySelectorAll(".section").length > 1) { el.remove(); update(); }
+      if (list.querySelectorAll(".section").length > 1) { el.remove(); update(false); }
     });
-    el.addEventListener("change", function () { syncFields(el); update(); });
-    el.addEventListener("input", update);
+    el.addEventListener("change", function () { syncFields(el); update(false); });
+    el.addEventListener("input", function () { update(false); });
     list.appendChild(el);
     return el;
   }
 
   function set(id, text) { var el = document.getElementById(id); if (el) { el.textContent = text; } }
 
-  function update(report) {
-    if (!calculated) { return; }
-    if (!window.RSValidate(form, report === true)) { return; }
+  function renderResult() {
     var empty = document.getElementById("r-empty");
     var out = document.getElementById("r-out");
+    var err = form.querySelector(".form-error");
+    if (err) { err.hidden = true; }
     if (empty) { empty.hidden = true; }
     if (out) { out.hidden = false; }
 
@@ -142,7 +142,7 @@
     set("r-ft2-raw", fmt(r.ft2, 1) + " ft²");
     set("r-yd2", fmt(r.yd2, 2) + " yd²");
     set("r-m2", fmt(r.m2, 2) + " m²");
-    set("r-acres", r.acres >= 0.01 ? fmt(r.acres, 3) + " acres" : "—");
+    set("r-acres", r.acres >= 0.001 ? fmt(r.acres, 4) + " acres" : "—");
     set("r-squares", fmt(r.squares, 2) + " squares");
 
     var costBox = document.getElementById("r-cost-box");
@@ -154,6 +154,26 @@
         costBox.hidden = true;
       }
     }
+    if (window.RSInitResultTools) { window.RSInitResultTools(form); }
+  }
+
+  function update(report) {
+    if (report === true) {
+      submitted = true;
+      if (!window.RSValidate(form, true)) { return; }
+      renderResult();
+      return;
+    }
+    if (window.RSReadyToCalc && window.RSReadyToCalc(form)) {
+      renderResult();
+    } else if (submitted) {
+      window.RSValidate(form, false);
+    } else {
+      var out = document.getElementById("r-out");
+      var empty = document.getElementById("r-empty");
+      if (out) { out.hidden = true; }
+      if (empty) { empty.hidden = false; }
+    }
   }
 
   addSection();
@@ -163,13 +183,36 @@
   });
   form.addEventListener("submit", function (e) {
     e.preventDefault();
-    calculated = true;
     update(true);
-    // Only when there is something to look at: a failed validation leaves the
-    // empty state in place, and scrolling to it would be a lie.
     var out = document.getElementById("r-out");
     if (out && !out.hidden && window.RSRevealResult) { window.RSRevealResult(form); }
   });
-  form.addEventListener("input", update);
-  form.addEventListener("change", update);
+  form.addEventListener("input", function () { update(false); });
+  form.addEventListener("change", function () { update(false); });
+
+  var exBtn = document.getElementById("use-example");
+  if (exBtn) {
+    exBtn.addEventListener("click", function () {
+      list.replaceChildren();
+      addSection({ shape: "rect", unit: "ft", a: "16", b: "12", qty: "1" });
+      addSection({ shape: "rect", unit: "ft", a: "8", b: "6", qty: "1" });
+      if (form.elements.wastePct) { form.elements.wastePct.value = "10"; }
+      update(true);
+    });
+  }
+  var resetBtn = document.getElementById("reset-calc");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", function () {
+      form.reset();
+      list.replaceChildren();
+      addSection();
+      submitted = false;
+      var out = document.getElementById("r-out");
+      var empty = document.getElementById("r-empty");
+      var err = form.querySelector(".form-error");
+      if (out) { out.hidden = true; }
+      if (empty) { empty.hidden = false; }
+      if (err) { err.hidden = true; }
+    });
+  }
 })();

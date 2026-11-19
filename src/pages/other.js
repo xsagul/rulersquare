@@ -1,83 +1,110 @@
 const { SITE } = require("../layout");
 const { ICONS } = require("../icons");
-const { AUTHOR, PERSON_ID, personSchema } = require("../author");
+const { AUTHOR, PERSON_ID, ORG_ID, personSchema, UPDATED } = require("../author");
 
 const table = (head, rows) => `<div class="table-wrap"><table>
-  <thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead>
+  <thead><tr>${head.map(h => `<th scope="col">${h}</th>`).join("")}</tr></thead>
   <tbody>${rows.map(r => `<tr>${r.map((c, i) => i === 0 ? `<th scope="row">${c}</th>` : `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody>
 </table></div>`;
 
 const CONCRETE = [
-  ["/concrete-calculator/", "Concrete Calculator", "Cubic yards, bags and cost for slabs, footings and columns", "concrete", "concrete slab footing column bags ready-mix yards"],
-  ["/asphalt-calculator/", "Asphalt Calculator", "Tons of hot mix for driveways and lots", "asphalt", "asphalt hot mix paving driveway blacktop tons overlay"],
+  ["/concrete-calculator/", "Concrete Calculator", "Cubic yards, bags and cost for slabs, footings, columns, steps and curbs", "concrete", "concrete slab footing column steps curb bags ready-mix yards"],
+  ["/asphalt-calculator/", "Asphalt Calculator", "Tons of hot mix for driveways and parking lots", "asphalt", "asphalt hot mix paving driveway blacktop tons overlay"],
   ["/square-footage-calculator/", "Square Footage Calculator", "Any shape, in sq ft, yards, meters and acres", "sqft", "square footage area room floor acres sq ft measure"],
 ];
 const AGGREGATE = [
-  ["/gravel-calculator/", "Gravel Calculator", "Tons and cubic yards for driveways and paths", "gravel", "gravel driveway pea stone aggregate tons yards"],
-  ["/road-base-calculator/", "Road Base Calculator", "Crusher run with an adjustable allowance", "gravel", "road base crusher run aggregate abc"],
+  ["/gravel-calculator/", "Gravel Calculator", "Tons and cubic yards for driveways and paths", "gravel", "gravel driveway aggregate tons yards truckloads"],
+  ["/pea-gravel-calculator/", "Pea Gravel Calculator", "Tons, yards and bags for patios and walkways", "gravel", "pea gravel patio walkway dog run rounded stone tons bags"],
+  ["/decomposed-granite-calculator/", "Decomposed Granite Calculator", "Compacted DG for patios and pathways", "stone", "decomposed granite dg pathway patio stabilized compacted tons yards"],
+  ["/road-base-calculator/", "Road Base Calculator", "Crusher run with compaction allowance", "gravel", "road base crusher run aggregate abc driveway base"],
   ["/stone-calculator/", "Crushed Stone Calculator", "#57 stone and crusher run for bases and drainage", "stone", "crushed stone 57 crusher run paver base drainage"],
   ["/sand-calculator/", "Sand Calculator", "Bedding sand in cubic yards, tons or bags", "sand", "sand paver bedding sandbox concrete backfill"],
   ["/river-rock-calculator/", "River Rock Calculator", "Decorative beds and dry creek beds", "rock", "river rock decorative landscape stone dry creek"],
 ];
 const SOIL = [
-  ["/topsoil-calculator/", "Topsoil Calculator", "Lawns, garden beds and raised beds", "topsoil", "topsoil lawn garden raised bed soil"],
-  ["/fill-dirt-calculator/", "Fill Dirt Calculator", "Grading, low spots and backfill", "dirt", "fill dirt grading backfill low spot subsoil"],
+  ["/topsoil-calculator/", "Topsoil Calculator", "Lawns, garden beds and topdressing", "topsoil", "topsoil lawn garden soil yards bags"],
+  ["/compost-calculator/", "Compost Calculator", "Garden amendments and lawn topdressing", "garden", "compost garden soil topdressing organic yards bags"],
+  ["/fill-dirt-calculator/", "Fill Dirt Calculator", "Grading, low spots and dump truck loads", "dirt", "fill dirt grading backfill low spot subsoil truckloads"],
   ["/mulch-calculator/", "Mulch Calculator", "Cubic yards and bags for garden beds", "mulch", "mulch bark garden bed landscaping bags cubic yards"],
 ];
+
 const { PROJ } = require("../data/projects");
 const { COSTS } = require("../data/costs");
 const { TOOLS } = require("../data/tools");
 const { CATEGORIES } = require("./categories");
-// One icon per subject, rather than a single default across fifteen pages.
+
 const KIND_ICON = {
   fence: "fence", deck: "deck", siding: "siding", drywall: "drywall",
-  tile: "tile", paver: "paver", paint: "paint", roofing: "roofing",
+  tile: "tile", paver: "paver", paint: "paint", "exterior-paint": "paint",
+  "deck-stain": "paint", roofing: "roofing", "metal-roofing": "roofing",
   "retaining-wall": "wall", insulation: "insulation",
-  "board-and-batten": "batten", grout: "trowel", thinset: "trowel",
-  "cubic-yard": "cube", cost: "cost",
+  "board-and-batten": "batten", wainscoting: "batten",
+  grout: "trowel", thinset: "trowel", mortar: "trowel",
+  "cubic-yard": "cube", "cubic-feet": "cube", "yards-to-tons": "cube",
+  cost: "cost", "gutter-size": "gutter", stair: "stairs", "concrete-steps": "stairs",
+  "baluster-spacing": "fence", sonotube: "concrete", "fence-post-concrete": "concrete",
+  "concrete-bag": "concrete", "self-leveling": "concrete",
+  "raised-bed": "garden", "grass-seed": "topsoil",
+  btu: "hvac", firewood: "firewood", "generator-wattage": "bolt",
+  "water-heater": "water", dehumidifier: "water", "bathroom-fan": "fan",
+  "tank-volume": "tank", pool: "water",
 };
+
 const NEW = [...PROJ, ...COSTS, ...TOOLS].map(c =>
-  [`/${c.slug}/`, c.h1, c.lede, KIND_ICON[c.kind] || "sqft", `${c.h1} ${c.description}`]);
+  [`/${c.slug}/`, c.h1, c.lede, KIND_ICON[c.kind] || "sqft", `${c.h1} ${c.slug.replace(/-/g, " ")}`]);
 const ALL = [].concat(CONCRETE, AGGREGATE, SOIL, NEW);
-module.exports = module.exports || {};
 
-
-const cards = list => list.map(([href, title, desc, icon]) =>
-  `<a class="card" href="${href}">${ICONS[icon]}<b>${title}</b><span>${desc}</span></a>`).join("\n  ");
-
-/* The homepage leads with categories, not a list of calculators. Both
- * category leaders do this, and it is what makes a modest catalogue read as
- * organised rather than thin. A plain index of every calculator follows, so
- * each one is a single click from the page search engines visit most. */
 const HUBS = [
   ["/construction-calculators/", "Construction", "concrete"],
   ["/landscaping-calculators/", "Landscaping", "mulch"],
-  ["/cost-calculators/", "Project costs", "cost"],
-].map(([path, name, icon]) => [path, name, icon, new Set(CATEGORIES.find(c => c.path === path).groups.flatMap(g => g.items.map(i => i[0]))).size]);
+  ["/home-systems-calculators/", "Home Systems", "hvac"],
+  ["/cost-calculators/", "Project Costs", "cost"],
+].map(([path, name, icon]) => [
+  path, name, icon,
+  new Set(CATEGORIES.find(c => c.path === path).groups.flatMap(g => g.items.map(i => i[0]))).size,
+]);
 
 const POPULAR = [
   ["/concrete-calculator/", "Concrete Calculator", "concrete"],
   ["/gravel-calculator/", "Gravel Calculator", "gravel"],
   ["/square-footage-calculator/", "Square Footage Calculator", "sqft"],
   ["/mulch-calculator/", "Mulch Calculator", "mulch"],
-  ["/feet-and-inches-calculator/", "Feet and Inches Calculator", "sqft"],
-  ["/asphalt-calculator/", "Asphalt Calculator", "asphalt"],
-  ["/fence-calculator/", "Fence Calculator", "sqft"],
-  ["/concrete-slab-cost/", "Concrete Slab Cost", "concrete"],
+  ["/raised-bed-soil-calculator/", "Raised Bed Soil Calculator", "garden"],
+  ["/btu-calculator/", "BTU Calculator (AC & Heat)", "hvac"],
+  ["/feet-and-inches-calculator/", "Feet & Inches Calculator", "ruler"],
+  ["/concrete-slab-cost/", "Concrete Slab Cost (2026)", "cost"],
 ];
+
+/* Every calculator listed once under its primary hub group so both visitors
+ * and Googlebot reach any calculator in a single click from the homepage. */
+function fullDirectory() {
+  const seen = new Set();
+  return CATEGORIES.map(cat => {
+    const items = [];
+    for (const g of cat.groups) {
+      for (const [href, name] of g.items) {
+        if (seen.has(href)) continue;
+        seen.add(href);
+        items.push([href, name]);
+      }
+    }
+    return `<div>
+      <h3><a href="${cat.path}">${cat.h1.replace(/ Calculators$/, "")} (${items.length})</a></h3>
+      <ul>${items.map(([href, name]) => `<li><a href="${href}">${name}</a></li>`).join("")}</ul>
+    </div>`;
+  }).join("\n");
+}
 
 const home = {
   path: "/",
-  title: "Ruler Square – Building Material & Project Cost Calculators",
-  description: "Free calculators for building materials, home improvements and landscaping. Estimate quantities and project costs with formulas and worked examples.",
-  lastmod: "2026-11-15",
-  // One @graph rather than separate blocks, so the site, the publisher and the
-  // person behind it are linked by @id instead of merely co-present.
+  title: "Ruler Square – Free Building Material & Cost Calculators",
+  description: `Free US construction, landscaping, home systems and 2026 project cost calculators (${ALL.length} tools). Live estimates, formulas, charts and printable lists.`,
+  lastmod: UPDATED.iso,
   schema: [{
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization", "@id": SITE.url + "/#organization", name: SITE.name,
+        "@type": "Organization", "@id": ORG_ID, name: SITE.name,
         url: SITE.url + "/", logo: { "@type": "ImageObject", url: SITE.url + "/og.png" },
         email: SITE.email, founder: { "@id": PERSON_ID },
       },
@@ -85,27 +112,23 @@ const home = {
       {
         "@type": "WebSite", "@id": SITE.url + "/#website",
         url: SITE.url + "/", name: SITE.name, inLanguage: "en-US",
-        publisher: { "@id": SITE.url + "/#organization" },
-        potentialAction: {
-          "@type": "SearchAction",
-          target: { "@type": "EntryPoint", urlTemplate: SITE.url + "/?q={search_term_string}" },
-          "query-input": "required name=search_term_string",
-        },
+        publisher: { "@id": ORG_ID },
       },
     ],
   }],
   body: `
 <section class="hero">
-  <p class="eyebrow">Measure. Plan. Build.</p>
-  <h1>Get the numbers<br>before you build.</h1>
-  <p class="lede">${ALL.length} free calculators for building materials and project costs. Clear units, worked examples and the math behind every estimate.</p>
+  <p class="eyebrow">US Home &amp; Trade Tools</p>
+  <h1>Free Construction, Yard &amp; Home Cost Calculators</h1>
+  <p class="lede">${ALL.length} free calculators for building materials, landscaping, HVAC &amp; power sizing, and 2026 project budgets. Instant math, worked examples and printable shopping lists.</p>
   <div class="search">
     <label class="sr-only" for="q">Search calculators</label>
     ${ICONS.search}
-    <input id="q" type="search" autocomplete="off" placeholder="Search calculators — try &quot;flooring&quot; or &quot;concrete&quot;">
+    <input id="q" type="search" autocomplete="off" placeholder="Search ${ALL.length} calculators — try &quot;concrete&quot;, &quot;btu&quot;, &quot;gutter&quot; or &quot;mulch&quot;">
   </div>
   <ul class="search-hits" id="hits" hidden></ul>
 </section>
+
 <div id="browse">
 <div class="hubs">
   ${HUBS.map(([href, name, icon, n]) =>
@@ -118,73 +141,62 @@ const home = {
     `<a class="card" href="${href}">${ICONS[icon]}<b>${title}</b></a>`).join("\n  ")}
 </div>
 
-</div>
-<section class="prose home-note">
-<h2>Know what is in the estimate</h2>
-<p>Use your measurements, check the assumptions and see a worked example. Material calculators tell you what to order. Cost calculators help you compare rates and budget for the work.</p>
-<p>No account is needed. Calculator inputs stay in your browser. Confirm quantities with your supplier and compare written quotes before starting work.</p>
+<section class="directory-section">
+  <h2>All ${ALL.length} calculators by category</h2>
+  <div class="directory">
+    ${fullDirectory()}
+  </div>
 </section>
+</div>
 `,
   scripts: `<script src="/assets/search.js?v=VERSION" defer></script>`,
 };
 
 const about = {
   path: "/about/",
-  title: "About Ruler Square — Who Maintains It",
-  description: "Who builds and maintains Ruler Square, why it exists, how the figures are kept current, how it is funded, and the public log of corrections.",
+  title: "About Ruler Square | Material & Cost Calculators",
+  description: "How Ruler Square builds transparent, fast, ad-light construction, landscaping, home systems and cost calculators with open formulas.",
   crumbs: "About",
-  lastmod: "2026-11-15",
+  breadcrumbs: [{ name: "Home", href: "/" }, { name: "About" }],
+  lastmod: UPDATED.iso,
   schema: [
     {
       "@context": "https://schema.org", "@type": "AboutPage",
       url: SITE.url + "/about/", name: "About Ruler Square",
-      mainEntity: { "@id": PERSON_ID },
-      publisher: { "@id": SITE.url + "/#organization" },
+      mainEntity: { "@id": ORG_ID },
+      publisher: { "@id": ORG_ID },
+      dateModified: UPDATED.iso,
     },
     { "@context": "https://schema.org", ...personSchema },
   ],
   body: `
 <div class="prose">
 <h1>About Ruler Square</h1>
-<p class="lede">Independent calculators for building materials and home project budgets.</p>
+<p class="lede">Fast, transparent calculators for US building materials, landscaping, home systems and project budgets.</p>
 
-<h2>Who maintains the site</h2>
-<p>${AUTHOR.name}, a full-stack developer. I build and maintain Ruler Square’s calculators, their formulas and the explanations on each page.</p>
-<p>This is not my first calculator site. I also build and run <a href="https://salariile.ro/despre" rel="me">salariile.ro</a>, an independent open-source salary and tax calculator for Romania, which has been live and maintained through a full year of legislative changes. The habits on this site — publishing the formula, naming the source for every figure, and logging corrections in public instead of editing them away — came from that one.</p>
-<p>You can check who I am: <a href="${AUTHOR.sameAs[0]}" rel="me nofollow">LinkedIn</a>, <a href="${AUTHOR.sameAs[1]}" rel="me nofollow">GitHub</a>, <a href="${AUTHOR.sameAs[2]}" rel="me nofollow">dev.to</a>. The <a href="https://github.com/xsagul/rulersquare">site’s source code</a> is public, so you can inspect the arithmetic.</p>
+<h2>Why Ruler Square exists</h2>
+<p>Most online construction calculators give you a single mystery number with hidden assumptions—you cannot tell what gravel density, concrete bag yield, or labor scope went into the answer. Every Ruler Square calculator shows its exact formula, lets you adjust every density, coverage rate or price tier, and works directly in your browser with no account required.</p>
 
-<h2>Why the site exists</h2>
-<p>Material estimating is arithmetic that anyone can do and almost nobody enjoys. The figures are not secret — a cubic yard is 27 cubic feet whoever you ask — but they are scattered across supplier PDFs, trade tables and half-remembered rules of thumb.</p>
-<p>What made me build this rather than use what exists: most calculators give you a number and nothing else. You cannot see the density they assumed, whether compaction was included, or whether the price is for material or for installed work. When the answer is wrong you have no way of knowing why. Every page here shows its formula and lets you change the assumptions.</p>
-
-<h2>How the calculations are kept current</h2>
+<h2>How calculations are verified</h2>
 <ul>
-  <li>Price ranges carry the date they were last checked against their published source.</li>
-  <li>Material densities are editable planning assumptions. Moisture and product differences matter; use your supplier’s figure.</li>
-  <li>Automated tests check calculation engines, example inputs and unit conversions. A separate site audit checks metadata, links and sitemap coverage before deployment.</li>
+  <li>Every calculator follows US standard definitions (NIST), model residential codes (IRC/ADA), and published trade manuals (ACI, AWC, SMACNA, HVI, ENERGY STAR, USDA NRCS).</li>
+  <li>Every material order rounds <strong>up</strong> to whole bags, sheets, rolls or standard delivery increments so you do not run short mid-project.</li>
+  <li>Automated tests check every calculation engine, unit conversion, worked example and reference table before deployment.</li>
 </ul>
-<p>The full detail is on the <a href="/methodology/">methodology page</a>, including what these calculators deliberately do not attempt.</p>
+<p>See the full technical breakdown on our <a href="/methodology/">Methodology page</a>.</p>
 
-<h2>How the project is funded</h2>
-<p>The calculators are free, with no paid tier, newsletter, account or lead form. Display advertising may support the site; our <a href="/privacy/">privacy policy</a> explains this. Calculator inputs are processed in your browser, not sent to us.</p>
-<p>No page here is sponsored, and no supplier, contractor or manufacturer pays for a mention. Where a product or trade body is named it is because it is the source of a figure.</p>
+<h2>Who builds and maintains it</h2>
+<p>Ruler Square is built and maintained by ${AUTHOR.name}, a software engineer focused on fast, zero-bloat web calculators. The <a href="https://github.com/xsagul/rulersquare" rel="noopener">calculator source code</a> is public on GitHub so anyone can inspect the formulas.</p>
 
-<h2>Estimates, not engineering</h2>
-<p>These calculators are for planning and buying materials. They do not replace a structural engineer, your local building code or your supplier's own advice. Cost ranges are planning references, not contractor bids.</p>
+<h2>Independent &amp; free</h2>
+<p>All ${ALL.length} calculators—including our embeddable website widgets—are free to use with no paywall, account signup or contractor lead-selling forms. Display advertising may support hosting and maintenance; see our <a href="/privacy/">Privacy Policy</a>.</p>
 
-<h2>Found a mistake?</h2>
-<p>Write to <a href="mailto:${SITE.email}">${SITE.email}</a>. If a figure does not match its stated source, that is a bug and it gets fixed. Corrections are logged below rather than quietly edited.</p>
-
-<h2>Corrections and updates</h2>
-<p class="note">Newest first. Substantive changes to a figure or a formula are listed here; wording and layout changes are not.</p>
-${table(["Date", "Change"], [
-  ["15 November 2026", "Focused the site on construction and home projects. Retired the six pay calculators; added six material and measurement calculators and sixteen sourced cost estimators."],
-  ["22 September 2026", "Fixed supplier-density and bag-size inputs, salary result display and example unit resets. Corrected ramp landings to use 30 inches of rise per run and clarified rebar stock estimates and vehicle payload limits."],
-  ["21 September 2026", "Added a methodology page and this correction log. Published author identity and source attribution across the site."],
-  ["21 September 2026", "Fixed rebar bar-direction labelling: bars running the length are spaced across the width, not along it. The total count was unaffected; the displayed breakdown was wrong."],
-  ["21 September 2026", "Fixed the labour cost page, where the total was hidden whenever no optional price was entered."],
-  ["21 September 2026", "Fixed unit selectors that were read as numbers, which made the feet-and-inches calculator add when subtract was selected."],
-  ["21 September 2026", "Site launched with 53 calculators."],
+<h2>Changelog &amp; corrections</h2>
+<p>Spotted an error or want a new calculator? Email <a href="mailto:${SITE.email}">${SITE.email}</a>.</p>
+${table(["Date", "Update"], [
+  ["November 19, 2026", `Expanded catalog to ${ALL.length} calculators with a new Home Systems hub (BTU, firewood, generator, water heater, dehumidifier, bath fan) plus 22 construction, concrete, carpentry and yard tools. Added live auto-calculation, interactive material/state cost selectors, shareable links, print views and free embeddable widgets.`],
+  ["November 15, 2026", "Focused the site on home construction, landscaping and project budgets; added 16 cost calculators and 6 room/finish tools."],
+  ["September 21, 2026", "Initial launch of Ruler Square with automated unit tests and methodology documentation."],
 ])}
 </div>
 `,
@@ -192,15 +204,16 @@ ${table(["Date", "Change"], [
 
 const contact = {
   path: "/contact/",
-  title: "Contact Ruler Square",
-  description: "Get in touch with Ruler Square to report an error, suggest a calculator or ask a question.",
+  title: "Contact | Ruler Square",
+  description: "Contact Ruler Square to report a calculation bug, request a new calculator or ask about embedding widgets.",
   crumbs: "Contact",
-  lastmod: "2026-09-22",
+  breadcrumbs: [{ name: "Home", href: "/" }, { name: "Contact" }],
+  lastmod: UPDATED.iso,
   body: `
 <div class="prose">
 <h1>Contact</h1>
-<p class="lede">Found an error, want a new calculator, or have a question about a result?</p>
-<p>Email us at <a href="mailto:${SITE.email}">${SITE.email}</a>. We usually reply within two business days.</p>
+<p class="lede">Found a bug, want a new calculator, or need help embedding a widget?</p>
+<p>Email <a href="mailto:${SITE.email}">${SITE.email}</a>. We typically reply within two business days.</p>
 </div>
 `,
 };
@@ -208,23 +221,22 @@ const contact = {
 const privacy = {
   path: "/privacy/",
   title: "Privacy Policy | Ruler Square",
-  description: "How Ruler Square handles your data.",
+  description: "How Ruler Square handles browser calculator inputs, hosting logs, analytics and advertising.",
   crumbs: "Privacy Policy",
-  lastmod: "2026-09-22",
+  breadcrumbs: [{ name: "Home", href: "/" }, { name: "Privacy Policy" }],
+  lastmod: UPDATED.iso,
   body: `
 <div class="prose">
 <h1>Privacy Policy</h1>
-<p class="note">Last updated: September 21, 2026</p>
-<h2>What you enter in our calculators</h2>
-<p>Calculations run in your browser. The numbers you type into a calculator are not sent to us or stored.</p>
-<h2>Information collected automatically</h2>
-<p>Our hosting provider, Cloudflare, processes standard technical data such as IP address, browser type and the pages you request, to deliver the site and protect it from abuse.</p>
+<p class="note">Last updated: ${UPDATED.text}</p>
+<h2>Calculator inputs</h2>
+<p>All calculations run locally in your browser. Numbers you type into a calculator are not transmitted to or stored on our servers.</p>
+<h2>Hosting &amp; technical logs</h2>
+<p>Our hosting provider, Cloudflare, processes standard technical request data (such as IP address, browser user agent and requested URL) to deliver pages reliably and block abuse.</p>
 <h2>Analytics and advertising</h2>
-<p>We may use analytics to understand which pages are useful, and we may show ads to keep the calculators free. If we do, those services may use cookies or similar technologies, and we will list them here with a link to their own privacy policies and, where required, ask for your consent.</p>
+<p>We may use privacy-conscious analytics and display advertising (such as Google AdSense) to keep all calculators free. Where required by law, we provide consent controls and list third-party vendors here.</p>
 <h2>Email</h2>
-<p>If you email us, we use your address and message only to reply.</p>
-<h2>Contact</h2>
-<p>Questions about this policy: <a href="mailto:${SITE.email}">${SITE.email}</a>.</p>
+<p>If you email <a href="mailto:${SITE.email}">${SITE.email}</a>, we use your message solely to reply.</p>
 </div>
 `,
 };
@@ -232,20 +244,21 @@ const privacy = {
 const terms = {
   path: "/terms/",
   title: "Terms of Use | Ruler Square",
-  description: "Terms of use for Ruler Square calculators and content.",
+  description: "Terms of use for Ruler Square calculators, reference charts and embeddable widgets.",
   crumbs: "Terms of Use",
-  lastmod: "2026-09-22",
+  breadcrumbs: [{ name: "Home", href: "/" }, { name: "Terms of Use" }],
+  lastmod: UPDATED.iso,
   body: `
 <div class="prose">
 <h1>Terms of Use</h1>
-<p class="note">Last updated: September 21, 2026</p>
-<p>Ruler Square provides free calculators and guides for planning construction and home projects. By using the site you agree to these terms.</p>
-<h2>Estimates only</h2>
-<p>Results are estimates based on the values you enter and on typical product data. Actual quantities and costs vary. Always confirm with your supplier, a qualified professional and your local building code before buying materials or starting work.</p>
+<p class="note">Last updated: ${UPDATED.text}</p>
+<p>Ruler Square provides free calculators, tables and embeddable widgets for planning home and construction projects. By using the site, you agree to these terms.</p>
+<h2>Planning estimates</h2>
+<p>Results are planning estimates based on standard geometry and typical US product data. Always confirm quantities, structural designs, local building codes and written contractor bids before ordering materials or starting work.</p>
+<h2>Widgets &amp; content</h2>
+<p>You are welcome to link to our pages, share calculation URLs and embed our calculators on your website using our provided embed code with attribution. Please do not scrape or republish page text in bulk.</p>
 <h2>No warranty</h2>
-<p>The site is provided "as is", without warranties of any kind. We are not liable for losses resulting from the use of our calculators or content.</p>
-<h2>Content</h2>
-<p>You may link to our pages and share results. Please do not copy our calculators or text in bulk.</p>
+<p>The site is provided "as is" without warranties of any kind. Ruler Square is not liable for project losses or overages resulting from use of these tools.</p>
 <h2>Contact</h2>
 <p><a href="mailto:${SITE.email}">${SITE.email}</a></p>
 </div>
@@ -254,15 +267,15 @@ const terms = {
 
 const notFound = {
   path: "/404.html",
-  title: "Page not found | Ruler Square",
+  title: "Page Not Found | Ruler Square",
   description: "This page does not exist.",
   robots: "noindex",
   noSitemap: true,
   body: `
 <div class="prose">
 <h1>Page not found</h1>
-<p class="lede">That page doesn't exist, or it has moved.</p>
-<p><a href="/">See all calculators</a></p>
+<p class="lede">That page does not exist or has moved.</p>
+<p><a href="/">Browse all calculators</a></p>
 </div>
 `,
 };

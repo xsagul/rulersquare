@@ -1,37 +1,45 @@
-const { SITE } = require("../layout");
+const { SITE, embedSnippet } = require("../layout");
 const { areaShapes } = require("../diagrams");
 const { byline, authorRef, UPDATED } = require("../author");
 
 const table = (head, rows) => `<div class="table-wrap"><table>
-  <thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead>
+  <thead><tr>${head.map(h => `<th scope="col">${h}</th>`).join("")}</tr></thead>
   <tbody>${rows.map(r => `<tr>${r.map((c, i) => i === 0 ? `<th scope="row">${c}</th>` : `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody>
 </table></div>`;
 
 const faq = [
   ["How do I calculate square footage?",
-   "Multiply length by width, with both in feet. A room 12 feet by 14 feet is 168 square feet. For a space that is not a rectangle, split it into rectangles, triangles and circles, work out each one and add them together — that is what the sections above are for."],
+   "Multiply length by width with both measurements in feet (for example, a 12 × 14 ft room equals 168 square feet). For irregular rooms, break the floor into rectangles, triangles, or circles and add each section together."],
   ["How do I find the square footage of an L-shaped room?",
-   "Cut the L into two rectangles. Measure each one separately, calculate both areas and add them. Where you cut does not matter as long as the two pieces do not overlap and together they cover the whole floor."],
+   "Split the L into two non-overlapping rectangles, multiply length × width for each rectangle, and add the two areas. Click '+ Add another section' above to sum multiple rectangles automatically."],
   ["How many square feet are in a square yard?",
-   "Nine. A square yard is three feet by three feet. Carpet is often priced per square yard while the room is measured in square feet, so divide your square footage by 9 before you compare prices."],
+   "Nine square feet equal 1 square yard (3 ft × 3 ft). Divide square footage by 9 to convert to square yards when comparing carpet or turf quotes."],
   ["How do I convert square feet to acres?",
-   "Divide by 43,560. A quarter-acre lot is 10,890 square feet; a full acre is roughly the size of an American football field without the end zones."],
-  ["How much extra should I order for flooring?",
-   "Ten percent for a straightforward rectangular room laid square to the walls. Fifteen percent for a room with lots of corners, or when laying at 45 degrees, because diagonal cuts waste more. Twenty percent for herringbone or any pattern with repeated angled cuts."],
+   "Divide square feet by 43,560. A quarter-acre lot is 10,890 square feet, and half an acre is 21,780 square feet."],
+  ["How much extra square footage should I add for flooring?",
+   "Add 10% for straight layouts in rectangular rooms, 15% for diagonal installations or rooms with many corners, and 20% for herringbone or chevron patterns."],
   ["What is a roofing square?",
-   "One hundred square feet. Roofers quote in squares rather than square feet, so a 2,400 square foot roof surface is 24 squares. The calculator shows both."],
+   "One roofing square equals 100 square feet of roof surface. A 2,400 square foot sloped roof is 24 squares."],
 ];
 
 module.exports = {
   path: "/square-footage-calculator/",
-  title: "Square Footage Calculator – Area in Sq Ft, Yards & Acres | Ruler Square",
-  description: "Free square footage calculator. Add rectangles, circles, triangles and trapezoids to measure any shape, with results in sq ft, sq yards, m² and acres.",
+  title: "Square Footage Calculator – Sq Ft & Acres | Ruler Square",
+  description: "Free square footage calculator for rooms, yards and irregular shapes. Combine rectangles, circles, triangles and trapezoids in sq ft, sq yd, m² and acres.",
   crumbs: "Square Footage Calculator",
-  lastmod: "2026-11-15",
+  breadcrumbs: [
+    { name: "Home", href: "/" },
+    { name: "Construction", href: "/construction-calculators/" },
+    { name: "Square Footage Calculator" },
+  ],
+  lastmod: UPDATED.iso,
+  category: "construction",
+  isCalculator: true,
   schema: [
     {
       "@context": "https://schema.org", "@type": "WebApplication",
       name: "Square Footage Calculator", url: SITE.url + "/square-footage-calculator/", author: authorRef,
+      dateModified: UPDATED.iso,
       applicationCategory: "UtilitiesApplication", operatingSystem: "Any",
       offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
       publisher: { "@type": "Organization", name: SITE.name, url: SITE.url },
@@ -44,14 +52,15 @@ module.exports = {
       "@context": "https://schema.org", "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: SITE.url + "/" },
-        { "@type": "ListItem", position: 2, name: "Square Footage Calculator", item: SITE.url + "/square-footage-calculator/" },
+        { "@type": "ListItem", position: 2, name: "Construction", item: SITE.url + "/construction-calculators/" },
+        { "@type": "ListItem", position: 3, name: "Square Footage Calculator", item: SITE.url + "/square-footage-calculator/" },
       ],
     },
   ],
   scripts: `<script src="/assets/area.js?v=VERSION" defer></script>`,
   body: `
 <h1>Square Footage Calculator</h1>
-<p class="lede">Measure any space, including odd shapes. Add a section for each part.</p>
+<p class="lede">Measure rooms, lots and irregular shapes in sq ft, sq yards, m² and acres.</p>
 
 <template id="section-tpl">
   <div class="section">
@@ -76,9 +85,9 @@ module.exports = {
       <button type="button" class="section-remove" aria-label="Remove this section">&times;</button>
     </div>
     <div class="section-fields">
-      <div class="field" data-w="a"><span class="label">Length</span><div class="unit"><input type="number" inputmode="decimal" min="0" step="any" data-f="a" value=""></div></div>
-      <div class="field" data-w="b"><span class="label">Width</span><div class="unit"><input type="number" inputmode="decimal" min="0" step="any" data-f="b" value=""></div></div>
-      <div class="field" data-w="c" hidden><span class="label">Height</span><div class="unit"><input type="number" inputmode="decimal" min="0" step="any" data-f="c" value=""></div></div>
+      <div class="field" data-w="a"><span class="label">Length</span><div class="unit"><input type="number" inputmode="decimal" min="0.001" step="any" data-f="a" value=""></div></div>
+      <div class="field" data-w="b"><span class="label">Width</span><div class="unit"><input type="number" inputmode="decimal" min="0.001" step="any" data-f="b" value=""></div></div>
+      <div class="field" data-w="c" hidden><span class="label">Height</span><div class="unit"><input type="number" inputmode="decimal" min="0.001" step="any" data-f="c" value=""></div></div>
       <div class="field"><span class="label">Qty</span><div class="unit"><input type="number" inputmode="numeric" min="1" step="1" data-f="qty" value="1"></div></div>
     </div>
   </div>
@@ -86,12 +95,13 @@ module.exports = {
 
 <form class="calc" id="area-form" novalidate>
   <div class="calc-inputs">
+    <p class="calc-step">Your space</p>
     <div id="sections"></div>
     <button type="button" class="btn-secondary" id="add-section">+ Add another section</button>
 
     <details class="calc-options">
     <summary>Waste allowance &amp; price</summary>
-    <div class="options-body row3">
+    <div class="options-body row2">
       <div class="field">
         <label class="label" for="f-waste">Waste allowance</label>
         <div class="unit"><input id="f-waste" type="number" inputmode="decimal" min="0" max="50" step="any" name="wastePct" value=""><em>%</em></div>
@@ -101,13 +111,14 @@ module.exports = {
         <div class="unit"><input id="f-price" type="number" inputmode="decimal" min="0" step="any" name="pricePerFt2" value=""><em>$/ft&sup2;</em></div>
       </div>
     </div>
-    <p class="note">Add 10–15% for flooring, more for diagonal or patterned layouts.</p>
     </details>
     <button type="submit" class="btn-calc">Calculate</button>
+    <div class="calc-actions"><button type="button" id="use-example">Try an L-shaped room</button><button type="button" id="reset-calc">Reset</button></div>
   </div>
 
-  <div class="calc-results" aria-live="polite">
-    <div class="empty-state" id="r-empty"><p>Enter your measurements above and press <b>Calculate</b>.</p>${areaShapes()}</div>
+  <section class="calc-results" aria-label="Your estimate" aria-live="polite" tabindex="-1">
+    <p class="calc-step">Your estimate</p>
+    <div class="empty-state" id="r-empty"><p>Enter your dimensions to see total area live, or press <b>Calculate</b>.</p>${areaShapes()}</div>
     <div id="r-out" hidden>
     <p class="big">Total area<strong><span id="r-ft2">0</span> ft&sup2;</strong></p>
     <ul class="results-list">
@@ -118,68 +129,61 @@ module.exports = {
       <li><span>Roofing squares <span class="sub">(100 ft&sup2;)</span></span><b id="r-squares">—</b></li>
     </ul>
     <div class="cost" id="r-cost-box" hidden>Estimated cost: <b id="r-cost"></b></div>
-    <p class="tip">Add a section for each part of an irregular space. Areas are added together.</p>
+    <p class="tip">Add a section for each part of an irregular space. Areas are summed automatically.</p>
     </div>
-  </div>
+  </section>
 </form>
-${byline({iso:"2026-11-15",text:"November 15, 2026"})}
+${byline(UPDATED)}
+${embedSnippet("/square-footage-calculator/", "Square Footage Calculator")}
+<nav class="jump-links" aria-label="On this page"><a href="#formula">Formulas</a><a href="#conversions">Conversions</a><a href="#waste">Waste guide</a><a href="#questions">FAQs</a></nav>
 
 <div class="prose">
-<h2>How to calculate square footage</h2>
-<p>Square footage is area, and for a rectangle it is simply length times width with both measurements in feet. The complication is that almost nothing you actually need to measure is a clean rectangle.</p>
-<div class="formula">Rectangle: length (ft) × width (ft)<br>Circle: π × radius², where radius is half the diameter<br>Triangle: base × height ÷ 2<br>Trapezoid: (side A + side B) × height ÷ 2</div>
-<p>For anything irregular, the method is always the same: break it into shapes you can measure, work out each one, add them up. An L-shaped room is two rectangles. A room with a bay window is a rectangle plus a half circle or a trapezoid. Use a separate section above for each piece.</p>
+<h2 id="formula">How to calculate square footage</h2>
+<p>Multiply length by width with both measurements in feet. For L-shaped rooms, bay windows, or irregular yards, split the space into simple shapes and add their areas.</p>
+<div class="formula">Rectangle: length × width<br>Circle: π × (diameter ÷ 2)²<br>Triangle: base × height ÷ 2<br>Trapezoid: (side A + side B) × height ÷ 2</div>
+<p><strong>Worked example (L-shaped living room):</strong> A 16 × 12 ft main space (192 ft²) plus an 8 × 6 ft leg (48 ft²) equals <strong>240 ft²</strong>. Adding 10% flooring waste gives 264 ft²; at $4.50/ft², material comes to $1,188.</p>
 
-<h3>Worked example: an L-shaped living room</h3>
-<p>The main part is 16 by 12 feet, and the leg of the L is 8 by 6 feet. That is 16 × 12 = 192 square feet plus 8 × 6 = 48 square feet, for 240 square feet total. If you are buying flooring at $4.50 a square foot with a 10% waste allowance, you need 264 square feet and the material comes to $1,188.</p>
-
-<h2>Converting square feet</h2>
-${table(["To convert", "Do this", "Example"], [
+<h2 id="conversions">Square footage conversion table</h2>
+${table(["Conversion", "Formula", "Example"], [
   ["Square feet to square yards", "divide by 9", "900 ft² = 100 yd²"],
-  ["Square feet to square meters", "divide by 10.764", "1,000 ft² = 92.9 m²"],
+  ["Square feet to square meters", "divide by 10.7639", "1,000 ft² = 92.9 m²"],
   ["Square feet to acres", "divide by 43,560", "10,890 ft² = 0.25 acres"],
   ["Square feet to roofing squares", "divide by 100", "2,400 ft² = 24 squares"],
   ["Square inches to square feet", "divide by 144", "1,728 in² = 12 ft²"],
 ])}
-<p class="note">Square units do not convert like linear ones. There are three feet in a yard but nine square feet in a square yard, because you are squaring the conversion factor.</p>
 
-<h2>How much extra to buy</h2>
-<p>Almost nothing gets installed with zero offcuts. How much to add depends on the material and the layout, not on how carefully you measure:</p>
-${table(["Material or layout", "Add", "Why"], [
-  ["Flooring, square to the walls", "10%", "End cuts and the last row."],
-  ["Flooring, diagonal or 45°", "15%", "Every cut is angled, so offcuts are unusable."],
-  ["Herringbone or chevron", "20%", "Repeated angled cuts at both ends."],
-  ["Tile, standard grid", "10%", "Breakage plus perimeter cuts."],
-  ["Tile, large format", "15%", "One broken tile wastes more area."],
-  ["Carpet", "10–20%", "Roll width forces seam placement."],
-  ["Sod or turf", "5–10%", "Trimming to curved edges."],
+<h2 id="waste">How much extra to add for waste</h2>
+${table(["Material or layout", "Recommended waste", "Why"], [
+  ["Flooring, straight lay", "10%", "End cuts and last row"],
+  ["Flooring, diagonal (45°)", "15%", "Angled offcuts rarely reuse"],
+  ["Herringbone or chevron", "20%", "Repeated mitered cuts at both ends"],
+  ["Standard grid tile", "10%", "Perimeter cuts and breakage"],
+  ["Large-format tile", "15%", "Each broken tile loses more coverage"],
+  ["Carpet", "10–20%", "Fixed 12 ft roll width and seam placement"],
+  ["Sod or turf", "5–10%", "Trimming along curves and beds"],
 ])}
 
-<h2>Measuring rooms without straight walls</h2>
-<p>Older houses are rarely square. Measure the length in two or three places rather than once — if the readings differ by more than an inch, use the largest, because flooring has to fit the widest point.</p>
-<p>For a curved bay, a trapezoid is usually close enough: measure the wall behind it, the outer face of the bay, and the depth between them. The error against a true curve is under a percent, which the waste allowance absorbs.</p>
-<p>Do not subtract small obstructions like columns or kitchen islands unless they are genuinely large. The material you would have saved usually ends up as offcuts anyway, and running short is far more expensive than a few spare boxes.</p>
+<h2>Tips for older or out-of-square rooms</h2>
+<p>Measure both ends of long walls—if they differ by more than an inch, use the larger number so flooring or drywall reaches the widest point. Leave small columns and built-in islands in the total unless they are large; cutting around them creates offcuts anyway.</p>
 
-<h2>Where square footage gets used</h2>
-<ul>
-  <li><strong>Flooring, tile and carpet:</strong> priced per square foot or square yard.</li>
-  <li><strong>Paint:</strong> wall area, not floor area — measure perimeter times ceiling height.</li>
-  <li><strong>Roofing:</strong> in squares of 100 square feet, on the sloped surface rather than the footprint.</li>
-  <li><strong>Materials by depth:</strong> gravel, mulch, topsoil and concrete all start from area, then multiply by thickness.</li>
-  <li><strong>Property listings:</strong> usually measured to the outside of exterior walls, which is why a listing figure is larger than what you can actually floor.</li>
-</ul>
-
-<h2>Frequently asked questions</h2>
+<h2 id="questions">Frequently asked questions</h2>
 ${faq.map(([q, a]) => `<h3>${q}</h3>\n<p>${a}</p>`).join("\n")}
 
-<h2>Next steps for your project</h2>
-<ul class="related-links"><li><a href="/flooring-calculator/">Flooring quantities and boxes</a></li><li><a href="/paint-calculator/">Paint for the room</a></li><li><a href="/cubic-yard-calculator/">Convert area and depth to cubic yards</a></li></ul>
+<h2>Related calculators</h2>
+<ul class="related-links">
+  <li><a href="/flooring-calculator/">Flooring Calculator</a></li>
+  <li><a href="/paint-calculator/">Paint Calculator</a></li>
+  <li><a href="/cubic-yard-calculator/">Cubic Yard Calculator</a></li>
+  <li><a href="/acreage-calculator/">Acreage Calculator</a></li>
+  <li><a href="/tile-calculator/">Tile Calculator</a></li>
+  <li><a href="/carpet-calculator/">Carpet Calculator</a></li>
+</ul>
 
 <h2>References</h2>
 <ul class="refs">
-  <li>All conversions are exact definitions: 1 yd² = 9 ft², 1 acre = 43,560 ft², 1 m² = 10.7639 ft².</li>
-  <li>Waste allowances reflect common trade practice; your installer may quote differently for an unusual layout.</li>
+  <li><a href="https://www.nist.gov/pml/owm" rel="noopener">NIST Office of Weights and Measures — exact area conversions</a></li>
 </ul>
+<p class="note">Exact definitions: 1 yd² = 9 ft², 1 acre = 43,560 ft², 1 m² = 10.7639 ft². Updated ${UPDATED.text}.</p>
 </div>
 `,
 };

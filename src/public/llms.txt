@@ -1,27 +1,29 @@
 # Ruler Square
 
-> Free calculators for US building materials, home project costs. Each calculator shows its formula, a worked example and the assumptions behind the default values, so a result can be checked rather than taken on trust. Quantities round up, never to nearest, because running short mid-job costs more than ordering long. Independent and maintained by one person, Știuriuc Sorin-Marian; no accounts, and calculator inputs stay in the browser.
+> Free US calculators for building materials, landscaping, home systems (HVAC/power/water) and 2026 home project cost budgets. Every calculator shows its formula, worked example and reference tables, rounds material orders up to real buying units, runs locally in the browser with no accounts, and offers a free embeddable widget.
 
 ## Citation
 
-Results, formulas and short explanations may be quoted with attribution and a link to the relevant page. Densities, coverage rates and cost ranges are planning assumptions with their sources listed on each page; they are not supplier quotes or engineering specifications. How every calculator works, and where each figure comes from: https://rulersquare.com/methodology/
+Results, formulas and reference tables may be quoted with attribution and a link to the page. Full standards and formulas: https://rulersquare.com/methodology/
 
 ## Calculators by category
 
-- [Construction calculators](https://rulersquare.com/construction-calculators/): concrete, asphalt, framing, stairs, roofing, drywall, tile, siding, brick, rebar and unit conversions
-- [Landscaping calculators](https://rulersquare.com/landscaping-calculators/): gravel, crushed stone, sand, topsoil, fill dirt, mulch, river rock, sod, pavers and retaining walls
-- [Project cost calculators](https://rulersquare.com/cost-calculators/): installed budgets for concrete slabs, patios, driveways, decks, fences, retaining walls and roof replacement
+- [Construction calculators](https://rulersquare.com/construction-calculators/): concrete, bags, steps, Sonotubes, mortar, self-leveler, framing, stairs, balusters, wainscoting, trim, roofing, metal roofing, gutters, drywall, tile, grout, thinset, siding, brick, rebar and unit conversions
+- [Landscaping calculators](https://rulersquare.com/landscaping-calculators/): gravel, pea gravel, decomposed granite, crushed stone, sand, topsoil, compost, fill dirt, mulch, river rock, raised garden beds, grass seed, sod, pavers, retaining walls, acreage and pools
+- [Home systems & energy calculators](https://rulersquare.com/home-systems-calculators/): room AC & heating BTU, mini-split sizing, firewood cords, backup generator wattage, water heater size, dehumidifier pints and bathroom exhaust fan CFM
+- [Project cost calculators](https://rulersquare.com/cost-calculators/): 2026 installed budgets for concrete slabs, patios, driveways, roofs, siding, flooring, countertops, decks, fences, retaining walls, French drains and home additions
 
 ## Most used
 
-- [Concrete Calculator](https://rulersquare.com/concrete-calculator/): cubic yards, 40–80 lb bags and cost for slabs, footings, columns and round pads
-- [Gravel Calculator](https://rulersquare.com/gravel-calculator/): tons and cubic yards by area and depth, with an editable density
-- [Crushed Stone Calculator](https://rulersquare.com/stone-calculator/): #57 stone and crusher run in tons and yards
-- [Mulch Calculator](https://rulersquare.com/mulch-calculator/): cubic yards and bags for beds
-- [Square Footage Calculator](https://rulersquare.com/square-footage-calculator/): rectangles, circles, triangles and trapezoids, summed across sections
+- [Concrete Calculator](https://rulersquare.com/concrete-calculator/): cubic yards, 40–80 lb bags and cost for slabs, footings, columns, steps and curbs
+- [Gravel Calculator](https://rulersquare.com/gravel-calculator/): tons, cubic yards and dump truck loads by area and depth
+- [Square Footage Calculator](https://rulersquare.com/square-footage-calculator/): rectangles, circles, triangles and trapezoids summed across sections
+- [Raised Bed Soil Calculator](https://rulersquare.com/raised-bed-soil-calculator/): cubic feet, cubic yards, bags and 60/30/10 blend
+- [BTU Calculator](https://rulersquare.com/btu-calculator/): room cooling/heating BTU, AC tonnage and mini-split sizing
+- [Gutter Size Calculator](https://rulersquare.com/gutter-size-calculator/): 5" vs. 6" gutters and downspouts from roof area, pitch and rainfall
 
 ## About
 
-- [About and author](https://rulersquare.com/about/)
+- [About Ruler Square](https://rulersquare.com/about/)
 - [Methodology](https://rulersquare.com/methodology/)
-- Source code: https://github.com/xsagul/rulersquare (MIT); page content is not covered by that licence
+- Source code: https://github.com/xsagul/rulersquare (MIT license for code)

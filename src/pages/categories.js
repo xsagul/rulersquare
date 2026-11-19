@@ -3,73 +3,126 @@ const { ICONS } = require("../icons");
 const { PROJ } = require("../data/projects");
 const { TOOLS } = require("../data/tools");
 const { COSTS } = require("../data/costs");
+const { UPDATED } = require("../author");
+
 const entries = list => list.map(c => [`/${c.slug}/`, c.h1, c.lede]);
 const material = (slug, title, desc) => [`/${slug}-calculator/`, title, desc];
 const tools = [...PROJ, ...TOOLS];
-const group = (name, icon, kinds) => ({name, icon, items:entries(tools.filter(c=>kinds.includes(c.kind)))});
-const costGroup = (name, slugs) => ({name, icon:"cost", items:entries(COSTS.filter(c=>slugs.includes(c.slug)))});
+const group = (name, icon, kinds) => ({ name, icon, items: entries(tools.filter(c => kinds.includes(c.kind))) });
+const costGroup = (name, slugs) => ({ name, icon: "cost", items: entries(COSTS.filter(c => slugs.includes(c.slug))) });
+
 const CATEGORIES = [
   {
-    path:"/construction-calculators/", h1:"Construction Calculators",
-    title:"Construction Calculators – Materials & Measurements | Ruler Square",
-    description:"Calculate concrete, flooring, drywall, roofing, lumber and masonry quantities. Free tools with unit conversions, formulas and worked examples.",
-    lede:"Measure the job. Work out what to buy.",
-    intro:"Choose a material or measurement below. Each tool shows its units, formula and a worked example. Use product coverage and supplier measurements for your final order.",
-    groups:[
-      {name:"Concrete & masonry",icon:"concrete",items:[material("concrete","Concrete Calculator","Cubic yards and bags for slabs, footings and columns"),...entries(tools.filter(c=>["brick","rebar"].includes(c.kind)))]},
-      group("Floors, walls & finishes","tile",["flooring","carpet","wallpaper","drywall","tile","paint","insulation","board-and-batten","grout","thinset"]),
-      group("Lumber, framing & stairs","deck",["board-foot","framing","stair","ramp","deck","fence"]),
-      group("Roofing & siding","roofing",["roofing","roof-pitch","siding"]),
-      {name:"Driveways & base layers",icon:"gravel",items:[material("asphalt","Asphalt Calculator","Hot-mix asphalt in tons"),material("road-base","Road Base Calculator","Crusher run with a compaction allowance"),material("stone","Crushed Stone Calculator","Stone for bases and drainage")]},
-      group("Measurements & conversions","sqft",["feet-inches","cubic-feet","cubic-yard","linear-feet","tank-volume"]),
+    path: "/construction-calculators/", h1: "Construction Calculators", category: "construction",
+    title: "Construction Calculators – Materials & Cuts | Ruler Square",
+    description: "Free construction calculators for concrete, framing, stairs, drywall, tile, roofing, trim and lumber quantities with formulas and reference charts.",
+    lede: "Measure the project and work out exact material quantities before you order.",
+    intro: "Select a material or layout calculator below. Every tool computes live as you enter your dimensions, rounds order quantities up to whole packages, and lets you copy or print a clean job list.",
+    groups: [
+      {
+        name: "Concrete & masonry", icon: "concrete",
+        items: [
+          material("concrete", "Concrete Calculator", "Yards, bags and cost for slabs, footings, columns, steps and curbs"),
+          ...entries(tools.filter(c => ["concrete-bag", "concrete-steps", "sonotube", "fence-post-concrete", "self-leveling", "brick", "mortar", "rebar"].includes(c.kind))),
+        ],
+      },
+      group("Floors, walls & finishes", "tile", ["flooring", "carpet", "wallpaper", "drywall", "tile", "grout", "thinset", "paint", "exterior-paint", "insulation"]),
+      group("Carpentry, framing, decks & trim", "deck", ["framing", "board-foot", "plywood", "deck", "deck-stain", "fence", "stair", "baluster-spacing", "ramp", "board-and-batten", "wainscoting", "baseboard", "crown-molding"]),
+      group("Roofing, siding & gutters", "roofing", ["roofing", "metal-roofing", "roof-pitch", "gutter-size", "siding"]),
+      {
+        name: "Driveways & base layers", icon: "gravel",
+        items: [
+          material("asphalt", "Asphalt Calculator", "Hot-mix asphalt in US tons"),
+          material("road-base", "Road Base Calculator", "Crusher run with compaction"),
+          material("stone", "Crushed Stone Calculator", "#57 stone and crusher run"),
+        ],
+      },
+      group("Measurements & unit conversions", "sqft", ["feet-inches", "cubic-feet", "cubic-yard", "linear-feet", "tank-volume"]),
     ],
-    outro:'<h2>Quantity or installed cost?</h2><p>These tools estimate materials. For a budget including labor, use the <a href="/cost-calculators/">project cost calculators</a>. Quantities do not replace a structural design or a product installation plan.</p>',
+    outro: '<h2>Need installed budgets too?</h2><p>These tools estimate materials and layouts. To price labor and materials together, browse the <a href="/cost-calculators/">2026 project cost calculators</a>.</p>',
   },
   {
-    path:"/landscaping-calculators/",h1:"Landscaping Calculators",
-    title:"Landscaping Calculators – Soil, Gravel, Patios & Pools | Ruler Square",
-    description:"Estimate mulch, soil, sand, gravel, sod, pavers and retaining wall blocks. Calculate pool volume, with formulas and editable planning assumptions.",
-    lede:"Plan the yard, from soil and stone to a patio or pool.",
-    intro:"Measure the area and planned depth. Weight depends on moisture and density; replace the starting assumption with your supplier’s figure before ordering.",
-    groups:[
-      {name:"Soil & planting beds",icon:"mulch",items:[material("mulch","Mulch Calculator","Cubic yards and bags for garden beds"),material("topsoil","Topsoil Calculator","Soil for lawns and raised beds"),material("fill-dirt","Fill Dirt Calculator","Grading and backfill"),...entries(tools.filter(c=>c.kind==="sod"))]},
-      {name:"Gravel, rock & sand",icon:"gravel",items:[material("gravel","Gravel Calculator","Driveways, paths and drainage"),material("river-rock","River Rock Calculator","Decorative beds and dry creek beds"),material("stone","Crushed Stone Calculator","Paver bases and drainage"),material("sand","Sand Calculator","Bedding sand and sandboxes")]},
-      group("Patios, walls & pools","paver",["paver","retaining-wall","pool"]),
+    path: "/landscaping-calculators/", h1: "Landscaping Calculators", category: "landscaping",
+    title: "Landscaping Calculators – Soil, Gravel & Lawn | Ruler Square",
+    description: "Free landscaping calculators for gravel, mulch, topsoil, compost, raised garden beds, sod, grass seed, pavers, retaining walls and pools.",
+    lede: "Calculate bulk stone, soil, mulch, lawn seed, pavers and pool volume.",
+    intro: "Enter your area and depth to get cubic yards, US tons, retail bags and estimated dump truck loads. Every calculator lets you edit material density and compaction allowance.",
+    groups: [
+      {
+        name: "Soil, mulch & lawn", icon: "mulch",
+        items: [
+          material("mulch", "Mulch Calculator", "Cubic yards and 2 cu ft bags for beds"),
+          material("topsoil", "Topsoil Calculator", "Screened soil for lawns and beds"),
+          material("compost", "Compost Calculator", "Compost for gardens and lawn topdressing"),
+          material("fill-dirt", "Fill Dirt Calculator", "Grading, low spots and backfill"),
+          ...entries(tools.filter(c => ["raised-bed", "sod", "grass-seed"].includes(c.kind))),
+        ],
+      },
+      {
+        name: "Gravel, rock, sand & conversions", icon: "gravel",
+        items: [
+          material("gravel", "Gravel Calculator", "Driveways, paths and drainage"),
+          material("pea-gravel", "Pea Gravel Calculator", "Patios, walkways and dog runs"),
+          material("decomposed-granite", "Decomposed Granite Calculator", "Compacted DG paths and patios"),
+          material("river-rock", "River Rock Calculator", "Landscape beds and dry creeks"),
+          material("stone", "Crushed Stone Calculator", "#57 drainage and paver bases"),
+          material("sand", "Sand Calculator", "Paver bedding and sandboxes"),
+          ...entries(tools.filter(c => ["yards-to-tons", "acreage"].includes(c.kind))),
+        ],
+      },
+      group("Patios, retaining walls & pools", "paver", ["paver", "retaining-wall", "pool"]),
     ],
-    outro:'<h2>A quick coverage check</h2><p>One cubic yard covers 108 square feet at 3 inches deep. Check the planned depth for your plants, soil or installation system before ordering. For installed budgets, see the <a href="/cost-calculators/">cost calculators</a>.</p>',
+    outro: '<h2>Quick cubic-yard coverage rule</h2><p>One cubic yard covers 162 ft² at 2 inches deep, 108 ft² at 3 inches deep, or 81 ft² at 4 inches deep. For installed budgets, see the <a href="/cost-calculators/">project cost calculators</a>.</p>',
   },
   {
-    path:"/cost-calculators/",h1:"Project Cost Calculators",
-    title:"Project Cost Calculators – Home Improvement Budgets | Ruler Square",
-    description:"Estimate flooring, painting, roofing, concrete and landscaping costs. Compare published US price ranges, local quotes, labor and excluded extras.",
-    lede:"Start a budget. See the rate, scope and extras behind it.",
-    intro:"Published US price ranges are starting references, not local quotes. Replace them with rates for your project and add delivery or removal only when the quote excludes them.",
-    groups:[
-      costGroup("Concrete & driveways",["concrete-cost-per-yard","concrete-slab-cost","concrete-patio-cost","concrete-driveway-cost","asphalt-driveway-cost"]),
-      costGroup("Flooring & interior finishes",["carpet-installation-cost","laminate-flooring-installation-cost","tile-installation-cost","epoxy-garage-floor-cost","drywall-installation-cost","interior-painting-cost","countertop-cost"]),
-      costGroup("Roofing, siding & insulation",["roof-replacement-cost","metal-roof-cost","stucco-cost","vinyl-siding-cost","spray-foam-insulation-cost"]),
-      costGroup("Decks, fences & landscaping",["deck-cost-calculator","deck-staining-cost","fence-installation-cost","retaining-wall-cost","sod-installation-cost","french-drain-cost"]),
-      costGroup("Building & additions",["construction-cost-calculator","home-addition-cost"]),
-      group("Labor & quoting","cost",["labor-cost","markup"]),
+    path: "/home-systems-calculators/", h1: "Home Systems & Energy Calculators", category: "systems",
+    title: "Home Systems Calculators – HVAC, BTU & Power | Ruler Square",
+    description: "Free home sizing calculators for room AC & heating BTU, mini-splits, firewood cords, backup generators, water heaters, dehumidifiers and bath fans.",
+    lede: "Size heating, cooling, backup power, hot water and home ventilation accurately.",
+    intro: "Size everyday home mechanical and energy systems using US DOE, ENERGY STAR, HVI and NIST guidelines—built for year-round renovations, winter prep and storm readiness.",
+    groups: [
+      group("Heating, cooling & ventilation", "hvac", ["btu", "dehumidifier", "bathroom-fan"]),
+      group("Backup power, hot water & firewood", "bolt", ["generator-wattage", "water-heater", "firewood"]),
     ],
-    outro:'<h2>Compare like for like</h2><p>An installed price and a material-only price cover different work. Check preparation, labor, removal, delivery, cleanup and taxes before comparing quotes.</p>',
+    outro: '<h2>Pairing system sizing with building envelope</h2><p>Upgrading attic insulation cuts cooling and heating loads before you buy new equipment—check our <a href="/insulation-calculator/">Insulation Calculator</a> and <a href="/spray-foam-insulation-cost/">Spray Foam Cost Calculator</a>.</p>',
+  },
+  {
+    path: "/cost-calculators/", h1: "Project Cost Calculators", category: "cost",
+    title: "Home Project Cost Calculators (2026) | Ruler Square",
+    description: "Estimate 2026 installed home project costs for concrete, roofing, flooring, siding, fences, decks, painting and home additions.",
+    lede: "Estimate 2026 installed project budgets with material tiers and clear extras.",
+    intro: "Pick a material, finish tier or US state inside each calculator to start from current national benchmarks, then swap in your local contractor quotes and track demolition or fees separately.",
+    groups: [
+      costGroup("Concrete & driveways", ["concrete-cost-per-yard", "concrete-slab-cost", "concrete-patio-cost", "concrete-driveway-cost", "asphalt-driveway-cost"]),
+      costGroup("Flooring & interior finishes", ["carpet-installation-cost", "laminate-flooring-installation-cost", "tile-installation-cost", "epoxy-garage-floor-cost", "drywall-installation-cost", "interior-painting-cost", "countertop-cost"]),
+      costGroup("Roofing, siding & insulation", ["roof-replacement-cost", "metal-roof-cost", "stucco-cost", "vinyl-siding-cost", "spray-foam-insulation-cost"]),
+      costGroup("Decks, fences & landscaping", ["deck-cost-calculator", "deck-staining-cost", "fence-installation-cost", "retaining-wall-cost", "sod-installation-cost", "french-drain-cost"]),
+      costGroup("Building & additions", ["construction-cost-calculator", "home-addition-cost"]),
+      group("Contractor pricing & labor", "cost", ["labor-cost", "markup"]),
+    ],
+    outro: '<h2>Compare quotes like for like</h2><p>Always verify whether a contractor quote includes tear-out, haul-away, subfloor or gravel base prep, permits and taxes before comparing two bids side by side.</p>',
   },
 ];
-// Area is shared across material projects and needs a direct home in the hub.
-CATEGORIES[0].groups.find(g=>g.name==="Measurements & conversions").items.unshift(material("square-footage","Square Footage Calculator","Area for rectangles, circles and irregular spaces"));
+
+CATEGORIES[0].groups.find(g => g.name === "Measurements & unit conversions").items.unshift(
+  material("square-footage", "Square Footage Calculator", "Area for rectangles, circles, triangles and irregular spaces")
+);
 
 function categoryPage(cat) {
-  const allItems = cat.groups.reduce((n, g) => n + g.items.length, 0);
+  const uniqueItems = new Set(cat.groups.flatMap(g => g.items.map(i => i[0]))).size;
   return {
     path: cat.path,
     title: cat.title,
     description: cat.description,
     crumbs: cat.h1,
-    lastmod: "2026-11-15",
+    breadcrumbs: [{ name: "Home", href: "/" }, { name: cat.h1 }],
+    category: cat.category,
+    lastmod: UPDATED.iso,
     schema: [
       {
         "@context": "https://schema.org", "@type": "CollectionPage",
         name: cat.h1, url: SITE.url + cat.path, description: cat.description,
+        dateModified: UPDATED.iso,
       },
       {
         "@context": "https://schema.org", "@type": "ItemList",
@@ -98,7 +151,7 @@ ${cat.groups.map(g => `<section class="cat-group">
 </section>`).join("\n")}
 
 <div class="prose">
-<h2>About these ${allItems} calculators</h2>
+<h2>About these ${uniqueItems} calculators</h2>
 <p>${cat.intro}</p>
 ${cat.outro}
 </div>
@@ -106,12 +159,10 @@ ${cat.outro}
   };
 }
 
-/* Where a calculator sits in the hubs. The first hub that lists it wins, so a
- * page filed under two hubs takes its breadcrumb from the earlier one. */
 function placeOf(href) {
   for (const cat of CATEGORIES) {
-    const group = cat.groups.find(g => g.items.some(i => i[0] === href));
-    if (group) return { cat, group };
+    const groupFound = cat.groups.find(g => g.items.some(i => i[0] === href));
+    if (groupFound) return { cat, group: groupFound };
   }
   return null;
 }

@@ -2,7 +2,7 @@ const { ICONS } = require("./icons");
 
 const SITE = {
   name: "Ruler Square",
-  tagline: "Material & Cost Calculators",
+  tagline: "Material, Home System & Project Cost Calculators",
   url: "https://rulersquare.com",
   email: "contact@rulersquare.com",
 };
@@ -15,30 +15,53 @@ const LOGO = `<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
 const NAV = [
   ["/construction-calculators/", "Construction", "concrete"],
   ["/landscaping-calculators/", "Landscaping", "mulch"],
-  ["/cost-calculators/", "Costs", "asphalt"],
+  ["/home-systems-calculators/", "Home Systems", "hvac"],
+  ["/cost-calculators/", "Costs", "cost"],
   ["/about/", "About", "info"],
 ];
+
+const OG_BY_CAT = {
+  construction: "/og-construction.png",
+  landscaping: "/og-landscaping.png",
+  systems: "/og-systems.png",
+  cost: "/og-costs.png",
+};
 
 function esc(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+function renderCrumbs(page) {
+  if (page.breadcrumbs && page.breadcrumbs.length) {
+    const parts = page.breadcrumbs.map((item, i) =>
+      i < page.breadcrumbs.length - 1 && item.href
+        ? `<a href="${item.href}">${esc(item.name)}</a>`
+        : esc(item.name));
+    return `<nav class="crumbs" aria-label="Breadcrumb">${parts.join(" › ")}</nav>`;
+  }
+  if (page.crumbs) {
+    return `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › ${esc(page.crumbs)}</nav>`;
+  }
+  return "";
+}
+
 function layout(page) {
   const canonical = SITE.url + page.path;
-  const nav = NAV.slice(0, 4).map(([href, label]) =>
+  const ogImg = SITE.url + (page.ogImage || OG_BY_CAT[page.category] || "/og.png");
+  const nav = NAV.map(([href, label]) =>
     `<a href="${href}"${href === page.path ? ' aria-current="page"' : ""}>${label}</a>`).join("");
-  // The drawer repeats the links with icons, the way a phone menu reads best.
   const drawerNav = NAV.map(([href, label, icon]) =>
     `<a href="${href}"${href === page.path ? ' aria-current="page"' : ""}>${ICONS[icon] || ""}<span>${label}</span></a>`).join("");
-  // Search lives in the bar on desktop and inside the menu panel on a phone.
   const search = `<div class="nav-search">
       <label class="sr-only" for="nav-q">Search calculators</label>
+      ${ICONS.search}
       <input id="nav-q" type="search" autocomplete="off" placeholder="Search calculators">
       <ul class="nav-hits" id="nav-hits" hidden></ul>
     </div>`;
   const schema = page.schema ? page.schema.map(s =>
     `<script type="application/ld+json">${JSON.stringify(s)}</script>`).join("\n") : "";
-  const crumbs = page.crumbs ? `<p class="crumbs"><a href="/">Home</a> › ${esc(page.crumbs)}</p>` : "";
+  const crumbs = renderCrumbs(page);
+  const isCalc = /id="(?:material|concrete|area|project)-form"/.test(page.body);
   return `<!doctype html>
 <html lang="en-US">
 <head>
@@ -53,15 +76,15 @@ function layout(page) {
 <meta property="og:title" content="${esc(page.title)}">
 <meta property="og:description" content="${esc(page.description)}">
 <meta property="og:url" content="${canonical}">
-<meta property="og:image" content="${SITE.url}/og.png">
+<meta property="og:image" content="${ogImg}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Ruler Square — material and project cost calculators">
+<meta property="og:image:alt" content="${esc(page.title)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(page.title)}">
 <meta name="twitter:description" content="${esc(page.description)}">
-<meta name="twitter:image" content="${SITE.url}/og.png">
-<meta name="twitter:image:alt" content="Ruler Square — material and project cost calculators">
+<meta name="twitter:image" content="${ogImg}">
+<meta name="twitter:image:alt" content="${esc(page.title)}">
 <meta name="theme-color" content="#c2410c">
 <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/favicon.png">
@@ -103,13 +126,13 @@ ${page.body}
 </main>
 <footer class="site-footer">
   <div class="wrap">
-    <span>© ${new Date().getFullYear()} ${SITE.name}. Estimates only — check quantities with your supplier.</span>
+    <span>© ${new Date().getFullYear()} ${SITE.name}. Planning estimates — verify quantities, specs and local codes before ordering or building.</span>
     <nav aria-label="Footer"><a href="/about/">About</a><a href="/methodology/">Methodology</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
   </div>
 </footer>
-<script>window.RS_INDEX=${JSON.stringify(page.index || [])};</script>
+<script>window.RS_INDEX_URL="/assets/search-index.json?v=${page.version}";</script>
 <script src="/assets/nav.js?v=${page.version}" defer></script>
-${/id="(?:material|concrete|area|project)-form"/.test(page.body) ? `<script src="/assets/calc-ui.js?v=${page.version}" defer></script>` : ""}
+${isCalc ? `<script src="/assets/calc-ui.js?v=${page.version}" defer></script>` : ""}
 ${page.scripts || ""}
 ${page.dev ? `<script src="/assets/devtools.js?v=${page.version}" defer></script>` : ""}
 </body>
@@ -117,4 +140,51 @@ ${page.dev ? `<script src="/assets/devtools.js?v=${page.version}" defer></script
 `;
 }
 
-module.exports = { layout, SITE, LOGO, esc };
+/* Lightweight frameless calculator view for third-party embeds. Marked noindex
+ * so it never competes with the full page, while pointing canonical to the main URL. */
+function embedLayout(page) {
+  const canonical = SITE.url + page.path;
+  const formMatch = page.body.match(/<form class="calc"[\s\S]*?<\/form>/);
+  const tplMatch = page.body.match(/<template id="section-tpl">[\s\S]*?<\/template>/);
+  const h1Match = page.body.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
+  const h1 = h1Match ? h1Match[1] : page.crumbs || page.title;
+  if (!formMatch) return null;
+  return `<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(h1)} | ${SITE.name} Widget</title>
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="${canonical}">
+<link rel="stylesheet" href="/assets/style.css?v=${page.version}">
+</head>
+<body class="embed-page">
+<main class="embed-wrap" id="main-content">
+  <div class="embed-head">
+    <h1>${h1}</h1>
+    <a href="${canonical}" target="_blank" rel="noopener">Full guide &amp; tables ↗</a>
+  </div>
+  ${tplMatch ? tplMatch[0] : ""}
+  ${formMatch[0]}
+</main>
+<script src="/assets/calc-ui.js?v=${page.version}" defer></script>
+${page.scripts || ""}
+</body>
+</html>
+`;
+}
+
+function embedSnippet(path, name) {
+  const full = SITE.url + path;
+  const embedUrl = SITE.url + "/embed" + path;
+  const code = `<iframe src="${embedUrl}" width="100%" height="580" style="border:1px solid #dcd8cc;border-radius:10px" loading="lazy" title="${esc(name)}"></iframe>\n<p style="font-size:13px;margin:6px 0 0">Powered by <a href="${full}">${esc(name)} on Ruler Square</a></p>`;
+  return `<details class="embed-box">
+  <summary>Embed this calculator on your website (free)</summary>
+  <p class="note">Copy the snippet below to add this calculator to a contractor site, blog or project guide. Inputs stay in the visitor’s browser.</p>
+  <textarea class="embed-code" readonly rows="4" aria-label="Embed HTML code">${esc(code)}</textarea>
+  <button type="button" class="btn-chip" data-copy-embed>Copy embed code</button>
+</details>`;
+}
+
+module.exports = { layout, embedLayout, embedSnippet, SITE, LOGO, esc };

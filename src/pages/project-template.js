@@ -1,24 +1,15 @@
-const { SITE, esc } = require("../layout");
+const { SITE, esc, embedSnippet } = require("../layout");
 const { diagramFor } = require("../diagrams");
 const { chartsFor } = require("../data/charts");
 const { EXTRAS } = require("../data/extras");
 const { byline, authorRef, UPDATED } = require("../author");
 
-/* A field the visitor measures on site gets a unit selector; a field that is a
- * product spec or a trade constant keeps its fixed unit. Nominal lumber
- * thickness is always inches, so offering yards there would be noise. */
 const UNIT_SETS = {
   length: [["in", "inches"], ["ft", "feet"], ["yd", "yards"], ["cm", "cm"], ["m", "meters"]],
   area: [["ft2", "sq feet"], ["in2", "sq inches"], ["yd2", "sq yards"], ["m2", "sq meters"]],
-  // Suppliers quote ready-mix by the cubic yard, but our own concrete
-  // calculator hands you cubic feet and cubic meters too, so a visitor
-  // carrying either should not have to convert by hand to price the order.
   volume: [["yd3", "cubic yards"], ["ft3", "cubic feet"], ["m3", "cubic meters"]],
 };
 
-/* The unit a measured field must reach the engine in, derived from its display
- * unit. "ft²" and "yd³" are how a label reads; "ft2" and "yd3" are what the
- * conversion tables are keyed by. */
 const UNIT_DEFAULT = { length: "ft", area: "ft²", volume: "yd³" };
 function baseUnit(f) {
   return String(f.unit || UNIT_DEFAULT[f.units] || "ft").replace("²", "2").replace("³", "3");
@@ -26,15 +17,22 @@ function baseUnit(f) {
 
 function field(f) {
   const attrs = `id="p-${f.name}" name="${f.name}"`;
-  const positive = new Set(["length", "width", "height", "diameter", "thickness", "totalRise", "maxRiser", "treadDepth", "run", "unitLength", "unitHeight", "rollArea", "coverage", "pieces", "hours", "workers", "area", "cost"]);
+  const positive = new Set([
+    "length", "width", "height", "diameter", "thickness", "totalRise", "maxRiser",
+    "treadDepth", "run", "unitLength", "unitHeight", "rollArea", "coverage",
+    "pieces", "hours", "workers", "area", "cost", "stepWidth", "riserHeight",
+    "stepCount", "depth", "tubes", "posts", "holeDiameter", "holeDepth",
+    "units", "bagCoverage", "panelWidth", "panelLength", "boardLength",
+    "runningWatts", "people", "amount", "logLength", "beds", "bagSize",
+  ]);
   const minimum = positive.has(f.name) ? Math.max(0.001, f.min || 0) : (f.min ?? 0.001);
   const help = f.hint ? `<small class="field-help" id="help-${f.name}">${esc(f.hint)}</small>` : "";
-  const input = `<input ${attrs} type="number" inputmode="decimal" min="${minimum}" max="${f.max ?? 10000000}" step="${f.step ?? "any"}" value="${f.value ?? ""}"${f.optional ? "" : " required"}${f.hint ? ` aria-describedby="help-${f.name}"` : ""}>`;
+  const ph = f.placeholder ? ` placeholder="${esc(f.placeholder)}"` : "";
+  const input = `<input ${attrs} type="number" inputmode="decimal" min="${minimum}" max="${f.max ?? 10000000}" step="${f.step ?? "any"}" value="${f.value ?? ""}"${ph}${f.optional ? "" : " required"}${f.hint ? ` aria-describedby="help-${f.name}"` : ""}>`;
   let control;
   if (f.options) {
-    control = `<div class="select"><select ${attrs}>${f.options.map(([v, label]) => `<option value="${v}"${String(v) === String(f.value) ? " selected" : ""}>${esc(label)}</option>`).join("")}</select></div>`;
+    control = `<div class="select"><select ${attrs}>${f.options.map(([v, label]) => `<option value="${esc(v)}"${String(v) === String(f.value) ? " selected" : ""}>${esc(label)}</option>`).join("")}</select></div>`;
   } else if (f.units && UNIT_SETS[f.units]) {
-    // The engine still receives f.unit; the selector only says what was typed.
     const base = baseUnit(f);
     control = `<div class="combo">${input}<select name="${f.name}Unit" aria-label="${esc(f.label)} units">${UNIT_SETS[f.units].map(([v, label]) => `<option value="${v}"${v === base ? " selected" : ""}>${esc(label)}</option>`).join("")}</select></div>`;
   } else {
@@ -44,9 +42,6 @@ function field(f) {
   return `<div class="field"${showIf}><label class="label" for="p-${f.name}">${esc(f.label)}${f.optional ? ' <span class="hint">(optional)</span>' : ""}</label>${control}${help}</div>`;
 }
 
-/* Fields sharing a `group` are two halves of one reading — feet and inches off
- * the same tape — so they sit side by side. Five stacked boxes read as five
- * questions; two pairs and a verb read as the measurement it actually is. */
 function fields(list) {
   const out = [];
   for (let i = 0; i < list.length; i++) {
@@ -59,7 +54,7 @@ function fields(list) {
   }
   return out.join("\n");
 }
-/* Which unit each measured field must reach the engine in. */
+
 function unitBase(c) {
   const out = {};
   for (const f of [...(c.fields || []), ...(c.advanced || [])]) {
@@ -69,9 +64,6 @@ function unitBase(c) {
   return Object.keys(out).length ? out : undefined;
 }
 
-/* Fields the visitor measures on site, by calculator. Everything absent from
- * this list keeps a fixed unit: nominal lumber sizes, pitch per 12 in, mortar
- * joints, package coverage and prices are not things you measure with a tape. */
 const MEASURED = {
   "fence-calculator": ["length"],
   "deck-calculator": ["length", "width"],
@@ -89,19 +81,13 @@ const MEASURED = {
   "cubic-yard-calculator": ["length", "width", "depth"],
   "board-foot-calculator": ["length"],
   "stair-calculator": ["totalRise"],
-  // Rise stays in inches: "rise per 12 in of run" is the trade convention the
-  // number is defined by. The run is a distance you walk with a tape.
   "roof-pitch-calculator": ["run"],
   "brick-calculator": ["area"],
   "ramp-calculator": ["rise", "width"],
   "framing-calculator": ["length"],
   "rebar-calculator": ["length", "width"],
   "sod-calculator": ["area"],
-  "tank-volume-calculator": ["diameter", "length", "width", "height"],
-  // Cost pages take the same measurements the material pages do. The unit rate
-  // stays per ft², per linear ft or per yd³; only what you typed converts.
-  // The ":set" suffix is explicit because a field called `quantity` is an area
-  // on a roof, a length on a fence and a volume on a ready-mix order.
+  "tank-volume-calculator": ["diameter", "length", "width", "height", "fillDepth"],
   "concrete-slab-cost": ["length", "width"],
   "concrete-patio-cost": ["length", "width"],
   "concrete-driveway-cost": ["length", "width"],
@@ -133,6 +119,27 @@ const MEASURED = {
   "flooring-calculator": ["length", "width"],
   "carpet-calculator": ["length", "width"],
   "concrete-block-calculator": ["area"],
+  // Phase 4 calculators
+  "gutter-size-calculator": ["area"],
+  "concrete-steps-calculator": ["stepWidth:length"],
+  "sonotube-calculator": ["depth"],
+  "concrete-bag-calculator": ["length", "width", "height"],
+  "self-leveling-concrete-calculator": ["area"],
+  "plywood-calculator": ["length", "width"],
+  "metal-roofing-calculator": ["area"],
+  "baluster-spacing-calculator": ["length"],
+  "wainscoting-calculator": ["width", "height"],
+  "baseboard-calculator": ["length"],
+  "crown-molding-calculator": ["length"],
+  "deck-stain-calculator": ["area", "railLength:length"],
+  "exterior-paint-calculator": ["area", "openings"],
+  "raised-bed-soil-calculator": ["length", "width"],
+  "grass-seed-calculator": ["area"],
+  "btu-calculator": ["area", "ceilingHeight:length"],
+  "firewood-calculator": ["length", "height"],
+  "dehumidifier-size-calculator": ["area"],
+  "bathroom-fan-cfm-calculator": ["length", "width", "height"],
+  "acreage-calculator": ["length", "width"],
 };
 const AREA_FIELDS = new Set(["area", "openings"]);
 const VALID_UNIT = Object.fromEntries(Object.entries(UNIT_SETS).map(([k, set]) => [k, new Set(set.map(([v]) => v))]));
@@ -148,23 +155,68 @@ function markMeasured(c) {
   for (const f of [...(c.fields || []), ...(c.advanced || [])]) {
     if (!spec[f.name] || f.options) continue;
     f.units = spec[f.name];
-    // A display unit like "linear ft" or "ft³" is a label, not a member of the
-    // selector's set. Fall back to the base so an option is actually selected.
     if (!VALID_UNIT[f.units].has(baseUnit(f))) { f.unit = UNIT_DEFAULT[f.units]; }
   }
 }
 
-/* Keep only the next steps chosen for this project. Category hubs carry the
- * full catalogue, rather than repeating it beneath every calculator. */
-function relatedLinks(c, path) {
-  return c.related.map(([slug, label]) => [`/${slug}/`, label])
-    .filter(([href]) => href !== path).slice(0, 3);
+/* Strip direct SERP calculator competitors from outbound citations; mark
+ * third-party consumer cost aggregators nofollow so PageRank stays clean. */
+const SKIP_SOURCE = /(?:inchcalculator\.com|calculator\.net|calculatorsoup\.com|homedepot\.com|lowes\.com)/i;
+const NOFOLLOW_SOURCE = /(?:fixr\.com|homeguide\.com|thisoldhouse\.com|concretenetwork\.com|todayshomeowner\.com|tileshop\.com)/i;
+
+function renderSources(list) {
+  const clean = (list || []).filter(([url]) => !SKIP_SOURCE.test(url));
+  if (!clean.length) return "";
+  return clean.map(([url, label]) => {
+    const rel = NOFOLLOW_SOURCE.test(url) ? ' rel="nofollow noopener"' : ' rel="noopener"';
+    return `<li><a href="${url}"${rel}>${esc(label)}</a></li>`;
+  }).join("");
 }
 
-/* A reference chart: a heading people search for, one line on how to read it,
- * the table, and a note on what it leaves out. */
+/* Build 6 unique contextual internal links: curated next steps first, then
+ * neighboring calculators from the same hub group so no page is isolated. */
+function relatedLinks(c, path) {
+  const out = [];
+  const seen = new Set([path]);
+  for (const [slug, label] of (c.related || [])) {
+    const href = slug.startsWith("/") ? slug : `/${slug}/`;
+    if (seen.has(href)) continue;
+    seen.add(href);
+    out.push([href, label]);
+  }
+  try {
+    const { placeOf } = require("./categories");
+    const place = placeOf(path);
+    if (place) {
+      for (const [href, label] of place.group.items) {
+        if (out.length >= 6) break;
+        if (seen.has(href)) continue;
+        seen.add(href);
+        out.push([href, label]);
+      }
+      if (out.length < 6) {
+        for (const g of place.cat.groups) {
+          for (const [href, label] of g.items) {
+            if (out.length >= 6) break;
+            if (seen.has(href)) continue;
+            seen.add(href);
+            out.push([href, label]);
+          }
+        }
+      }
+    }
+  } catch {}
+  return out.slice(0, 6);
+}
+
 function chartHtml(t) {
   return `<h2 id="${t.id}">${esc(t.title)}</h2>${t.intro ? `<p>${esc(t.intro)}</p>` : ""}<div class="table-wrap"><table><thead><tr>${t.head.map(h => `<th scope="col">${esc(h)}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r => `<tr>${r.map((cell, i) => i === 0 ? `<th scope="row">${esc(cell)}</th>` : `<td>${esc(cell)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>${t.note ? `<p class="note">${esc(t.note)}</p>` : ""}`;
+}
+
+function presetsHtml(presets) {
+  if (!presets || !presets.length) return "";
+  return `<div class="presets"><span class="presets-label">Quick fill:</span>${presets.map(([label, values]) =>
+    `<button type="button" class="preset-chip" data-preset='${esc(JSON.stringify(values))}'>${esc(label)}</button>`).join("")}</div>`;
 }
 
 function projectPage(c) {
@@ -172,14 +224,62 @@ function projectPage(c) {
   const charts = chartsFor(c);
   const path = `/${c.slug}/`;
   const category = c.category || "construction";
-  const hub = {construction:["Construction","construction-calculators"],landscaping:["Landscaping","landscaping-calculators"],cost:["Project costs","cost-calculators"]}[category] || ["Construction","construction-calculators"];
+  const hub = {
+    construction: ["Construction", "construction-calculators"],
+    landscaping: ["Landscaping", "landscaping-calculators"],
+    systems: ["Home Systems", "home-systems-calculators"],
+    cost: ["Project Costs", "cost-calculators"],
+  }[category] || ["Construction", "construction-calculators"];
+  const sourcesHtml = renderSources(c.sources);
+  const fullTitle = c.title.includes("Ruler Square") ? c.title : `${c.title} | Ruler Square`;
+
   return {
-    path, title: c.title + " | Ruler Square", description: c.description, crumbs: c.h1, lastmod: c.checked === "November 15, 2026" ? "2026-11-15" : UPDATED.iso,
-    category: c.category || "construction",
-    schema: [{"@context":"https://schema.org","@type":"WebApplication",name:c.h1,author:authorRef,url:SITE.url+path,applicationCategory:"UtilitiesApplication",operatingSystem:"Any",offers:{"@type":"Offer",price:0,priceCurrency:"USD"}},
-      {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Home",item:SITE.url+"/"},{"@type":"ListItem",position:2,name:hub[0],item:SITE.url+"/"+hub[1]+"/"},{"@type":"ListItem",position:3,name:c.h1,item:SITE.url+path}]},
-      {"@context":"https://schema.org","@type":"FAQPage",mainEntity:c.faq.map(([q,a])=>({"@type":"Question",name:q,acceptedAnswer:{"@type":"Answer",text:a}}))}],
-    scripts: `<script type="application/json" id="project-config">${JSON.stringify({kind:c.kind,costUnit:c.costUnit,example:c.example.values,unitBase:unitBase(c)}).replace(/</g,"\\u003c")}</script><script src="/assets/project.js?v=VERSION" defer></script>`,
+    path,
+    title: fullTitle,
+    description: c.description,
+    crumbs: c.h1,
+    breadcrumbs: [
+      { name: "Home", href: "/" },
+      { name: hub[0], href: `/${hub[1]}/` },
+      { name: c.h1 },
+    ],
+    lastmod: UPDATED.iso,
+    category,
+    isCalculator: true,
+    schema: [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        name: c.h1,
+        author: authorRef,
+        dateModified: UPDATED.iso,
+        url: SITE.url + path,
+        applicationCategory: "UtilitiesApplication",
+        operatingSystem: "Any",
+        offers: { "@type": "Offer", price: 0, priceCurrency: "USD" },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE.url + "/" },
+          { "@type": "ListItem", position: 2, name: hub[0], item: SITE.url + "/" + hub[1] + "/" },
+          { "@type": "ListItem", position: 3, name: c.h1, item: SITE.url + path },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: c.faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+      },
+    ],
+    scripts: `<script type="application/json" id="project-config">${JSON.stringify({
+      kind: c.kind,
+      costUnit: c.costUnit,
+      example: c.example.values,
+      unitBase: unitBase(c),
+      presetMaps: c.presetMaps,
+    }).replace(/</g, "\\u003c")}</script><script src="/assets/project.js?v=VERSION" defer></script>`,
     body: `<h1>${esc(c.h1)}</h1><p class="lede">${esc(c.lede)}</p>
 <form class="calc" id="project-form" novalidate>
   <div class="calc-inputs">
@@ -188,28 +288,31 @@ function projectPage(c) {
     ${c.advanced?.length ? `<details class="calc-options"><summary>${esc(c.optionsLabel || "Waste, sizes & optional cost")}</summary><div class="options-body">${fields(c.advanced)}</div></details>` : ""}
     <p class="form-error" id="form-error" role="alert" hidden></p>
     <button class="btn-calc" type="submit">Calculate</button>
+    ${presetsHtml(c.presets)}
     <div class="calc-actions"><button type="button" id="use-example">Try an example</button><button type="button" id="reset-calc">Reset</button></div>
   </div>
   <section class="calc-results" id="project-result" tabindex="-1" aria-label="Your estimate" aria-live="polite">
     <p class="calc-step">Your estimate</p>
-    <div class="empty-state" id="r-empty"><p>Add your measurements, then select <b>Calculate</b>. Your result and buying quantities will appear here.</p>${diagramFor(c.slug)}</div>
-    <div id="r-out" hidden><p class="big"><span id="result-label"></span><strong id="result-main"></strong></p><ul class="results-list" id="result-rows"></ul><p class="tip" id="result-note"></p></div>
+    <div class="empty-state" id="r-empty"><p>Enter your measurements to see results live, or select <b>Calculate</b>.</p>${diagramFor(c.slug)}</div>
+    <div id="r-out" hidden><p class="big"><span id="result-label"></span><strong id="result-main"></strong></p><ul class="results-list" id="result-rows"></ul><div class="live-visual" id="r-visual" hidden></div><p class="tip" id="result-note"></p></div>
   </section>
 </form>
 ${c.context || ""}
-<noscript><p class="note">Turn on JavaScript to use the calculator. The formula and worked example below are available without it.</p></noscript>
-${byline(c.checked === "November 15, 2026" ? {iso:"2026-11-15",text:c.checked} : UPDATED)}
-<nav class="jump-links" aria-label="On this page"><a href="#method">How it works</a><a href="#example">Example</a>${charts.map(t=>`<a href="#${t.id}">${esc(t.jump)}</a>`).join("")}<a href="#before-you-buy">Before you buy</a><a href="#questions">FAQs</a></nav>
+<noscript><p class="note">Turn on JavaScript to use the calculator. The formula, tables and worked example below work without it.</p></noscript>
+${byline(UPDATED)}
+${embedSnippet(path, c.h1)}
+<nav class="jump-links" aria-label="On this page"><a href="#method">Formula</a><a href="#example">Example</a>${charts.map(t => `<a href="#${t.id}">${esc(t.jump)}</a>`).join("")}<a href="#before-you-buy">${esc(c.buyJump || "Buying guide")}</a><a href="#questions">FAQs</a></nav>
 <div class="prose">
   <h2 id="method">${esc(c.methodTitle)}</h2><p>${c.method}</p><div class="formula">${c.formula}</div>
   <h2 id="example">${esc(c.example.title)}</h2><p>${c.example.text}</p>
   ${charts.map(chartHtml).join("")}
   <h2 id="before-you-buy">${esc(c.buyTitle || "Before you buy")}</h2>${c.buy}
   ${c.extra || ""}${EXTRAS[c.slug] || ""}
-  <h2 id="questions">Common questions</h2>${c.faq.map(([q,a])=>`<h3>${esc(q)}</h3><p>${a}</p>`).join("")}
-  <h2>Next steps for your project</h2><ul class="related-links">${relatedLinks(c, path).map(([href,label])=>`<li><a href="${href}">${esc(label)}</a></li>`).join("")}</ul>
-  <h2>Sources & assumptions</h2><ul class="refs">${c.sources.map(([url,label])=>`<li><a href="${url}">${esc(label)}</a></li>`).join("")}</ul><p class="note">${esc(c.sourceNote || "Quantities use the geometry shown above. Default allowances are editable planning assumptions, not building specifications. Check the selected product and project requirements.")} Checked ${c.checked || "September 21, 2026"}.</p>
-</div>`
+  <h2 id="questions">Frequently asked questions</h2>${c.faq.map(([q, a]) => `<h3>${esc(q)}</h3><p>${a}</p>`).join("")}
+  <h2>Related calculators</h2><ul class="related-links">${relatedLinks(c, path).map(([href, label]) => `<li><a href="${href}">${esc(label)}</a></li>`).join("")}</ul>
+  ${sourcesHtml ? `<h2>References</h2><ul class="refs">${sourcesHtml}</ul>` : ""}<p class="note">${esc(c.sourceNote || "Formulas use standard US geometry and trade coverage rates. Verify product specs and local building codes before ordering.")} Updated ${UPDATED.text}.</p>
+</div>`,
   };
 }
+
 module.exports = { projectPage };

@@ -10,8 +10,8 @@ const table = (head, rows) => `<div class="table-wrap"><table><thead><tr>${head.
 /* Third-party price tables are quoted as published, with the source linked
  * under each one and the date it was read. They are kept apart from the
  * page's own arithmetic so a reader can tell a benchmark from a calculation. */
-const CHECKED = "October 22, 2026";
-const cite = (url, name) => `<p class="note">Source: <a href="${url}">${name}</a>, checked ${CHECKED}. National averages; local quotes vary.</p>`;
+const CHECKED = "November 19, 2026";
+const cite = (url, name) => `<p class="note">Benchmark reference: <a href="${url}" rel="nofollow noopener">${name}</a> (reviewed ${CHECKED}). National averages; local quotes vary.</p>`;
 const HG = "https://homeguide.com/costs/";
 const CN = "https://www.concretenetwork.com/";
 
@@ -259,6 +259,21 @@ ${table(["Sheet", "Covers", "Sheets per 1,000 ft²"], [[4, 8], [4, 10], [4, 12]]
 <p>Divide the exposed height by the block height and round up for the visible courses, then add the buried course. Manufacturers commonly specify burying at least one course — often about a tenth of the wall height for taller walls. Check the instructions for your block.</p>
 <h2 id="caps">Caps</h2>
 <p>Cap units finish the top course and are counted by wall length, not area. They are usually glued with masonry adhesive rather than stacked loose.</p>`,
+
+  "generator-wattage-calculator": `
+<h2 id="appliance-watts">Common household appliance wattages</h2>
+<p>Add the running watts of items you need simultaneously, plus only the single largest starting surge.</p>
+${table(["Appliance", "Running watts", "Extra starting surge"], [
+  ["Refrigerator / freezer", "600–800 W", "+1,200 W"],
+  ["Gas furnace blower (½ HP)", "600–900 W", "+1,200 W"],
+  ["Sump pump (½ HP)", "800–1,050 W", "+1,300 W"],
+  ["Well pump (¾–1 HP)", "1,000–1,500 W", "+2,000 W"],
+  ["Central AC (3-ton)", "3,000–3,800 W", "+4,000 W"],
+  ["Window AC (10,000 BTU)", "1,000–1,200 W", "+1,800 W"],
+  ["Microwave (1,000 W)", "1,000–1,500 W", "0 W"],
+  ["Electric space heater", "1,500 W", "0 W"],
+  ["LED lights, Wi-Fi, TV & laptops", "300–500 W", "0 W"],
+])}`,
 };
 
 module.exports = { EXTRAS };

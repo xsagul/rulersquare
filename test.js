@@ -33,6 +33,32 @@ const exampleExpected = {
   "linear-feet-calculator":96, "pool-volume-calculator":18192.62337536,
   "wallpaper-calculator":10, "flooring-calculator":198,
   "carpet-calculator":22, "concrete-block-calculator":237,
+  // Phase 4 expansion calculators
+  "gutter-size-calculator":5,
+  "concrete-steps-calculator":1.116975309,
+  "sonotube-calculator":0.767944871,
+  "fence-post-concrete-calculator":41,
+  "concrete-bag-calculator":20,
+  "mortar-calculator":16,
+  "self-leveling-concrete-calculator":9,
+  "plywood-calculator":7,
+  "metal-roofing-calculator":52,
+  "baluster-spacing-calculator":13,
+  "wainscoting-calculator":25.625,
+  "baseboard-calculator":5,
+  "crown-molding-calculator":6,
+  "deck-stain-calculator":5,
+  "exterior-paint-calculator":12,
+  "raised-bed-soil-calculator":32,
+  "grass-seed-calculator":42,
+  "cubic-yards-to-tons-calculator":7,
+  "acreage-calculator":0.459136823,
+  "btu-calculator":8000,
+  "firewood-calculator":0.666666667,
+  "generator-wattage-calculator":3900,
+  "water-heater-size-calculator":88,
+  "dehumidifier-size-calculator":35,
+  "bathroom-fan-cfm-calculator":150,
 };
 for (const c of [...require("./src/data/projects").PROJ, ...require("./src/data/costs").COSTS, ...require("./src/data/tools").TOOLS]) {
   const result = require("./src/assets/project").calculate(c.kind, {...c.example.values, costUnit:c.costUnit});
@@ -425,4 +451,47 @@ assert(studs(ft) === studs(yd) && studs(ft) === 19, "units: 24 ft and 8 yd both 
   assert(close(v("labor-cost", { rate: 28, hours: 40, workers: 3, burden: 30 }, "Total labor"), 4368, 1e-9), "extras: the labor example is $4,368");
   assert(close(v("markup", { cost: 100, markup: 30 }, "Gross margin"), 23.0769, 1e-3), "extras: a 30% markup is a 23.1% margin");
   assert(close(v("cubic-yard", { length: 12, width: 9, depth: 3, waste: 0 }, "Volume with allowance"), 1, 1e-9), "extras: 12 x 9 ft at 3 in is 1 yd3");
+}
+
+// ---------- Upgraded & Phase 4 engines ----------
+{
+  const { calculate } = require("./src/assets/project.js");
+  const val = (r, label) => r.rows.find(x => x.label === label).value;
+
+  // Concrete calculator: steps & curb shapes
+  const st = calc("steps", { stepCount: 3, stepWidth: 4, stepWidthUnit: "ft", riserHeight: 7, riserHeightUnit: "in", treadDepth: 11, treadDepthUnit: "in", platformDepth: 36, platformDepthUnit: "in", qty: 1, waste: 0 });
+  assert(close(st.ft3, 27.4167, 0.01), "concrete steps: 3 steps x 4ft with 36in platform = 27.42 ft3");
+  const cb = calc("curb", { curbLength: 100, curbLengthUnit: "ft", curbDepth: 6, curbDepthUnit: "in", curbHeight: 6, curbHeightUnit: "in", gutterWidth: 12, gutterWidthUnit: "in", flagThickness: 4, flagThicknessUnit: "in", qty: 1, waste: 0 });
+  // Cross section: curb (6x6 = 36 in2) + gutter+flag (18x4 = 72 in2) = 108 in2 = 0.75 ft2 -> 75 ft3
+  assert(close(cb.ft3, 75, 0.01), "concrete curb & gutter: 100 ft = 75 ft3");
+
+  // Material calculator: new aggregate densities
+  const pg = m("area", { areaFt2: 108, depth: 3, depthUnit: "in", material: "pea-gravel", compaction: 0 });
+  assert(close(pg.tons, 1.4, 1e-9), "pea gravel: 1.4 tons/yd3");
+  const dg = m("area", { areaFt2: 108, depth: 3, depthUnit: "in", material: "decomposed-granite", compaction: 0 });
+  assert(close(dg.tons, 1.45, 1e-9), "decomposed granite: 1.45 tons/yd3");
+  const cp = m("area", { areaFt2: 108, depth: 3, depthUnit: "in", material: "compost", compaction: 0 });
+  assert(close(cp.tons, 0.5, 1e-9), "compost: 0.5 tons/yd3");
+
+  // Grout tile+joint real geometry: 234 ft2 of 12x12x3/8 tile with 3/16 joint ~= 25 lb sanded grout
+  const gr = calculate("grout", { mode: "tile", area: 234, tileLength: 12, tileWidth: 12, tileThickness: 0.375, jointWidth: 0.1875, groutType: "sanded", bagWeight: 25, waste: 0 });
+  assert(close(val(gr, "Grout needed"), 25, 0.1), "grout tile mode: 234 ft2 12x12x3/8 at 3/16 joint ~= 25.0 lb");
+  const gr200 = calculate("grout", { mode: "tile", area: 200, tileLength: 12, tileWidth: 12, tileThickness: 0.375, jointWidth: 0.1875, groutType: "sanded", bagWeight: 25, waste: 10 });
+  assert(val(gr200, "25 lb bags to buy") === 1, "grout tile mode: 200 ft2 + 10% waste fits in 1 x 25 lb bag");
+
+  // Tank volume partial liquid depth
+  const tkp = calculate("tank-volume", { shape: "cylinder", diameter: 24, height: 48, fillDepth: 24 });
+  assert(close(val(tkp, "Filled volume at liquid depth"), val(tkp, "Capacity") / 2, 0.01), "tank: half fill depth = half capacity");
+
+  // Phase 4 edge & boundary tests
+  assert(val(calculate("gutter-size", { area: 1500, pitch: 8, rainfall: 6 }), "Recommended K-style gutter") === 7, "gutter: heavy rain steep large roof -> 7 in");
+  assert(val(calculate("gutter-size", { area: 1400, pitch: 6, rainfall: 4 }), "Recommended K-style gutter") === 6, "gutter: 1400 ft2 at 6/12 & 4 in/hr -> 6 in");
+  const bal = calculate("baluster-spacing", { length: 6, balusterWidth: 1.5, maxGap: 4 });
+  assert(val(bal, "Balusters needed") === 13 && close(val(bal, "Clear gap between balusters"), 3.75, 1e-6), "baluster: 72in opening -> 13 balusters @ 3.75in clear");
+  assert(val(calculate("mortar", { unitType: "block", units: 130, bagSize: 80, waste: 0 }), "80 lb mortar bags") === 10, "mortar: 130 blocks = 10 x 80 lb bags");
+  assert(close(val(calculate("grass-seed", { area: 4000, grassType: "tall-fescue", jobType: "overseed", waste: 0 }), "Grass seed needed"), 16, 1e-9), "grass-seed: overseed uses half rate (4 lb/1000 ft2)");
+  assert(close(val(calculate("yards-to-tons", { mode: "ton-to-yd", amount: 7, density: 2800 }), "Cubic yards"), 5, 1e-9), "yards-to-tons: reverse 7 tons gravel = 5 yd3");
+  assert(val(calculate("bathroom-fan", { length: 5, width: 8, height: 8, fixtures: 2, jettedTub: 0 }), "Minimum fan airflow") === 50, "bathroom-fan: 40 ft2 enforces 50 CFM HVI minimum");
+  assert(val(calculate("bathroom-fan", { length: 12, width: 10, height: 8, fixtures: 3, jettedTub: 1 }), "Minimum fan airflow") === 250, "bathroom-fan: >100 ft2 adds 100 CFM for jetted tub");
+  assert(close(val(calculate("acreage", { length: 435.6, width: 100 }), "Total acreage"), 1, 1e-6), "acreage: 435.6 x 100 ft = 1.0000 acre");
 }

@@ -1,7 +1,5 @@
-/* Ruler Square — bulk material calculator (gravel, stone, sand, topsoil, dirt).
- *
- * One engine drives every aggregate page. The page sets the default material;
- * the visitor can switch it. Shared with Node for the test suite.
+/* Ruler Square — bulk material calculator (gravel, stone, sand, topsoil, mulch, asphalt, etc.).
+ * Measurement inputs start empty; computes live once required fields are entered.
  */
 (function () {
   "use strict";
@@ -12,13 +10,12 @@
 
   var DENSITY = {
     "gravel": 2800, "pea-gravel": 2800, "crushed": 2700, "river-rock": 2700,
-    "limestone": 2700, "abc": 3000, "sand": 2700, "sand-wet": 3240,
-    "topsoil": 2000, "fill-dirt": 2000, "mulch": 800, "riprap": 2700,
-    "asphalt": 3915
+    "limestone": 2700, "abc": 3000, "decomposed-granite": 2900,
+    "sand": 2700, "sand-wet": 3240,
+    "topsoil": 2000, "fill-dirt": 2000, "compost": 1000,
+    "mulch": 800, "riprap": 2700, "asphalt": 3915
   };
 
-  // One box plus a unit, rather than a feet box and an inches box. Two boxes
-  // per dimension doubles what the visitor has to read and fill in.
   var FT_PER = { in: 1 / 12, ft: 1, yd: 3, cm: 0.032808399, m: 3.280839895 };
 
   function num(v) {
@@ -29,14 +26,14 @@
     return num(v[name]) * (FT_PER[v[name + "Unit"]] || 1);
   }
 
-  /* Square feet of ground the job covers. */
   function areaFt2(shape, v) {
     switch (shape) {
       case "rect":
         return len(v, "length") * len(v, "width");
-      case "circle":
+      case "circle": {
         var r = len(v, "diameter") / 2;
         return Math.PI * r * r;
+      }
       case "area":
         return num(v.areaFt2);
       default:
@@ -47,7 +44,6 @@
   function calc(shape, v) {
     var material = v.material && DENSITY[v.material] ? v.material : "gravel";
     var lbPerYd3 = num(v.density) || DENSITY[material];
-    // Compaction is capped at 50%: past that the number is a guess, not an estimate.
     var compaction = Math.min(50, Math.max(0, parseFloat(v.compaction) || 0));
 
     var ft2 = areaFt2(shape, v);
@@ -57,11 +53,8 @@
     var yd3 = ft3c / FT3_PER_YD3;
     var tons = yd3 * lbPerYd3 / LB_PER_TON;
 
-    // Suppliers sell in whole and half yards; round up so the job is covered.
     var orderYd3 = yd3 > 0 ? Math.ceil(yd3 * 2 - 1e-9) / 2 : 0;
     var orderTons = tons > 0 ? Math.ceil(tons * 2 - 1e-9) / 2 : 0;
-
-    // A cubic yard spread 3 in deep covers 108 sq ft.
     var coverageFt2 = depthFt > 0 ? FT3_PER_YD3 / depthFt : 0;
 
     var price = num(v.price);
@@ -91,7 +84,6 @@
   if (typeof module !== "undefined" && module.exports) { module.exports = api; }
   if (typeof document === "undefined") { return; }
 
-  // ---------- UI ----------
   function fmt(n, d) {
     return n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   }
@@ -111,25 +103,32 @@
   }
   function set(id, text) { var el = document.getElementById(id); if (el) { el.textContent = text; } }
 
-  /* Nothing is computed until the visitor asks for it. Showing a figure for
-   * dimensions they never typed is worse than showing nothing. */
-  var calculated = false;
+  var submitted = false;
 
   function showShape() {
     var shape = currentShape();
-    Array.prototype.forEach.call(document.querySelectorAll(".shape"), function (s) {
-      s.hidden = s.getAttribute("data-shape") !== shape;
+    Array.prototype.forEach.call(form.querySelectorAll(".shape"), function (s) {
+      var hide = s.getAttribute("data-shape") !== shape;
+      s.hidden = hide;
+      s.querySelectorAll("input,select").forEach(function (el) { el.disabled = hide; });
     });
     if (window.RSShowDiagram) { window.RSShowDiagram(shape); }
     return shape;
   }
 
-  function update(report) {
-    var shape = showShape();
-    if (!calculated) { return; }
-    if (!window.RSValidate(form, report === true)) { return; }
+  function truckEstimate(yd3, tons) {
+    if (yd3 <= 0) { return "—"; }
+    if (tons <= 1 && yd3 <= 1.5) { return "1 half-ton pickup trip (check payload)"; }
+    if (yd3 <= 5 && tons <= 7) { return "1 single-axle dump truck"; }
+    var tandem = Math.max(Math.ceil(yd3 / 10), Math.ceil(tons / 14));
+    return tandem === 1 ? "1 tandem dump truck (10–12 yd³)" : tandem + " tandem dump truck loads";
+  }
+
+  function renderResult(shape) {
     var empty = document.getElementById("r-empty");
     var out = document.getElementById("r-out");
+    var err = form.querySelector(".form-error");
+    if (err) { err.hidden = true; }
     if (empty) { empty.hidden = true; }
     if (out) { out.hidden = false; }
 
@@ -142,6 +141,7 @@
     set("r-order-tons", r.orderTons > 0 ? fmt(r.orderTons, 1) + " tons" : "—");
     set("r-coverage", r.coverageFt2 > 0 ? fmt(r.coverageFt2, 0) + " ft² per yd³" : "—");
     set("r-bags", r.bags ? fmt(r.bags, 0) + " bags" : "—");
+    set("r-truck", truckEstimate(r.yd3, r.tons));
 
     var costBox = document.getElementById("r-cost-box");
     if (costBox) {
@@ -153,23 +153,105 @@
       }
     }
 
-
     var tip = document.getElementById("r-tip");
     if (tip) {
-      tip.textContent = "Estimated weight: " + fmt(r.lbs, 0) + " lb before order rounding. Confirm density and delivery with your supplier. A truck’s available payload, not its bed size, determines a safe load.";
+      tip.textContent = "Estimated weight: " + fmt(r.lbs, 0) + " lb (" + fmt(r.density, 0) + " lb/yd³). Confirm supplier weight per yard and delivery minimums before ordering.";
+    }
+    if (window.RSInitResultTools) { window.RSInitResultTools(form); }
+  }
+
+  function update(report) {
+    var shape = showShape();
+    if (report === true) {
+      submitted = true;
+      if (!window.RSValidate(form, true)) { return; }
+      renderResult(shape);
+      return;
+    }
+    if (window.RSReadyToCalc && window.RSReadyToCalc(form)) {
+      renderResult(shape);
+    } else if (submitted) {
+      window.RSValidate(form, false);
+    } else {
+      var out = document.getElementById("r-out");
+      var empty = document.getElementById("r-empty");
+      if (out) { out.hidden = true; }
+      if (empty) { empty.hidden = false; }
     }
   }
-  // Pressing Calculate is what starts it. After that, edits update live.
+
+  var matSel = form.elements.material;
+  if (matSel && matSel.tagName === "SELECT") {
+    matSel.addEventListener("change", function () {
+      if (DENSITY[matSel.value] && form.elements.density) {
+        form.elements.density.value = DENSITY[matSel.value];
+      }
+    });
+  }
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
-    calculated = true;
     update(true);
-    // Only when there is something to look at: a failed validation leaves the
-    // empty state in place, and scrolling to it would be a lie.
     var out = document.getElementById("r-out");
     if (out && !out.hidden && window.RSRevealResult) { window.RSRevealResult(form); }
   });
-  form.addEventListener("input", update);
-  form.addEventListener("change", update);
+  form.addEventListener("input", function () { update(false); });
+  form.addEventListener("change", function () { update(false); });
+
+  var exBtn = document.getElementById("use-example");
+  if (exBtn && exBtn.dataset.example) {
+    exBtn.addEventListener("click", function () {
+      try {
+        var data = JSON.parse(exBtn.dataset.example);
+        form.reset();
+        var sh = data.shape || "rect";
+        var r = form.querySelector('input[name="shape"][value="' + sh + '"]');
+        if (r) { r.checked = true; }
+        showShape();
+        Object.keys(data).forEach(function (k) {
+          if (k === "shape") { return; }
+          var el = form.elements.namedItem(k);
+          if (el) { el.value = data[k]; }
+        });
+        update(true);
+      } catch (err) {}
+    });
+  }
+  var resetBtn = document.getElementById("reset-calc");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", function () {
+      form.reset();
+      submitted = false;
+      showShape();
+      var out = document.getElementById("r-out");
+      var empty = document.getElementById("r-empty");
+      var err = form.querySelector(".form-error");
+      if (out) { out.hidden = true; }
+      if (empty) { empty.hidden = false; }
+      if (err) { err.hidden = true; }
+    });
+  }
+  form.addEventListener("click", function (e) {
+    var chip = e.target.closest("[data-preset]");
+    if (!chip) { return; }
+    try {
+      var data = JSON.parse(chip.getAttribute("data-preset"));
+      form.reset();
+      var sh = data.shape || "rect";
+      var r = form.querySelector('input[name="shape"][value="' + sh + '"]');
+      if (r) { r.checked = true; }
+      showShape();
+      Object.keys(data).forEach(function (k) {
+        if (k === "shape") { return; }
+        var el = form.elements.namedItem(k);
+        if (el) { el.value = data[k]; }
+      });
+      update(true);
+    } catch (err) {}
+  });
+
   showShape();
+  if (window.RSLoadQuery) {
+    window.RSLoadQuery(form, function () { showShape(); update(false); });
+  }
 })();
