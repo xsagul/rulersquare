@@ -55,44 +55,66 @@ const NEW = [...PROJ, ...COSTS, ...TOOLS].map(c =>
 const ALL = [].concat(CONCRETE, AGGREGATE, SOIL, NEW);
 
 const HUBS = [
-  ["/construction-calculators/", "Construction", "concrete"],
-  ["/landscaping-calculators/", "Landscaping", "mulch"],
-  ["/home-systems-calculators/", "Home Systems", "hvac"],
-  ["/cost-calculators/", "Project Costs", "cost"],
-].map(([path, name, icon]) => [
-  path, name, icon,
+  ["/construction-calculators/", "Construction", "concrete", "construction", "Concrete, framing, drywall, roofing & trim"],
+  ["/landscaping-calculators/", "Landscaping", "mulch", "landscaping", "Gravel, soil, mulch, lawn seed & pavers"],
+  ["/home-systems-calculators/", "Home Systems", "hvac", "systems", "HVAC BTU, firewood, generators & water"],
+  ["/cost-calculators/", "Project Costs", "cost", "cost", "2026 installed rates & material budgets"],
+].map(([path, name, icon, cat, blurb]) => [
+  path, name, icon, cat, blurb,
   new Set(CATEGORIES.find(c => c.path === path).groups.flatMap(g => g.items.map(i => i[0]))).size,
 ]);
 
 const POPULAR = [
-  ["/concrete-calculator/", "Concrete Calculator", "concrete"],
-  ["/gravel-calculator/", "Gravel Calculator", "gravel"],
-  ["/square-footage-calculator/", "Square Footage Calculator", "sqft"],
-  ["/mulch-calculator/", "Mulch Calculator", "mulch"],
-  ["/raised-bed-soil-calculator/", "Raised Bed Soil Calculator", "garden"],
-  ["/btu-calculator/", "BTU Calculator (AC & Heat)", "hvac"],
-  ["/feet-and-inches-calculator/", "Feet & Inches Calculator", "ruler"],
-  ["/concrete-slab-cost/", "Concrete Slab Cost (2026)", "cost"],
+  ["/concrete-calculator/", "Concrete Calculator", "concrete", "construction", "Yards, bags & ready-mix cost"],
+  ["/gravel-calculator/", "Gravel Calculator", "gravel", "landscaping", "Tons, cubic yards & truckloads"],
+  ["/square-footage-calculator/", "Square Footage", "sqft", "construction", "Any shape in ft², yd² & acres"],
+  ["/mulch-calculator/", "Mulch Calculator", "mulch", "landscaping", "Bulk yards & 2 cu ft bags"],
+  ["/raised-bed-soil-calculator/", "Raised Bed Soil", "garden", "landscaping", "Cubic feet, bags & soil mix"],
+  ["/btu-calculator/", "BTU Calculator", "hvac", "systems", "Room AC, mini-split & heat"],
+  ["/feet-and-inches-calculator/", "Feet & Inches", "ruler", "construction", "Add & subtract tape readings"],
+  ["/concrete-slab-cost/", "Concrete Slab Cost", "cost", "cost", "2026 installed 4 in & 6 in rates"],
 ];
 
-/* Every calculator listed once under its primary hub group so both visitors
- * and Googlebot reach any calculator in a single click from the homepage. */
+const QUICK_LINKS = [
+  ["/concrete-calculator/", "Concrete"],
+  ["/gravel-calculator/", "Gravel"],
+  ["/square-footage-calculator/", "Square Footage"],
+  ["/stair-calculator/", "Stairs"],
+  ["/baluster-spacing-calculator/", "Balusters"],
+  ["/raised-bed-soil-calculator/", "Raised Bed"],
+  ["/btu-calculator/", "AC BTU"],
+  ["/concrete-slab-cost/", "Slab Cost"],
+];
+
+/* Every calculator organized into balanced subgroup cards so both visitors and
+ * Googlebot reach any of the 97 tools in one click without a raw link wall. */
 function fullDirectory() {
   const seen = new Set();
-  return CATEGORIES.map(cat => {
-    const items = [];
+  const cards = [];
+  for (const cat of CATEGORIES) {
+    const catLabel = cat.h1.replace(/ Calculators$/, "");
     for (const g of cat.groups) {
+      const items = [];
       for (const [href, name] of g.items) {
         if (seen.has(href)) continue;
         seen.add(href);
         items.push([href, name]);
       }
+      if (!items.length) continue;
+      cards.push(`<article class="dir-card" data-cat="${cat.category}">
+      <div class="dir-head">
+        <span class="ico-badge">${ICONS[g.icon] || ICONS.sqft}</span>
+        <div class="dir-titles">
+          <h3><a href="${cat.path}">${g.name}</a></h3>
+          <span class="dir-cat">${catLabel}</span>
+        </div>
+        <span class="dir-count">${items.length}</span>
+      </div>
+      <ul class="dir-list">${items.map(([href, name]) => `<li><a href="${href}"><span>${name}</span><span class="chev" aria-hidden="true">›</span></a></li>`).join("")}</ul>
+    </article>`);
     }
-    return `<div>
-      <h3><a href="${cat.path}">${cat.h1.replace(/ Calculators$/, "")} (${items.length})</a></h3>
-      <ul>${items.map(([href, name]) => `<li><a href="${href}">${name}</a></li>`).join("")}</ul>
-    </div>`;
-  }).join("\n");
+  }
+  return cards.join("\n");
 }
 
 const home = {
@@ -118,31 +140,38 @@ const home = {
   }],
   body: `
 <section class="hero">
-  <p class="eyebrow">US Home &amp; Trade Tools</p>
+  <p class="eyebrow">US Home &amp; Trade Tools · ${ALL.length} Free Calculators</p>
   <h1>Free Construction, Yard &amp; Home Cost Calculators</h1>
-  <p class="lede">${ALL.length} free calculators for building materials, landscaping, HVAC &amp; power sizing, and 2026 project budgets. Instant math, worked examples and printable shopping lists.</p>
+  <p class="lede">${ALL.length} free calculators for building materials, landscaping, HVAC &amp; power sizing, and 2026 project budgets. Enter your measurements for live results, formulas and printable lists.</p>
   <div class="search">
     <label class="sr-only" for="q">Search calculators</label>
     ${ICONS.search}
     <input id="q" type="search" autocomplete="off" placeholder="Search ${ALL.length} calculators — try &quot;concrete&quot;, &quot;btu&quot;, &quot;gutter&quot; or &quot;mulch&quot;">
   </div>
+  <div class="quick-links" aria-label="Quick access">${QUICK_LINKS.map(([href, label]) => `<a href="${href}">${label}</a>`).join("")}</div>
   <ul class="search-hits" id="hits" hidden></ul>
 </section>
 
 <div id="browse">
 <div class="hubs">
-  ${HUBS.map(([href, name, icon, n]) =>
-    `<a class="hub" href="${href}">${ICONS[icon]}<b>${name}</b><span>${n} calculators</span></a>`).join("\n  ")}
+  ${HUBS.map(([href, name, icon, cat, blurb, n]) =>
+    `<a class="hub" data-cat="${cat}" href="${href}"><span class="ico-badge">${ICONS[icon]}</span><b>${name}</b><small>${blurb}</small><span class="hub-count">${n} calculators →</span></a>`).join("\n  ")}
 </div>
 
-<h2>Popular calculators</h2>
+<div class="section-head-row">
+  <h2>Popular calculators</h2>
+  <a class="section-more" href="#all-calculators">Browse all ${ALL.length} ↓</a>
+</div>
 <div class="grid tight">
-  ${POPULAR.map(([href, title, icon]) =>
-    `<a class="card" href="${href}">${ICONS[icon]}<b>${title}</b></a>`).join("\n  ")}
+  ${POPULAR.map(([href, title, icon, cat, desc]) =>
+    `<a class="card pop-card" data-cat="${cat}" href="${href}"><span class="ico-badge">${ICONS[icon]}</span><div><b>${title}</b><span>${desc}</span></div></a>`).join("\n  ")}
 </div>
 
-<section class="directory-section">
-  <h2>All ${ALL.length} calculators by category</h2>
+<section class="directory-section" id="all-calculators">
+  <div class="section-head-row">
+    <h2>All ${ALL.length} calculators by trade &amp; topic</h2>
+    <span class="note">Every tool is one click away</span>
+  </div>
   <div class="directory">
     ${fullDirectory()}
   </div>

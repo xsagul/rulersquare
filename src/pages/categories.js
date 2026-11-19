@@ -142,8 +142,8 @@ function categoryPage(cat) {
 <h1>${cat.h1}</h1>
 <p class="lede">${cat.lede}</p>
 
-${cat.groups.map(g => `<section class="cat-group">
-  <h2>${ICONS[g.icon]}${g.name}</h2>
+${cat.groups.map(g => `<section class="cat-group" data-cat="${cat.category}">
+  <h2><span class="ico-badge">${ICONS[g.icon] || ICONS.sqft}</span>${g.name}</h2>
   <div class="grid">
     ${g.items.map(([href, title, desc]) =>
       `<a class="card" href="${href}"><b>${title}</b><span>${desc}</span></a>`).join("\n    ")}
