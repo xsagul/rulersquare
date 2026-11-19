@@ -39,7 +39,7 @@ function field(f) {
     control = `<div class="unit">${input}<em>${esc(f.unit || "")}</em></div>`;
   }
   const showIf = f.showIf ? ` data-show-field="${esc(f.showIf[0])}" data-show-value="${esc(f.showIf[1])}"` : "";
-  return `<div class="field"${showIf}><label class="label" for="p-${f.name}">${esc(f.label)}${f.optional ? ' <span class="hint">(optional)</span>' : ""}</label>${control}${help}</div>`;
+  return `<div class="field"${showIf}><label class="label" for="p-${f.name}">${esc(f.label)}${f.optional && !f.hideOptional ? ' <span class="hint">(optional)</span>' : ""}</label>${control}${help}</div>`;
 }
 
 function fields(list) {

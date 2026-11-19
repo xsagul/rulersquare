@@ -144,7 +144,7 @@ const home = {
   <div class="search">
     <label class="sr-only" for="q">Search calculators</label>
     ${ICONS.search}
-    <input id="q" type="search" autocomplete="off" placeholder="Search ${ALL.length} calculators (concrete, BTU, mulch…)">
+    <input id="q" type="search" autocomplete="off" placeholder="Search ${ALL.length} calculators…">
   </div>
   <div class="quick-links" aria-label="Quick access">${QUICK_LINKS.map(([href, label]) => `<a href="${href}">${label}</a>`).join("")}</div>
   <ul class="search-hits" id="hits" hidden></ul>

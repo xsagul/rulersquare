@@ -133,7 +133,7 @@
       Object.keys(prefill).forEach(function (k) {
         if (k === "sign") {
           var sb = el.querySelector(".section-sign");
-          if (sb && prefill.sign === -1) { sb.dataset.sign = "-1"; sb.textContent = "− Cutout"; }
+          if (sb && prefill.sign === -1) { sb.dataset.sign = "-1"; sb.textContent = "− Subtract cutout"; }
           return;
         }
         var f = el.querySelector('[data-f="' + k + '"]');
@@ -146,7 +146,7 @@
       signBtn.addEventListener("click", function () {
         var next = signBtn.dataset.sign === "-1" ? "1" : "-1";
         signBtn.dataset.sign = next;
-        signBtn.textContent = next === "-1" ? "− Cutout" : "+ Add";
+        signBtn.textContent = next === "-1" ? "− Subtract cutout" : "+ Add section";
         update(false);
       });
     }

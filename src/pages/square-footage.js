@@ -64,8 +64,11 @@ module.exports = {
 
 <template id="section-tpl">
   <div class="section">
+    <div class="section-bar">
+      <button type="button" class="section-sign" data-sign="1" title="Toggle Add area or Subtract cutout">+ Add section</button>
+      <button type="button" class="section-remove" aria-label="Remove this section">&times;</button>
+    </div>
     <div class="section-head">
-      <button type="button" class="section-sign" data-sign="1" title="Toggle Add area or Subtract cutout">+ Add</button>
       <div class="select">
         <select data-f="shape" aria-label="Shape">
           <option value="rect">Rectangle</option>
@@ -83,7 +86,6 @@ module.exports = {
           <option value="cm">cm</option>
         </select>
       </div>
-      <button type="button" class="section-remove" aria-label="Remove this section">&times;</button>
     </div>
     <div class="section-fields">
       <div class="field" data-w="a"><span class="label">Length</span><div class="unit"><input type="number" inputmode="decimal" min="0.001" step="any" data-f="a" value=""></div></div>
@@ -131,7 +133,7 @@ module.exports = {
       <li><span>Perimeter <span class="sub">(added rectangles/circles)</span></span><b id="r-perim">—</b></li>
     </ul>
     <div class="cost" id="r-cost-box" hidden>Estimated cost: <b id="r-cost"></b></div>
-    <p class="tip">Click <b>+ Add</b> on any section to switch it to <b>− Cutout</b> (subtract closets, islands or openings automatically).</p>
+    <p class="tip">Click <b>+ Add section</b> on any box to switch it to <b>− Subtract cutout</b> (subtract closets, islands or openings automatically).</p>
     </div>
   </section>
 </form>
