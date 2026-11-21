@@ -13,6 +13,7 @@ const PROJ = [
     lede: "Count wood fence posts, rails and pickets for your straight fence run.",
     fields: [
       n("length", "Fence length (excluding gates)", "ft", undefined, { units: "length" }),
+      n("height", "Fence height", "ft", 6, { units: "length" }),
       n("spacing", "Maximum post spacing", "ft", 8),
     ],
     advanced: [
@@ -31,8 +32,8 @@ const PROJ = [
     formula: "Sections = round up(length ÷ spacing)<br>Posts = sections + 1 &nbsp;•&nbsp; Rails = sections × rails per section<br>Pickets = round up((length × 12 + gap) ÷ (picket width + gap))",
     example: {
       title: "Example: an 80-foot privacy fence",
-      values: { length: 80, spacing: 8, boardWidth: 5.5, gap: 0, rails: 3, waste: 10 },
-      text: "An 80-foot run at 8-foot spacing needs 10 sections, 11 posts and 30 rails (three per section). Side-by-side 5.5-inch pickets take 175 boards before waste, or 193 with 10% extra.",
+      values: { length: 80, height: 6, spacing: 8, boardWidth: 5.5, gap: 0, rails: 3, waste: 10 },
+      text: "An 80-foot run at 8-foot spacing needs 10 sections, 11 posts and 30 rails (three per section). Side-by-side 5.5-inch pickets take 175 boards before waste, or 193 with 10% extra. For a 6-foot fence each post goes 2 feet into the ground, so buy 8-foot posts and about 22 bags of 50 lb fast-setting concrete.",
     },
     buy: "<ul><li><strong>Use actual board width:</strong> a nominal 1×6 dog-ear picket measures 5.5 inches wide; a 1×4 measures 3.5 inches.</li><li><strong>Count corners once:</strong> run each straight side separately and subtract shared corner posts so you do not double-count them.</li><li><strong>Plan post concrete:</strong> most 6-foot privacy fence posts use two 50 lb bags of fast-setting concrete per hole—use our <a href=\"/fence-post-concrete-calculator/\">fence post concrete calculator</a>.</li><li><strong>Call 811 before digging</strong> to locate buried utility lines.</li></ul>",
     faq: [
@@ -179,6 +180,7 @@ const PROJ = [
       n("pieceWidth", "Tile width", "in", 12, { group: "tile" }),
     ],
     advanced: [
+      n("gap", "Grout joint width", "in", 0.125, { min: 0, max: 1 }),
       waste(10),
       n("boxCount", "Tiles per box", "", 0, { min: 0, step: 1, hint: "Leave at 0 to skip whole-box rounding." }),
       price("Price per tile", "$/tile"),
@@ -193,8 +195,8 @@ const PROJ = [
     formula: "Tile area (ft²) = tile length (in) × tile width (in) ÷ 144<br>Tiles = round up(area × allowance ÷ tile area)<br>Boxes = round up(tiles ÷ tiles per box)",
     example: {
       title: "Example: a 10 × 12-foot floor",
-      values: { length: 10, width: 12, pieceLength: 12, pieceWidth: 12, waste: 10, boxCount: 10, price: 0 },
-      text: "120 ft² with 12×12-inch tiles (1 ft² each) and 10% waste requires 132 tiles. At 10 tiles per box, order 14 boxes.",
+      values: { length: 10, width: 12, pieceLength: 12, pieceWidth: 12, gap: 0.125, waste: 10, boxCount: 10, price: 0 },
+      text: "120 ft² with 12×12-inch tiles and ⅛-inch grout joints (each tile plus its joint covers 1.02 ft²) and 10% waste requires 130 tiles. At 10 tiles per box, order 13 boxes.",
     },
     buy: "<p>Use <strong>10% waste</strong> for straight grid layouts, <strong>15%</strong> for diagonal patterns or large-format 12×24 and 24×24 tile, and <strong>20%</strong> for herringbone. Always save a few spare tiles from the same dye lot for future repairs.</p><p>For mesh-mounted mosaic sheets, enter the full sheet dimensions (typically 12×12 in) instead of one tiny chip.</p>",
     faq: [

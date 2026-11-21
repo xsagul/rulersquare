@@ -13,15 +13,24 @@
       case "fence": {
         const sections = ceil(v.length / v.spacing);
         const pickets = ceil((v.length * 12 + v.gap) / (v.boardWidth + v.gap));
+        // Posts: buried at least 2 ft or a third of the above-ground height, whichever
+        // is more, then rounded up to a stock length. Concrete: the page's own rule of
+        // two 50 lb bags per hole for a 6-ft privacy post, scaled by burial depth.
+        const height = v.height || 6;
+        const bury = Math.max(2, height / 3);
+        const stock = [6, 8, 10, 12, 14, 16].find(L => L >= height + bury) || ceil(height + bury);
+        const posts = sections + 1;
         rows = [
           row("Pickets to buy", ceil(pickets * extra), "pickets"),
-          row("Posts for one straight run", sections + 1, "posts"),
+          row("Posts for one straight run", posts, "posts"),
+          row("Post length to buy", stock, "ft"),
+          row("Hole depth", bury * 12, "in"),
+          row("Fast-setting concrete, 50 lb bags", ceil(posts * 2 * bury / 2), "bags"),
           row("Horizontal rails", sections * v.rails, "rails"),
           row("Sections", sections),
           row("Even post spacing", v.length / sections, "ft", 2),
-          row("Pickets before waste", pickets),
         ];
-        note = "Straight run excluding gates. Add concrete bags per post, fasteners and gate hardware separately.";
+        note = "Straight run excluding gates. Gate posts need deeper holes and more concrete; fasteners and hardware are separate.";
         break;
       }
       case "deck": {
@@ -87,7 +96,9 @@
       case "tile":
       case "paver": {
         area = v.length * v.width;
-        const pieceArea = v.pieceLength * v.pieceWidth / 144;
+        // Tile: each piece plus its grout joint is the repeating unit (3 of the top 4 count it).
+        const joint = kind === "tile" ? (v.gap || 0) : 0;
+        const pieceArea = (v.pieceLength + joint) * (v.pieceWidth + joint) / 144;
         count = ceil(area * extra / pieceArea);
         rows = [
           row(kind === "tile" ? "Tiles to buy" : "Pavers to buy", count, kind === "tile" ? "tiles" : "pavers"),
@@ -183,7 +194,16 @@
           row("Center-to-center spacing", gap + v.boardWidth, "in", 3),
           row("Vertical trim length", count * v.height / 12, "linear ft", 1),
         ];
-        note = "Includes one full-width batten at each wall edge. Measure every mark from the same starting edge to prevent cumulative drift.";
+        // Where each batten goes (left edge, from the left wall), to the nearest 1/16 in;
+        // the top results give this layout, not just the gap.
+        const sixteenth = x => {
+          const t = Math.round(x * 16), whole = Math.floor(t / 16), f = t % 16;
+          if (!f) return String(whole);
+          let n = f, d = 16; while (n % 2 === 0) { n /= 2; d /= 2; }
+          return (whole ? whole + " " : "") + n + "/" + d;
+        };
+        const marks = Array.from({ length: count }, (_, i) => sixteenth(i * (gap + v.boardWidth)));
+        note = `Mark the left edge of each batten at: ${marks.join(", ")} in from the left wall. Measure every mark from that same edge to prevent cumulative drift.`;
         break;
       }
       case "grout": {

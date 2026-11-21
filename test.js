@@ -6,7 +6,7 @@ process.on("exit", () => console.log(process.exitCode ? "SUITE FAILED" : "SUITE 
 // expected headline quantities. A missing expectation fails as the catalogue grows.
 const exampleExpected = {
   "fence-calculator":193, "deck-calculator":29, "siding-calculator":1424.5,
-  "drywall-calculator":17, "tile-calculator":132, "paver-calculator":594,
+  "drywall-calculator":17, "tile-calculator":130, "paver-calculator":594,
   "paint-calculator":2, "roofing-calculator":45, "retaining-wall-calculator":79,
   "insulation-calculator":21, "board-and-batten-calculator":19.8,
   "grout-calculator":2, "thinset-calculator":5, "cubic-yard-calculator":1,

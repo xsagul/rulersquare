@@ -79,7 +79,7 @@ function unitBase(c) {
 }
 
 const MEASURED = {
-  "fence-calculator": ["length"],
+  "fence-calculator": ["length", "height"],
   "deck-calculator": ["length", "width"],
   "siding-calculator": ["perimeter", "wallHeight", "gableBase", "gableHeight"],
   "drywall-calculator": ["length", "width", "height", "openings"],
