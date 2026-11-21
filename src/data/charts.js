@@ -150,7 +150,12 @@ const BUILD = {
       "Exact volume before any allowance. Find your area down the side and the depth across the top.",
       ["Area", ...depths.map(d => `${d} in deep`)],
       [100, 200, 300, 500, 1000, 2000].map(a => [num(a) + " ft²", ...depths.map(d => num(value("cubic-yard", { length: a, width: 1, depth: d, waste: 0 }, "Volume with allowance"), 2))]),
-      "One cubic yard covers 324 ft² at 1 inch deep; divide 324 by the depth in inches for the coverage of a yard.")];
+      "One cubic yard covers 324 ft² at 1 inch deep; divide 324 by the depth in inches for the coverage of a yard."),
+    chart("coverage", "Coverage of 1 yd³", "How much area one cubic yard covers",
+      "Read this when the material is sold by the yard and you want to know how far one load goes.",
+      ["Depth", "Area covered by 1 yd³", "Square patch"],
+      [1, 2, 3, 4, 5, 6, 8, 10, 12].map(d => [d + " in", num(324 / d, 1) + " ft²", "about " + num(Math.sqrt(324 / d), 1) + " × " + num(Math.sqrt(324 / d), 1) + " ft"]),
+      "At 3 inches, typical for mulch and gravel paths, one yard covers 108 ft². At 4 inches, typical for a concrete slab, it covers 81 ft².")];
   },
   "feet-and-inches-calculator": c => [
     chart("chart", "Inches to decimal ft", "Inches to decimal feet & metric chart", "Quick reference for converting tape-measure inches (1–12 in) directly to decimal feet, centimeters and millimeters.",

@@ -14,7 +14,7 @@ const DEPTH_USES = {
   "/stone-calculator/": { rows: [["Paver or patio base over firm soil", "4 in"], ["Paver or patio base over clay or in freeze-thaw climates", "6 in"]], note: "Compact in 2-inch lifts with a plate compactor so the bottom layer locks solid." },
   "/sand-calculator/": { rows: [["Paver bedding sand (screeded, loose)", "1 in"], ["Children's sandbox (washed play sand)", "6–12 in"], ["Structural backfill (each compacted lift)", "4–6 in"]], note: "Screed paver bedding sand loose—never plate-compact it before laying pavers." },
   "/topsoil-calculator/": { rows: [["New grass seed or sod", "4–6 in"], ["Topdressing an established lawn", "¼–½ in at a time"]], note: "Topdress a little at a time so you do not smother the existing grass." },
-  "/mulch-calculator/": { rows: [["Established beds", "2–3 in"], ["Bare new beds (weed control)", "3–4 in"], ["Maximum anywhere", "4 in"]], note: "Never pile mulch against tree trunks—leave a 2–3 inch bare collar around the bark so stems stay dry." },
+  "/mulch-calculator/": { rows: [["Established beds", "2–3 in"], ["Bare new beds (weed control)", "3–4 in"], ["Bark or wood mulch, maximum", "4 in"]], note: "Never pile mulch against tree trunks—leave a 2–3 inch bare collar around the bark so stems stay dry." },
   "/river-rock-calculator/": { rows: [["Decorative beds, ¾–1½ in stone", "2–3 in"], ["Dry creek beds and erosion swales", "4–6 in"], ["Driveways", "Not recommended"]], note: "Rule of thumb: the layer should be at least twice as deep as the rock is wide. Round stone shifts under tires, which is why it does not belong on a driveway." },
   "/asphalt-calculator/": { rows: [["Residential driveway (over 6–8 in compacted road base)", "2–3 in"], ["Commercial lot with delivery trucks", "3–4 in"], ["Overlay on sound existing asphalt", "1.5–2 in"]] },
   "/road-base-calculator/": { rows: [["Gravel or asphalt driveway", "6–8 in compacted"], ["Driveway over clay or in frost-heave zones", "10–12 in compacted"], ["Under a paver patio", "4–6 in"]], note: "Compact in 2- to 4-inch lifts—a plate compactor only densifies the top few inches." },
@@ -31,6 +31,12 @@ function depthSection(cfg) {
   }
   return `<h2 id="depth">How deep should ${cfg.noun} be?</h2>
 <div class="table-wrap"><table><thead><tr><th scope="col">Use</th><th scope="col">Depth</th></tr></thead><tbody>${d.rows.map(([u, v]) => `<tr><th scope="row">${u}</th><td>${v}</td></tr>`).join("")}</tbody></table></div>${d.note ? `<p>${d.note}</p>` : ""}`;
+}
+
+/* Decision tables a page carries on its own (types, weights by soil), each with its source. */
+function typeTables(cfg) {
+  return (cfg.tables || []).map(t => `<h2 id="${t.id}">${t.title}</h2>${t.intro ? `<p>${t.intro}</p>` : ""}
+<div class="table-wrap"><table><thead><tr>${t.head.map(h => `<th scope="col">${h}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r => `<tr>${r.map((c, i) => i ? `<td>${c}</td>` : `<th scope="row">${c}</th>`).join("")}</tr>`).join("")}</tbody></table></div>${t.note ? `<p>${t.note}</p>` : ""}${t.source ? `<p class="note">Source: <a href="${t.source[0]}" rel="nofollow noopener">${t.source[1]}</a>.</p>` : ""}`).join("");
 }
 
 function weightTables(cfg, options) {
@@ -192,6 +198,7 @@ ${byline(UPDATED)}
 <h2 id="example">Example: ${cfg.example.label}</h2><p>${cfg.example.text}</p>
 ${weightTables(cfg, options)}${EXTRAS[cfg.path.replace(/\//g, "")] || ""}${truckTable}
 ${depthSection(cfg)}
+${typeTables(cfg)}
 ${cfg.orderingProse ? `<h2 id="buying">What ${cfg.noun} costs and how it is sold</h2><p>${cfg.orderingProse}</p>` : ""}
 <h2 id="questions">Frequently asked questions</h2>${faq.map(([q, a]) => `<h3>${q}</h3><p>${a}</p>`).join("")}
 <h2>Related calculators</h2><ul class="related-links">${relatedList(cfg).map(([href, label]) => `<li><a href="${href}">${esc(label)}</a></li>`).join("")}</ul>
