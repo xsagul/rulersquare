@@ -527,3 +527,16 @@ assert(studs(ft) === studs(yd) && studs(ft) === 19, "units: 24 ft and 8 yd both 
   const costYd = calculate("cost", { quantity: 6, low: 160, high: 195, costUnit: "yd³" });
   assert(!costYd.rows.some(r => /Est\. labor/.test(r.label)), "cost: ready-mix per yd3 omits labor split");
 }
+
+// The 10 project groups cover the whole catalog, each calculator exactly once.
+{
+  const { GROUPS } = require("./src/data/groups");
+  const { ALL } = require("./src/data/catalog");
+  const fs = require("fs");
+  const inGroups = GROUPS.flatMap(g => g.items);
+  const catalog = ALL.map(a => a[0].replace(/\//g, ""));
+  assert(GROUPS.length === 10, "groups: there are 10 project groups");
+  assert(new Set(inGroups).size === inGroups.length, "groups: no calculator is listed twice");
+  assert(catalog.every(s => inGroups.includes(s)) && inGroups.every(s => catalog.includes(s)), "groups: every calculator is in exactly one group");
+  assert(GROUPS.every(g => fs.existsSync(`./src/assets/g-${g.img}.webp`)), "groups: every group has its drawing");
+}

@@ -24,6 +24,30 @@ const pages = [
   require("./src/pages/methodology"),
 ];
 
+// Every calculator's breadcrumb points at its project group (21 Nov 2026
+// restructure), in the visible trail and in BreadcrumbList alike, whatever
+// hub the page template was written for.
+{
+  const { GROUPS, groupHref } = require("./src/data/groups");
+  const groupOf = new Map(GROUPS.flatMap(g => g.items.map(s => [`/${s}/`, g])));
+  for (const p of pages) {
+    const g = groupOf.get(p.path);
+    if (!g || !p.breadcrumbs) continue;
+    const last = p.breadcrumbs[p.breadcrumbs.length - 1];
+    p.breadcrumbs = [{ name: "Home", href: "/" }, { name: g.name, href: groupHref(g) }, { name: last.name }];
+    for (const s of p.schema || []) {
+      const lists = s["@type"] === "BreadcrumbList" ? [s] : (s["@graph"] || []).filter(n => n["@type"] === "BreadcrumbList");
+      for (const bl of lists) {
+        bl.itemListElement = [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE.url + "/" },
+          { "@type": "ListItem", position: 2, name: g.name, item: SITE.url + groupHref(g) },
+          { "@type": "ListItem", position: 3, name: last.name, item: SITE.url + p.path },
+        ];
+      }
+    }
+  }
+}
+
 // The search index is derived from the built pages rather than a hand-kept
 // list, so a new calculator is searchable the moment it is added. Served once
 // as a cacheable JSON file instead of being inlined into every HTML page.
@@ -78,7 +102,7 @@ for (const p of pages) {
 // favicon
 fs.writeFileSync(path.join(OUT, "favicon.svg"),
   LOGO.replace('aria-hidden="true" focusable="false"', 'xmlns="http://www.w3.org/2000/svg"')
-      .replace(/var\(--accent\)/g, "#c2410c").replace(/var\(--accent-ink\)/g, "#ffffff"));
+      .replace(/var\(--ink\)/g, "#1f3a5f").replace(/var\(--paper\)/g, "#f6f1e6"));
 
 // Files served as-is from the site root: the IndexNow key, llms.txt.
 for (const f of fs.readdirSync(path.join(__dirname, "src/public"))) {

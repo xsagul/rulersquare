@@ -3,7 +3,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const root = path.resolve(__dirname, "dist");
-const mime = { ".html":"text/html; charset=utf-8", ".css":"text/css", ".js":"text/javascript", ".svg":"image/svg+xml", ".png":"image/png", ".xml":"application/xml", ".txt":"text/plain" };
+const mime = { ".html":"text/html; charset=utf-8", ".css":"text/css", ".js":"text/javascript", ".svg":"image/svg+xml", ".png":"image/png", ".xml":"application/xml", ".txt":"text/plain", ".webp":"image/webp", ".json":"application/json" };
 http.createServer((req, res) => {
   let route;
   try { route = decodeURIComponent(new URL(req.url, "http://localhost").pathname); }

@@ -49,6 +49,21 @@ măsurătorii scris întreg. Stau în starea goală a panoului de rezultate. Reg
 desen și cine nu e în comentariul din `src/diagrams.js`. Pe scurt: niciun desen, decât unul care
 induce în eroare.
 
+## Structura și aspectul — 21 noiembrie 2026
+
+- **10 grupe pe proiect**, nu pe tip de răspuns: lista e în `src/data/groups.js`, iar raționamentul în
+  `research/structura-2026-11-21.md`. Într-o grupă stau împreună calculatoarele de cantitate și
+  cele de cost. `test.js` verifică faptul că fiecare calculator e în exact o grupă.
+- **Nicio adresă nouă.** Cele 4 hub-uri vechi rămân: `/construction-calculators/` le are pe toate,
+  cu ancoră pe grupă; `/landscaping-calculators/`, `/home-systems-calculators/` și `/cost-calculators/`
+  le au pe ale lor. Firul de navigare al fiecărui calculator arată grupa (setat în `build.js`).
+- **Aspectul „plan tehnic”** (direcția C, aleasă de proprietar): hârtie cu grilă, cerneală
+  #1f3a5f, portocaliu doar pentru acțiuni și cote, colțuri drepte, titluri cu serife.
+- **Desenele grupelor** (`src/assets/g-*.webp`) sunt generate în ChatGPT Image pe o singură planșă,
+  pentru stil unitar, și verificate cotă cu cotă înainte să fie puse. Regula proprietarului: orice
+  imagine cu desen tehnic vine din ChatGPT Image, nu e desenată de agent. Planșele sunt în
+  `research/design-2026-11-21/`.
+
 ## Starea curentă — 15 noiembrie 2026
 
 - Proprietarul a autorizat refacerea, eliminarea paginilor nepotrivite și extinderea pe intenții valoroase.

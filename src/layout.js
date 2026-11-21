@@ -1,4 +1,5 @@
 const { ICONS } = require("./icons");
+const { GROUPS, NAV_GROUPS, groupHref } = require("./data/groups");
 
 const SITE = {
   name: "Ruler Square",
@@ -8,17 +9,11 @@ const SITE = {
 };
 
 const LOGO = `<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-  <path d="M4 4h7v17h17v7H4z" fill="var(--accent)"/>
-  <path d="M8 8h2M8 12h2M8 16h2M14 24v2M18 24v2M22 24v2" stroke="var(--accent-ink)" stroke-width="1.6" stroke-linecap="square"/>
+  <path d="M4 4h7v17h17v7H4z" fill="var(--ink)"/>
+  <path d="M8 8h2M8 12h2M8 16h2M14 24v2M18 24v2M22 24v2" stroke="var(--paper)" stroke-width="1.6" stroke-linecap="square"/>
 </svg>`;
 
-const NAV = [
-  ["/construction-calculators/", "Construction", "construction"],
-  ["/landscaping-calculators/", "Landscaping", "mulch"],
-  ["/home-systems-calculators/", "Home Systems", "hvac"],
-  ["/cost-calculators/", "Costs", "cost"],
-  ["/about/", "About", "info"],
-];
+const NAV = NAV_GROUPS;
 
 const OG_BY_CAT = {
   construction: "/og-construction.png",
@@ -48,10 +43,9 @@ function renderCrumbs(page) {
 function layout(page) {
   const canonical = SITE.url + page.path;
   const ogImg = SITE.url + (page.ogImage || OG_BY_CAT[page.category] || "/og.png");
-  const nav = NAV.map(([href, label]) =>
-    `<a href="${href}"${href === page.path ? ' aria-current="page"' : ""}>${label}</a>`).join("");
-  const drawerNav = NAV.map(([href, label, icon]) =>
-    `<a href="${href}"${href === page.path ? ' aria-current="page"' : ""}>${ICONS[icon] || ""}<span>${label}</span></a>`).join("");
+  const nav = NAV.map(([label, href]) => `<a href="${href}">${label}</a>`).join("");
+  const drawerNav = GROUPS.map(g =>
+    `<a href="${groupHref(g)}"><img src="/assets/g-${g.img}.webp?v=VERSION" alt="" width="54" height="36" loading="lazy" decoding="async"><span>${g.name}</span></a>`).join("");
   const search = `<div class="nav-search">
       <label class="sr-only" for="nav-q">Search calculators</label>
       ${ICONS.search}
@@ -85,7 +79,7 @@ function layout(page) {
 <meta name="twitter:description" content="${esc(page.description)}">
 <meta name="twitter:image" content="${ogImg}">
 <meta name="twitter:image:alt" content="${esc(page.title)}">
-<meta name="theme-color" content="#c2410c">
+<meta name="theme-color" content="#f6f1e6">
 <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/favicon.png">
 <link rel="stylesheet" href="/assets/style.css?v=${page.version}">
@@ -99,8 +93,8 @@ ${schema}
     <a class="brand" href="/">${LOGO}<span>${SITE.name}</span></a>
     ${search}
     <nav class="nav" aria-label="Main">${nav}</nav>
-    <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-panel" aria-label="Open menu">
-      <span></span><span></span><span></span>
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-panel">
+      Menu <i aria-hidden="true"><span></span><span></span><span></span></i>
     </button>
   </div>
 </header>
@@ -117,8 +111,9 @@ ${schema}
     <input id="drawer-q" type="search" autocomplete="off" placeholder="Search calculators">
     <ul class="nav-hits" id="drawer-hits" hidden></ul>
   </div>
-  <p class="nav-drawer-label">Calculators</p>
+  <p class="nav-drawer-label">Project calculators</p>
   <nav class="nav-drawer-links">${drawerNav}</nav>
+  <nav class="nav-drawer-more" aria-label="More"><a href="/construction-calculators/">All calculators</a><a href="/cost-calculators/">All cost calculators</a><a href="/about/">About</a></nav>
 </aside>
 <main class="wrap" id="main-content">
 ${crumbs}
