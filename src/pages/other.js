@@ -48,27 +48,6 @@ const home = {
 </section>
 
 <div id="browse">
-<section class="fi-mini" aria-labelledby="fi-title">
-  <h2 id="fi-title">Feet &amp; Inches Calculator</h2>
-  <p>Add or subtract two measurements.</p>
-  <form id="fi-form" class="fi-form" novalidate>
-    <fieldset><legend>First measurement</legend>
-      <label><input type="number" inputmode="decimal" name="f1" value="8" aria-label="First measurement, feet"><span>ft</span></label>
-      <label><input type="number" inputmode="decimal" name="i1" value="4" step="any" aria-label="First measurement, inches"><span>in</span></label>
-    </fieldset>
-    <div class="fi-ops" role="group" aria-label="Operation">
-      <button type="button" class="fi-op is-on" data-op="+" aria-pressed="true" aria-label="Add">+</button>
-      <button type="button" class="fi-op" data-op="-" aria-pressed="false" aria-label="Subtract">−</button>
-    </div>
-    <fieldset><legend>Second measurement</legend>
-      <label><input type="number" inputmode="decimal" name="f2" value="2" aria-label="Second measurement, feet"><span>ft</span></label>
-      <label><input type="number" inputmode="decimal" name="i2" value="7" step="any" aria-label="Second measurement, inches"><span>in</span></label>
-    </fieldset>
-    <output class="fi-out" id="fi-out" for="fi-form" aria-live="polite">= 10 ft 11 in</output>
-  </form>
-  <a class="fi-more" href="/feet-and-inches-calculator/">Fractions, decimals and metric: full Feet and Inches Calculator</a>
-</section>
-
 <section class="home-groups" aria-labelledby="pg-title">
   <h2 id="pg-title">Project calculators</h2>
   ${GROUPS.map(g => {
@@ -88,8 +67,7 @@ const home = {
 </section>
 </div>
 `,
-  scripts: `<script src="/assets/search.js?v=VERSION" defer></script>
-<script src="/assets/feet-mini.js?v=VERSION" defer></script>`,
+  scripts: `<script src="/assets/search.js?v=VERSION" defer></script>`,
 };
 
 const about = {

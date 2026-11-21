@@ -74,6 +74,7 @@ induce în eroare.
 - Cele șase calculatoare de salarii și hub-ul lor sunt retrase, conform cererii din conversația Claude.
 - Catalog: 69 de calculatoare, în trei hub-uri (Construction, Landscaping, Costs); 79 de pagini HTML.
 - Au fost integrate cele 16 pagini de cost și 6 calculatoare începute de Claude.
-- Prima pagină folosește căutare, categorii și opt instrumente populare; catalogul complet stă în hub-uri.
+- Prima pagină are căutarea și cele 10 grupe, fără calculator în ea (proprietarul, 22 noiembrie 2026: nu aduce nimic
+  față de pagina dedicată și împinge grupele în jos). Feet & inches se găsește în grupa Measure și în căutare.
 - Paginile de proiect au cel mult trei trimiteri alese manual la pașii următori.
 - Nu se adaugă cod AdSense fără ID-ul real al proprietarului.
