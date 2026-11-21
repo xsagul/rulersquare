@@ -143,6 +143,7 @@ const items = [
     faq: [
       ["How much does it cost to remove an old concrete driveway?", "Demolition and haul-away typically add $2 to $6 per square foot ($1,600–$4,800 for an 800 ft² driveway)."],
       ["Is a concrete driveway better than asphalt?", "Concrete costs slightly more up front ($5–$10/ft² plain vs. $6–$9/ft² asphalt) but lasts 30–40 years with far less maintenance and does not soften in summer heat."],
+      ["Do I need a permit to replace a driveway?", "Replacing a driveway in the same footprint often needs no building permit, but widening it, changing drainage or touching the strip between the sidewalk and the street usually does. That strip is public right-of-way, so the permit comes from the city, not the building department. Ask your city before work starts."],
       ["When can I park on a new concrete driveway?", "Wait at least 7 days for passenger cars and 14–28 days for heavy trucks, RVs, or dumpsters."],
     ],
     related: [["concrete-calculator", "Concrete Calculator"], ["asphalt-driveway-cost", "Asphalt Driveway Cost"], ["rebar-calculator", "Rebar Calculator"], ["gravel-calculator", "Gravel Calculator"]],
@@ -232,7 +233,7 @@ const items = [
       text: "150 linear feet at $20–$60/ft totals $3,000–$9,000 installed before gates and old-fence tear-out.",
     },
     buyTitle: "Fence bid checklist",
-    buy: "<ul><li><strong>Height &amp; style:</strong> 6-foot privacy fencing costs 25–40% more than 4-foot picket; 8-foot board-on-board jumps to $50–$85/ft.</li><li><strong>Gates:</strong> list exact widths and hardware (self-closing pool latches, steel frames) separately.</li><li><strong>Old fence removal:</strong> usually adds $3–$8 per linear foot.</li><li><strong>Property lines &amp; HOA:</strong> verify lot pins and setback rules before setting posts.</li></ul>",
+    buy: "<ul><li><strong>Height &amp; style:</strong> 6-foot privacy fencing costs 25–40% more than 4-foot picket; 8-foot board-on-board jumps to $50–$85/ft.</li><li><strong>Gates:</strong> list exact widths and hardware (self-closing pool latches, steel frames) separately.</li><li><strong>Old fence removal:</strong> usually adds $3–$8 per linear foot.</li><li><strong>Call 811 first:</strong> the free call gets buried gas, power and water lines marked before post holes are dug.</li><li><strong>Property lines &amp; HOA:</strong> verify lot pins and setback rules before setting posts.</li></ul>",
     faq: [
       ["How much does it cost to fence 1 acre?", "A square 1-acre lot has an 835-foot perimeter, costing roughly $16,700–$41,750 in wood privacy fencing, or $7,500–$25,000 in chain-link (farm wire is far less at $3–$6/ft)."],
       ["How much does a 200-foot privacy fence cost?", "At $25–$60/ft installed, 200 linear feet of 6-foot wood or vinyl privacy fence runs $5,000 to $12,000 plus $300–$600 per gate."],

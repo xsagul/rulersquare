@@ -45,6 +45,18 @@ const BUILD = {
       [4, 5, 6].map(t => { const yd = value("cubic-yard", { length: 20, width: 20, depth: t, waste: 0 }, "Volume with allowance");
         return [`${t} in`, num(yd, 2) + " yd³", range([yd * 160, yd * 195])]; }),
       "Material only, no allowance and no delivery. Labor and preparation do not scale with thickness the way concrete volume does."),
+    (() => {
+      const rate = id => c.rateOptions.find(r => r[0] === id);
+      const v = { ...c.example.values, delivery: 0, removal: 0, other: 0, waste: 0 };
+      const job = (name, l, w, id, thick) => { const r = rate(id);
+        return [name, size(l, w) + " (" + num(l * w) + " ft²)", thick, range(value("cost", { ...v, length: l, width: w, low: r[2], high: r[3] }, "Planning range"))]; };
+      return chart("by-project", "By project", "Concrete slab cost by project",
+        "Each project at its usual size and thickness, priced at this page's plain 4-inch or reinforced 6-inch rate.",
+        ["Project", "Typical size", "Thickness", "Installed range"],
+        [job("Shed pad", 10, 12, "4in", "4 in"), job("Patio", 12, 16, "4in", "4 in"), job("Walkway", 4, 40, "4in", "4 in"),
+         job("Two-car garage floor", 24, 24, "6in", "5–6 in, reinforced"), job("RV or trailer pad", 12, 40, "6in", "6 in, reinforced"), job("Workshop slab", 30, 40, "6in", "6 in, reinforced")],
+        "Pads under about 200 ft² often hit a contractor's minimum charge of $1,200–$2,000, so a shed pad can cost more than this range.");
+    })(),
   ],
   "concrete-patio-cost": c => [costBySize(c, "Concrete patio cost by size", [[10, 10], [10, 12], [12, 12], [12, 16], [16, 16], [16, 20], [20, 20]],
     "The broad $5–$18 range spans plain to stamped finishes. A quote for one named finish will sit inside a much narrower band.")],

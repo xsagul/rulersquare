@@ -242,7 +242,32 @@ ${table(["Sheet", "Covers", "Sheets per 1,000 ft²"], [[4, 8], [4, 10], [4, 12]]
 <h2 id="openings">Should you subtract doors and windows?</h2>
 <p>For a quick count, no: the offcuts around openings are rarely reusable, so the area they remove is roughly what you waste cutting around them. Subtract only large openings such as a patio door or a wide archway.</p>`,
 
+  "concrete-slab-cost": `
+<h2 id="save">How to spend less on a slab</h2>
+<ul><li><strong>Keep the shape simple.</strong> Squares and rectangles need less formwork than curves and jogs.</li><li><strong>Pour everything in one visit.</strong> A walkway or pad added to the same truck costs far less than a second trip and a second minimum charge.</li><li><strong>Match the thickness to the use.</strong> A garden shed does not need the 6 inches a garage floor does.</li><li><strong>Do the easy preparation yourself</strong> if the contractor agrees: clearing plants, moving sprinkler heads, pulling up old pavers.</li><li><strong>Compare three written quotes</strong> on the same terms: gravel base depth, reinforcement, joint spacing, finish and sealing.</li></ul>
+<p>Do not save on the gravel base or the steel. They are buried for the life of the slab and cannot be fixed later.</p>
+<h2 id="diy">Pouring a slab yourself</h2>
+<p>Labor is roughly half of an installed price, so doing it yourself saves real money on a small pad you can mix from bags. The work grows fast: a 20 × 20-foot slab at 4 inches is about 4.9 cubic yards, or roughly 222 bags of 80-lb mix, all of it to be placed and finished before it sets. Above a shed or air-conditioner pad, most people order ready-mix and hire a finishing crew. Check the volume and bag count with the <a href="/concrete-calculator/">Concrete Calculator</a>.</p>`,
+
+  "concrete-driveway-cost": `
+<h2 id="materials">Concrete compared with gravel, asphalt and pavers</h2>
+<p>Installed prices per square foot, and what a 600 ft² single-car driveway comes to:</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Surface</th><th scope="col">Per ft²</th><th scope="col">600 ft²</th><th scope="col">Upkeep</th></tr></thead><tbody>
+<tr><th scope="row">Gravel</th><td>$4–$10</td><td>$2,400–$6,000</td><td>Raking, topping up and regrading</td></tr>
+<tr><th scope="row">Asphalt</th><td>$6–$9</td><td>$3,600–$5,400</td><td>Sealcoating every few years</td></tr>
+<tr><th scope="row">Plain concrete</th><td>$5–$8</td><td>$3,000–$4,800</td><td>Little; sealing is optional</td></tr>
+<tr><th scope="row">Stamped concrete</th><td>$14–$21</td><td>$8,400–$12,600</td><td>Resealing to keep the color</td></tr>
+<tr><th scope="row">Pavers</th><td>$10–$30</td><td>$6,000–$18,000</td><td>Re-leveling settled pavers, refilling joint sand</td></tr>
+</tbody></table></div>
+<p>Gravel is the cheapest to build and the most work to keep. Pavers cost the most but single units can be lifted and replaced. Concrete and asphalt prices come from this site's <a href="/asphalt-driveway-cost/">asphalt</a> and concrete cost pages.</p>
+<p class="note">Gravel and paver ranges: <a href="https://homeguide.com/costs/gravel-driveway-cost" rel="nofollow noopener">HomeGuide gravel driveway cost</a> and <a href="https://homeguide.com/costs/driveway-pavers-cost" rel="nofollow noopener">HomeGuide driveway pavers cost</a> (reviewed November 21, 2026).</p>`,
+
   "roofing-calculator": `
+<h2 id="pitch">How to find your roof pitch</h2>
+<p>Pitch is how many inches the roof rises for every 12 inches it runs: a 6/12 roof rises 6 inches per foot. You do not need to climb onto the roof to measure it.</p>
+<ul><li><strong>In the attic:</strong> hold a level against the underside of a rafter, mark 12 inches along the level, and measure straight up from that mark to the rafter. That height is the pitch.</li><li><strong>At the gable end:</strong> from a ladder, do the same against the rake board or the edge of the roof.</li><li><strong>With a phone:</strong> read the roof angle with a level app and convert it in the <a href="/roof-pitch-calculator/">Roof Pitch Calculator</a>.</li></ul>
+<div class="table-wrap"><table><thead><tr><th scope="col">Pitch</th><th scope="col">Angle</th><th scope="col">Roof area per 100 ft² of footprint</th></tr></thead><tbody>${[3, 4, 5, 6, 7, 8, 9, 10, 12].map(p => `<tr><th scope="row">${p}/12</th><td>${(Math.atan(p / 12) * 180 / Math.PI).toFixed(1)}°</td><td>${(100 * Math.hypot(1, p / 12)).toFixed(1)} ft²</td></tr>`).join("")}</tbody></table></div>
+<p>Asphalt shingles need a pitch of at least 2/12, and roofs from 2/12 up to 4/12 need two layers of underlayment (International Residential Code, R905.2.2).</p>
 <h2 id="squares">Squares and bundles</h2>
 <p>A roofing square is 100 ft² of roof surface. Most architectural and three-tab shingles come three bundles to the square, so a 25-square roof takes about 75 bundles before waste. Check the coverage printed on the bundle; some heavier shingles need four.</p>
 <h2 id="waste">How much waste to allow</h2>
