@@ -1,33 +1,51 @@
-/* Notebook rhythm: start every block of text on a 24 px grid line.
- * CSS keeps line heights and spacing in whole squares; this only fixes the
- * blocks that follow a box whose height is not a whole number of squares
- * (calculator, drawing, embed box). It adds padding above the block, never
- * moves the box, and re-runs when the page height changes. */
+/* Notebook system, the part CSS cannot do (rules in style.css, "Notebook system").
+ * 1. Boxes whose content has any height (calculator, details, formula, embed box)
+ *    are rounded up to 24n+1 px, so their bottom stroke lies on a grid line.
+ * 2. Every block of text and every box starts on a grid line: text blocks get
+ *    padding above them, boxes get margin (padding would move their stroke).
+ * Re-runs whenever the page height changes (a result appears, a section opens). */
 (function () {
   var G = 24;
-  var SEL = "main h1, main h2, main h3, main p, main ul, main ol, main .crumbs, main .jump-links, main .byline, main .g-all, main .g-sub, .site-footer .wrap";
-  var SKIP = ".calc, table, details, .formula, .embed-box, .live-visual, .search-hits, .g-row, .g-head, .nav-drawer, .related-links li, .g-list, li";
+  var BOX = "main .calc, main details:not(.g-row), main .formula, main .embed-box";
+  var TEXT = "main h1, main h2, main h3, main p, main ul, main ol, main .crumbs, main .jump-links";
+  var EDGE = "main .table-wrap, main .search, .site-footer";
+  var INSIDE = ".calc, details, table, .formula, .embed-box, .live-visual, .search-hits, .g-row, .g-head, li";
   var busy = false;
-  function snap() {
+  function docTop(el, cs) {
+    var nudge = cs.position === "relative" ? (parseFloat(cs.top) || 0) : 0;
+    return el.getBoundingClientRect().top + window.scrollY - nudge;
+  }
+  function run() {
     if (busy) return; busy = true;
-    var els = document.querySelectorAll(SEL);
-    for (var i = 0; i < els.length; i++) els[i].style.paddingTop = "";
-    for (var j = 0; j < els.length; j++) {
-      var el = els[j];
-      if (el.closest(SKIP) && !el.matches(".site-footer .wrap")) continue;
+    var boxes = Array.prototype.slice.call(document.querySelectorAll(BOX));
+    var all = Array.prototype.slice.call(document.querySelectorAll(BOX + "," + TEXT + "," + EDGE));
+    all.forEach(function (el) { el.style.paddingTop = ""; el.style.marginTop = ""; });
+    boxes.forEach(function (el) { el.style.minHeight = ""; });
+    // 1. round boxes up to 24n+1, innermost first
+    for (var i = boxes.length - 1; i >= 0; i--) {
+      if (boxes[i].offsetParent === null) continue;
+      var h = boxes[i].getBoundingClientRect().height;
+      var want = Math.ceil((h - 1) / G - 0.02) * G + 1;
+      if (Math.abs(want - h) > 0.3) boxes[i].style.minHeight = want + "px";
+    }
+    // 2. put every top-level block on a line, top to bottom
+    for (var j = 0; j < all.length; j++) {
+      var el = all[j];
+      if (el.parentElement && el.parentElement.closest(INSIDE)) continue;
       var cs = getComputedStyle(el);
       if (cs.display === "none" || cs.position === "absolute" || cs.position === "fixed") continue;
-      // rect includes the visual nudge of position:relative headings; take it out
-      var nudge = cs.position === "relative" ? (parseFloat(cs.top) || 0) : 0;
-      var top = el.getBoundingClientRect().top + window.scrollY - nudge + parseFloat(cs.borderTopWidth) + parseFloat(cs.paddingTop);
+      var isBox = el.matches(BOX + "," + EDGE);
+      var top = docTop(el, cs) + (isBox ? 0 : parseFloat(cs.borderTopWidth) + parseFloat(cs.paddingTop));
       var r = ((top % G) + G) % G;
-      if (r > 0.5 && G - r > 0.5) el.style.paddingTop = (parseFloat(cs.paddingTop) + G - r) + "px";
+      if (r < 0.3 || G - r < 0.3) continue;
+      if (isBox) el.style.marginTop = (parseFloat(cs.marginTop) + G - r) + "px";
+      else el.style.paddingTop = (parseFloat(cs.paddingTop) + G - r) + "px";
     }
     busy = false;
   }
-  snap();
+  run();
   var queued = false;
-  function later() { if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; snap(); }); } }
+  function later() { if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; run(); }); } }
   if (window.ResizeObserver) new ResizeObserver(later).observe(document.body);
   window.addEventListener("load", later);
 })();

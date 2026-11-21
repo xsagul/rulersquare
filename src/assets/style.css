@@ -434,74 +434,125 @@ details p { margin: 8px 0 0; }
 .site-footer a { color: var(--ink); }
 main { padding-bottom: 8px; }
 
-/* ---------- Notebook rhythm (22 Nov 2026, chosen by the owner) ----------
- * The grid square is 24 px, so every line of text that sits on the grid is
- * 24 px tall (or 48 for big headings) and sits on a grid line, like writing in
- * a ruled notebook. Spacing is in whole squares. Borders that would add stray
- * pixels are drawn with outline/box-shadow, which take no space. Boxes with a
- * solid background (calculator, tables, details) hide the grid, so only their
- * outer height matters; assets/grid.js moves the next block of text onto the
- * following line when a box ends between lines. Checked by scripts/grid-check.js. */
-:root { --g: 24px; --grid-y: 19px; }
-body { font: 17px/24px var(--sans); background-position: 0 var(--grid-y); }
+/* ---------- Notebook system (22 Nov 2026, the owner's rules) ----------
+ * One unit = one 24 px square of the grid. Checked by scripts/grid-check.js.
+ * 1. Grid lines run every 24 px from the top of the page.
+ * 2. Text lines are 1 unit tall (2 for big headings) and every baseline sits on a
+ *    grid line: each text style is nudged down onto its line with position:relative,
+ *    which moves nothing else.
+ * 3. Every drawn horizontal line (ruler, separator, box edge) lies on a grid line.
+ *    Box edges are strokes drawn inside the box (outline with a negative offset);
+ *    a box is 24n+1 px tall, so its bottom stroke covers the line it ends on.
+ * 4. Inside boxes: 1 unit of padding, fields and buttons 2 units tall, rows 2 units.
+ * 5. Spacing in whole units. Drawings are exempt.
+ * assets/grid.js rounds boxes up to whole units and puts each block back on a line
+ * after content of any height (a result, a drawing). */
+:root { --u: 24px; --on-line: calc(12px - .414em); --on-line-serif: calc(12px - .35em); --on-line-serif2: calc(24px - .35em); }
+body { font: 17px/24px var(--sans); background-position: 0 0; }
 .embed-page { background: transparent; }
-.site-header .wrap { min-height: 70px; }
+main { padding-bottom: 0; }
+
+/* Lines: header rule, rulers */
+.site-header { border-bottom: 0; box-shadow: 0 2px 0 var(--ink); }
+.site-header .wrap { min-height: 72px; }
+.ruler, .home-groups::before, .site-footer::before { height: 24px; border-bottom: 0; box-shadow: 0 1.5px 0 var(--ink); }
+
+/* Text */
 .crumbs { font-size: 14px; line-height: 24px; margin: 24px 0 0; }
 h1 { font-size: clamp(32px, 4.4vw, 42px); line-height: 48px; margin: 24px 0 0; }
 h2 { font-size: 25px; line-height: 48px; margin: 24px 0 0; }
-/* 48 px lines centre a serif letter 0.35 em above the middle; move it down onto the line (no layout change). */
-h1, h2 { position: relative; top: calc(var(--grid-y) - .35em); }
 h3 { font-size: 18px; line-height: 24px; margin: 24px 0 0; }
-main p, main ul, main ol, .table-wrap, .formula, main details, .calc, .jump-links, .lede, .byline, .prose { margin-top: 24px; margin-bottom: 0; }
-/* text right under its heading, like an answer under its question */
-main :is(h2, h3) + :is(p, ul, ol, div, details, table, .table-wrap, .formula), .g-head h2 + p { margin-top: 0; }
-main h2 + h3 { margin-top: 24px; }
-li { line-height: 24px; }
-main li { margin: 0; }
+li, main li, .refs li { line-height: 24px; margin: 0; }
 .lede { font-size: 18px; line-height: 24px; }
-.note, .refs, .reference-note { font-size: 15px; line-height: 24px; }
-.refs li { margin: 0; }
+.note, .refs, .reference-note, .empty-state, .tip { font-size: 15px; line-height: 24px; }
 .byline { font-size: 14px; line-height: 24px; }
 .jump-links { line-height: 24px; gap: 0 18px; font-size: 14px; }
 .jump-links a { padding: 0; }
-.formula { line-height: 24px; padding: 12px 16px; border: 0; border-left: 4px solid var(--accent); box-shadow: inset 0 0 0 1px var(--line); }
-table { border: 0; outline: 1.5px solid var(--ink); outline-offset: -1.5px; }
+h1, h2 { position: relative; top: var(--on-line-serif2); }
+h3, .g-name { position: relative; top: var(--on-line-serif); }
+main :is(p, li, .crumbs, .jump-links):not(:is(.calc, details:not(.g-row), table, .formula, .embed-box, .search-hits, .results-list, .g-head) *),
+.site-footer .wrap > * { position: relative; top: var(--on-line); }
+main :is(p, li) :is(p, li), .site-footer .wrap > * * { top: 0; }
+
+/* Spacing: 1 unit between blocks; text right under its heading */
+main p, main ul, main ol, .table-wrap, .formula, main details:not(.g-row), .calc, .jump-links, .prose { margin-top: 24px; margin-bottom: 0; }
+main :is(h2, h3) + :is(p, ul, ol, div, details, table, .table-wrap, .formula), .g-head h2 + p { margin-top: 0; }
+main h2 + h3 { margin-top: 24px; }
+
+/* Boxes: strokes inside, 24n+1 tall (grid.js rounds the ones with free content) */
+/* the stroke goes on the wrapper, which is 1 px taller than the 2-unit rows */
+.table-wrap { max-width: 70ch; font-size: 16px; padding-bottom: 1px; outline: 1.5px solid var(--ink); outline-offset: -1.5px; }
+table { border: 0; }
 th, td { line-height: 24px; padding: 12px 12px 11px; }
 tr:last-child td { border-bottom: 1px solid transparent; }
-main details { border: 0; box-shadow: inset 0 0 0 1px var(--line); padding: 12px 16px; }
+main details:not(.g-row) { border: 0; outline: 1px solid var(--line); outline-offset: -1px; padding: 12px 16px; }
 summary { line-height: 24px; }
 details p { margin: 0; }
-.related-links { border-top: 0; box-shadow: inset 0 1.5px var(--ink); margin-top: 24px; }
-.related-links { box-shadow: none; }
-.related-links a { line-height: 24px; padding: 0 4px; border-bottom: 0; }
+.formula { line-height: 24px; padding: 12px 16px; border: 0; border-left: 4px solid var(--accent); outline: 1px solid var(--line); outline-offset: -1px; }
+.embed-box { border: 0; outline: 1px solid var(--line); outline-offset: -1px; padding: 12px 14px; margin-top: 24px; }
+.embed-box summary { line-height: 24px; }
+
+/* Calculator: 1 unit padding, 2-unit fields and buttons, 2-unit result rows */
+.calc { border: 0; outline: 1.5px solid var(--ink); outline-offset: -1.5px; }
+.calc-inputs, .calc-results { padding: 24px; }
+.calc-step { margin: 0 0 24px; line-height: 24px; }
+.tabs { margin: 0 0 24px; }
+.tabs span { line-height: 24px; padding: 10.5px 13px; }
+.field { margin: 0 0 24px; }
+.field > .label { line-height: 24px; margin: 0; }
+.field-help { line-height: 24px; margin-top: 0; }
+input[type="number"], select, .combo input, .combo select, .select select { height: 48px; min-height: 48px; line-height: 24px; padding-top: 0; padding-bottom: 0; }
+.btn-calc { height: 48px; line-height: 24px; padding: 0 18px; margin-top: 24px; }
+.calc-options { margin: 24px 0 0; padding: 12px 13px; }
+.options-body { padding-top: 24px; }
+.presets { margin: 24px 0 0; }
+.preset-chip { line-height: 22px; padding: 0 10px; }
+.calc-actions { margin-top: 24px; }
+.calc-actions button { min-height: 48px; padding: 12px 0; line-height: 24px; }
+.big { line-height: 24px; }
+.big strong { line-height: 48px; }
+.big-alt { line-height: 24px; margin: 0; }
+.results-list { margin: 24px 0 0; border-top: 0; box-shadow: inset 0 1.5px var(--ink); }
+.results-list li { padding: 12px 0 11px; line-height: 24px; }
+.tip, .cost, .live-visual { margin-top: 24px; }
+.cost { line-height: 24px; padding: 12px 14px; }
+.result-tools { margin-top: 24px; padding-top: 23px; }
+.form-error { line-height: 24px; padding: 12px; }
+
+/* Home and hubs */
 .home-top { padding: 0; }
 .home-top h1 { margin-top: 24px; }
 .search { margin-top: 24px; }
-.search input { line-height: 24px; padding: 11px 16px 11px 44px; border: 0; box-shadow: inset 0 0 0 1.5px var(--ink); }
+.search input { height: 49px; line-height: 24px; padding: 0 16px 0 44px; border: 0; box-shadow: inset 0 0 0 1.5px var(--ink); }
 .home-groups { margin-top: 48px; }
 .home-groups::before { margin-bottom: 0; }
 .home-groups > h2 { margin: 24px 0 0; }
-.g-row { border: 0; box-shadow: inset 0 -1px var(--line); }
-.g-row:first-of-type { border-top: 0; box-shadow: inset 0 -1px var(--line), inset 0 1.5px var(--ink); }
+.g-row { border: 0; box-shadow: 0 1px 0 var(--line); }
+.g-row:first-of-type { border-top: 0; box-shadow: 0 1px 0 var(--line), inset 0 1.5px var(--ink); }
 .g-row > summary { align-items: start; padding: 0 2px; min-height: 120px; }
 .g-row .g-draw { margin-top: 16px; }
 .g-row .g-name { padding: 24px 0; line-height: 24px; }
 .g-name small { margin-top: 0; line-height: 24px; }
 .g-chev { margin-top: 42px; }
 .g-body { padding-bottom: 24px; }
+.g-body > :first-child { margin-top: 0; }
 .g-sub { font-size: 13px; line-height: 24px; margin: 24px 0 0; }
-.g-list a { line-height: 24px; padding: 0; border-bottom: 0; }
+.g-list a, .related-links a { line-height: 24px; padding: 0; border-bottom: 0; }
+.related-links { box-shadow: none; border-top: 0; margin-top: 24px; }
 .g-all { font-size: 15px; line-height: 24px; margin: 24px 0 0; }
 .g-sec { padding: 24px 0 0; border-top: 0; box-shadow: inset 0 1.5px var(--ink); margin-top: 24px; }
 .g-head { margin-bottom: 0; align-items: start; }
-.g-head p { line-height: 24px; font-size: 16px; }
 .g-head h2 { margin: 0; }
+.g-head p { line-height: 24px; font-size: 16px; position: relative; top: var(--on-line); }
 .site-footer { margin-top: 48px; line-height: 24px; }
 .site-footer .wrap { padding-top: 24px; padding-bottom: 24px; gap: 0 24px; }
 .site-footer nav { gap: 0 16px; }
+@media (max-width: 800px) {
+  .calc-results { border-top: 0; box-shadow: inset 0 1.5px var(--ink); }
+}
 @media (max-width: 640px) {
-  .lede { font-size: 17px; line-height: 24px; }
-  h2 { font-size: 21px; line-height: 24px; top: 0; }
+  .lede { font-size: 17px; }
+  h2 { font-size: 21px; line-height: 24px; top: var(--on-line-serif); }
   .g-row > summary { min-height: 96px; }
   .g-row .g-chev { margin-top: 30px; }
 }

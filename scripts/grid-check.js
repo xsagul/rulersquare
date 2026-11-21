@@ -43,6 +43,19 @@ async function check(page) {
       const text = first.textContent.trim().slice(0, 40);
       out.push({ tag: el.tagName.toLowerCase() + (el.className ? "." + String(el.className).split(" ")[0] : ""), d: Math.round(d * 10) / 10, lh, lhOk, text });
     }
+    // drawn lines: a box's top edge sits on a grid line and its bottom stroke covers
+    // one (bottom edge 1 px past a line for 24n+1 boxes, on the line for rows)
+    const boxSel = { "main .calc": 1, "main details:not(.g-row)": 1, "main .formula": 1, "main .table-wrap": 1, "main .embed-box": 1, ".search input": 1, ".g-row": 0 };
+    for (const [sel, bottomRem] of Object.entries(boxSel)) {
+      for (const el of document.querySelectorAll(sel)) {
+        if (!el.offsetParent) continue;
+        if (el.matches("details") && el.closest(".calc")) continue;
+        const r = el.getBoundingClientRect(); const t = r.top + scrollY - offs, bt = r.bottom + scrollY - offs;
+        const tm = ((t % G) + G) % G, bm = (((bt - bottomRem) % G) + G) % G;
+        const near = x => x < 0.6 || G - x < 0.6;
+        out.push({ tag: "EDGE " + sel, d: 0, edge: `top ${Math.round(tm * 10) / 10} bottom ${Math.round(bm * 10) / 10}`, lh: "-", lhOk: near(tm) && near(bm), text: Math.round(r.height) + "px tall" });
+      }
+    }
     return out;
   });
 }
@@ -59,11 +72,11 @@ async function check(page) {
       const off = rows.filter(r => Math.abs(r.d) > 2 || !r.lhOk);
       total += rows.length; bad += off.length;
       console.log(`${label.padEnd(7)} ${path.padEnd(34)} ${String(rows.length).padStart(3)} lines, ${String(off.length).padStart(3)} off`);
-      if (verbose) off.slice(0, 12).forEach(r => console.log(`        ${r.tag.padEnd(22)} d=${String(r.d).padStart(5)} lh=${r.lh.padEnd(7)} ${r.text}`));
+      if (verbose) off.slice(0, 12).forEach(r => console.log(`        ${r.tag.padEnd(22)} ${r.edge || "d=" + String(r.d).padStart(5) + " lh=" + String(r.lh).padEnd(7)} ${r.text}`));
     }
     await page.close();
   }
   await b.close();
-  console.log(`GRID: ${total - bad}/${total} text lines on the grid (${Math.round((total - bad) / total * 100)}%)`);
+  console.log(`GRID: ${total - bad}/${total} text lines and box edges on the grid (${Math.round((total - bad) / total * 100)}%)`);
   process.exitCode = 0;
 })();

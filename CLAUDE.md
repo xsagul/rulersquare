@@ -74,10 +74,13 @@ induce în eroare.
 - Cele șase calculatoare de salarii și hub-ul lor sunt retrase, conform cererii din conversația Claude.
 - Catalog: 69 de calculatoare, în trei hub-uri (Construction, Landscaping, Costs); 79 de pagini HTML.
 - Au fost integrate cele 16 pagini de cost și 6 calculatoare începute de Claude.
-- **Textul stă pe liniile grilei, ca într-un caiet** (proprietarul, 22 noiembrie 2026): pătratul are 24 px, deci
-  rândurile au 24 px (titlurile mari 48) și spațiile sunt pătrate întregi. Chenarele care ar adăuga pixeli în plus se
-  desenează cu `outline`/`box-shadow`. `src/assets/grid.js` mută pe linia următoare textul de după o cutie cu înălțime
-  oarecare (calculator, desen). `node scripts/grid-check.js` măsoară pe pagini reale; trebuie să dea 100%.
+- **Sistemul „caiet”** (proprietarul, 22 noiembrie 2026), regulile în `src/assets/style.css`, secțiunea „Notebook
+  system”: unitatea e pătratul de 24 px; rândurile de text au 1 unitate (titlurile mari 2) și stau cu baza literelor pe
+  linie; orice linie desenată (riglă, separator, chenar) cade pe o linie a grilei; cutiile încep pe o linie și au
+  24n+1 px, cu chenarul desenat înăuntru; în calculator: margini de 1 unitate, câmpuri și butoane de 2, rânduri de 2;
+  spațiile sunt unități întregi, desenele sunt exceptate. `src/assets/grid.js` rotunjește cutiile și pune pe linie ce
+  urmează după conținut de orice înălțime. `node scripts/grid-check.js` (text și margini de cutii, desktop și telefon)
+  trebuie să dea 100% înainte de orice push care atinge CSS-ul.
 - Prima pagină are căutarea și cele 10 grupe, fără calculator în ea (proprietarul, 22 noiembrie 2026: nu aduce nimic
   față de pagina dedicată și împinge grupele în jos). Feet & inches se găsește în grupa Measure și în căutare.
 - Paginile de proiect au cel mult trei trimiteri alese manual la pașii următori.
