@@ -438,7 +438,7 @@ main { padding-bottom: 8px; }
  * One unit = one 24 px square of the grid. Checked by scripts/grid-check.js.
  * 1. Grid: lines every 24 px from the top of the page; the vertical lines start at
  *    the left edge of the content, and the content is a whole number of squares wide.
- * 2. Type scale (size / line): display 42/48 (26/24 on phones, at most 2 lines), heading 22/24,
+ * 2. Type scale (size / line): display 42/48 bold (26/24 on phones, at most 2 lines), heading 22/24 regular,
  *    group name 20/24, subheading and lede 18/24, body 17/24, small 15/24,
  *    label 13–14/24. Every baseline sits on a grid line: assets/grid.js measures the
  *    font the visitor actually has and nudges each line onto the grid; the CSS nudges
@@ -472,7 +472,9 @@ main { padding-bottom: 0; }
 /* Type scale */
 .crumbs { font-size: 14px; line-height: 24px; margin: 24px 0 0; }
 h1 { font-size: 42px; line-height: 48px; margin: 24px 0 0; }
-h2 { font-size: 22px; line-height: 24px; margin: 48px 0 0; }
+/* hierarchy by weight, not size: page title bold, section headings regular, the things you tap (groups, questions) bold */
+h2 { font-size: 22px; line-height: 24px; margin: 48px 0 0; font-weight: 400; }
+.g-head h2 { font-weight: 700; }
 h3 { font-size: 18px; line-height: 24px; margin: 24px 0 0; }
 li, main li, .refs li { line-height: 24px; margin: 0; }
 .lede { font-size: 18px; line-height: 24px; margin: 24px 0 0; }
@@ -541,7 +543,7 @@ input[type="number"], select, .combo input, .combo select, .select select { heig
 .home-groups::before { margin-bottom: 0; }
 .home-groups > h2 { margin: 24px 0 0; }
 .g-row { border: 0; box-shadow: 0 1px 0 var(--line); }
-.g-row:first-of-type { border-top: 0; box-shadow: 0 1px 0 var(--line), inset 0 1.5px var(--ink); }
+.g-row:first-of-type { border-top: 0; box-shadow: 0 1px 0 var(--line); }
 .g-row > summary { grid-template-columns: 144px 1fr 24px; gap: 24px; align-items: start; padding: 0; min-height: 120px; }
 .g-row .g-draw { width: 144px; height: 96px; margin-top: 12px; }
 .g-row .g-name { padding: 24px 0; line-height: 24px; font-size: 20px; }

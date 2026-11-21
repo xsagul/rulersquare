@@ -80,7 +80,7 @@ induce în eroare.
   24n+1 px, cu chenarul desenat înăuntru; în calculator: margini de 1 unitate, câmpuri și butoane de 2, rânduri de 2;
   spațiile sunt unități întregi, desenele sunt exceptate. `src/assets/grid.js` rotunjește cutiile și pune pe linie ce
   urmează după conținut de orice înălțime și măsoară fontul din browserul vizitatorului ca să pună baza literelor
-  pe linie (fonturile diferă pe Windows, Mac și iPhone). Scara de text: 42/48 (26/24 pe telefon: proprietarul vrea titlul pe maxim 2 rânduri, fără aer de SaaS), 22/24, 20/24,
+  pe linie (fonturile diferă pe Windows, Mac și iPhone). Scara de text: 42/48 (26/24 pe telefon: proprietarul vrea titlul pe maxim 2 rânduri, fără aer de SaaS). Ierarhia se face prin grosime, nu prin mărime sau transparență: titlul paginii bold, titlurile de secțiune normale, ce se apasă (grupe, întrebări) bold; fără linie sub titlul de secțiune de pe prima pagină (rigla separă deja), 22/24, 20/24,
   18/24, 17/24, 15/24, 13–14/24. Conținutul are lățimea în pătrate întregi, liniile verticale pornesc de la marginea
   lui. `node scripts/grid-check.js` și `node scripts/grid-check.js --fonts` (alte fonturi) trebuie să dea 100%
   înainte de orice push care atinge CSS-ul.
