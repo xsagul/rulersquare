@@ -130,6 +130,7 @@ ${page.body}
 ${isCalc ? `<script src="/assets/calc-ui.js?v=${page.version}" defer></script>` : ""}
 ${page.scripts || ""}
 ${page.dev ? `<script src="/assets/devtools.js?v=${page.version}" defer></script>` : ""}
+<script src="/assets/grid.js?v=${page.version}"></script>
 </body>
 </html>
 `;

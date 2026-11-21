@@ -74,6 +74,10 @@ induce în eroare.
 - Cele șase calculatoare de salarii și hub-ul lor sunt retrase, conform cererii din conversația Claude.
 - Catalog: 69 de calculatoare, în trei hub-uri (Construction, Landscaping, Costs); 79 de pagini HTML.
 - Au fost integrate cele 16 pagini de cost și 6 calculatoare începute de Claude.
+- **Textul stă pe liniile grilei, ca într-un caiet** (proprietarul, 22 noiembrie 2026): pătratul are 24 px, deci
+  rândurile au 24 px (titlurile mari 48) și spațiile sunt pătrate întregi. Chenarele care ar adăuga pixeli în plus se
+  desenează cu `outline`/`box-shadow`. `src/assets/grid.js` mută pe linia următoare textul de după o cutie cu înălțime
+  oarecare (calculator, desen). `node scripts/grid-check.js` măsoară pe pagini reale; trebuie să dea 100%.
 - Prima pagină are căutarea și cele 10 grupe, fără calculator în ea (proprietarul, 22 noiembrie 2026: nu aduce nimic
   față de pagina dedicată și împinge grupele în jos). Feet & inches se găsește în grupa Measure și în căutare.
 - Paginile de proiect au cel mult trei trimiteri alese manual la pașii următori.
