@@ -69,7 +69,9 @@
       var d = mod(y);                       // how far the baseline sits below a line
       var shift = d > G / 2 ? G - d : -d;   // smallest move onto a line
       t.style.position = "relative";
-      t.style.top = shift.toFixed(2) + "px";
+      // --lift: a title that sits a few px above its underline, on purpose
+      var lift = parseFloat(tcs.getPropertyValue("--lift")) || 0;
+      t.style.top = (shift - lift).toFixed(2) + "px";
     }
     busy = false;
   }

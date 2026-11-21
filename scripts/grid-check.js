@@ -36,7 +36,8 @@ async function check(page) {
       el.insertBefore(wrap, first);
       const y = probe.getBoundingClientRect().top + scrollY;
       wrap.remove();
-      let d = ((y - offs) % G + G) % G; if (d > G / 2) d -= G;
+      const lift = parseFloat(getComputedStyle(el).getPropertyValue("--lift")) || 0; // deliberate, see style.css
+      let d = ((y + lift - offs) % G + G) % G; if (d > G / 2) d -= G;
       const lh = getComputedStyle(el).lineHeight;
       const lhn = parseFloat(lh);
       const lhOk = !isNaN(lhn) && Math.abs(lhn / G - Math.round(lhn / G)) < 0.01;
