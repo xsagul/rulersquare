@@ -17,6 +17,10 @@ monetizarea, ci indexarea: pe 21 octombrie 2026, Search Console arăta 3 pagini 
 - Cloudflare Workers cu assets statice, contul `rulersquare` (`c301a52e9c21052e9b611b05e38c19dc`).
   `npm run deploy` rulează build-ul, testele și auditul, apoi `wrangler deploy`. Wrangler trebuie
   să fie logat cu acces la contul `rulersquare`; un token pe contul personal dă eroarea 10000.
+- **Publicarea e automată din 22 noiembrie 2026:** Cloudflare Workers Builds e legat de repo-ul
+  `xsagul/rulersquare`, branch-ul `main` (build `npm run build`, deploy `npx wrangler deploy`).
+  Orice push pe `main` publică site-ul; rulează `npm run check` înainte de push, fiindcă build-ul
+  din Cloudflare nu rulează testele. `npm run deploy` rămâne varianta manuală.
 - `npm run check` = build + 305 de teste pe motoare + audit (sitemap, canonical, metadata,
   JSON-LD, linkuri interne). Rulează-l înainte de orice commit.
 - `npm run indexnow` trimite sitemap-ul la Bing și Yandex după un deploy cu conținut nou.
