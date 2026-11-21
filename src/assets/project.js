@@ -29,42 +29,60 @@
         const perRow = ceil(v.length / v.boardLength);
         const base = boardRows * perRow;
         count = ceil(base * extra);
+        // Joists run across the boards, spaced along the deck length. Two screws per
+        // board at every joist (≈350 per 100 ft² at 16 in on center, the rate the page
+        // already states); hidden clips take one per board per joist instead.
+        const joists = ceil(v.length * 12 / (v.joistSpacing || 16)) + 1;
         rows = [
           row("Deck boards to buy", count, "boards"),
           row("Deck surface", v.length * v.width, "ft²", 1),
           row("Rows across the deck", boardRows),
           row("Stock boards per row", perRow),
-          row("Boards before allowance", base),
+          row(`Joists at ${v.joistSpacing || 16} in on center`, joists, "joists"),
+          row("Deck screws (2 per board at each joist)", 2 * boardRows * joists, "screws"),
+          row("Or hidden clips (1 per board at each joist)", boardRows * joists, "clips"),
           row("Board material cost", count * (v.price || 0), "$", 2),
         ];
-        note = "Surface decking boards running along the deck length. Joists, beams, footings, stairs and fasteners are separate.";
+        note = "Surface boards running along the deck length. Beams, posts, footings, railings and stairs are separate; diagonal decking needs joists at 12 in on center.";
         break;
       }
-      case "siding":
-        area = v.area - v.openings;
-        if (area <= 0) throw new Error("Openings must be smaller than the total wall area.");
+      case "siding": {
+        const walls = v.perimeter * v.wallHeight;
+        const gables = (v.gables || 0) * 0.5 * (v.gableBase || 0) * (v.gableHeight || 0);
+        const openings = (v.doors || 0) * (v.doorArea || 0) + (v.windows || 0) * (v.windowArea || 0);
+        area = walls + gables - openings;
+        if (area <= 0) throw new Error("Doors and windows must be smaller than the wall area.");
         needed = area * extra;
+        const squares = needed / 100;
         rows = [
           row("Siding to order", needed, "ft²", 1),
-          row("Siding squares", needed / 100, "squares", 2),
-          row("Net wall area", area, "ft²", 1),
-          row("Material allowance", needed - area, "ft²", 1),
+          row("Siding squares", squares, "squares", 2),
+          row("Vinyl boxes (2 squares each)", ceil(squares / 2), "boxes"),
+          row("Wall area", walls, "ft²", 1),
+          row("Gable area", gables, "ft²", 1),
+          row("Doors and windows subtracted", openings, "ft²", 1),
           row("Material cost", needed * (v.price || 0), "$", 2),
         ];
         note = "Based on exposed coverage after overlap. Add starter strip, J-channel, corners and soffit separately.";
         break;
+      }
       case "drywall":
         area = 2 * (v.length + v.width) * v.height + (v.ceiling === 1 ? v.length * v.width : 0) - v.openings;
         if (area <= 0) throw new Error("Openings must be smaller than the wall and ceiling area.");
         count = ceil(area * extra / v.sheetArea);
+        // Accessories at the rates printed on the page (USG / CertainTeed guidance):
+        // 35 screws and 35–40 ft of tape per 4×8 sheet, 1 gal of joint compound per
+        // 100 ft² for a Level 4 finish. Scaled to the chosen sheet size.
         rows = [
           row("Drywall sheets to buy", count, "sheets"),
           row("Net surface area", area, "ft²", 1),
           row("Area with waste", area * extra, "ft²", 1),
-          row("Sheet coverage", v.sheetArea, "ft²"),
+          row("Screws (about 35 per 4×8 sheet)", ceil(count * 35 * v.sheetArea / 32), "screws"),
+          row("Joint compound, Level 4 finish", ceil(area / 100), "gal"),
+          row("Joint tape", ceil(count * 37.5 * v.sheetArea / 32), "ft"),
           row("Sheet material cost", count * (v.price || 0), "$", 2),
         ];
-        note = "Single layer of drywall for one rectangular room. Add joint tape, mud, corner bead and screws (~35 screws per 4×8 sheet).";
+        note = "Single layer of drywall for one rectangular room. Add corner bead for outside corners; a Level 5 finish takes more compound.";
         break;
       case "tile":
       case "paver": {
@@ -122,15 +140,25 @@
         const courses = ceil(v.height * 12 / v.blockHeight) + v.buried;
         const perCourse = ceil(v.length * 12 / v.blockLength);
         count = courses * perCourse;
+        // Stone the page already prescribes: a 6-in compacted leveling pad that runs
+        // 6 in past the block front and back, and 12 in of clean #57 stone behind the
+        // full wall height. #57 at 2,700 lb/yd³ (materials table).
+        const depth = v.blockDepth || 12;
+        const padYd3 = v.length * (depth + 12) / 12 * 0.5 / 27;
+        const drainYd3 = v.length * 1 * (courses * v.blockHeight / 12) / 27;
         rows = [
           row("Wall blocks to buy", ceil(count * extra), "blocks"),
           row("Blocks per course", perCourse),
           row("Courses including buried rows", courses),
           row("Cap pieces", ceil(v.length * 12 / v.capLength), "caps"),
+          row("Base pad stone (6 in deep)", padYd3, "yd³", 2),
+          row("Drainage stone behind the wall (12 in)", drainYd3, "yd³", 2),
+          row("Base + drainage stone by weight", (padYd3 + drainYd3) * 2700 / 2000, "tons", 2),
+          row("Perforated drain pipe", v.length, "ft", 0),
           row("Exposed wall face", v.length * v.height, "ft²", 1),
           row("Block material cost", ceil(count * extra) * (v.price || 0), "$", 2),
         ];
-        note = "Straight level wall; cap thickness adds to finished height. Order crushed stone base, drainage pipe and adhesive separately.";
+        note = "Straight level wall; cap thickness adds to finished height. Walls over 3–4 ft usually need geogrid and an engineer.";
         break;
       }
       case "insulation":

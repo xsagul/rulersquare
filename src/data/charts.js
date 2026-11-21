@@ -371,14 +371,16 @@ const BUILD = {
       "Swap standard blocks for corner, half, or lintel units where needed.")];
   },
   "siding-calculator": c => [
-    chart("chart", "By wall area", "Siding squares and boxes by net wall area",
-      "Includes 10% waste; standard vinyl siding is boxed at 2 squares (200 ft²) per carton.",
-      ["Net wall area", "Order (+10%)", "Siding squares", "2-sq vinyl boxes"],
-      [800, 1200, 1500, 2000, 2500, 3000].map(a => {
-        const sq = value("siding", { area: a, openings: 0, waste: 10 }, "Siding squares");
-        return [`${num(a)} ft²`, `${num(a * 1.1)} ft²`, num(sq, 1), num(Math.ceil(sq / 2))];
+    chart("chart", "By house size", "Siding for a single-story house by footprint",
+      "9-ft walls and two gables on the short sides at a 6/12 roof pitch, before subtracting doors and windows; includes 10% waste. Vinyl is boxed at 2 squares (200 ft²) per carton.",
+      ["House footprint", "Walls + gables", "Order (+10%)", "Siding squares", "2-sq vinyl boxes"],
+      [[30, 20], [40, 25], [40, 30], [50, 30], [60, 30], [60, 40]].map(([l, w]) => {
+        const v = { perimeter: 2 * (l + w), wallHeight: 9, gables: 2, gableBase: w, gableHeight: w / 4, doors: 0, windows: 0, doorArea: 20, windowArea: 15, waste: 10 };
+        const gross = value("siding", v, "Wall area") + value("siding", v, "Gable area");
+        const sq = value("siding", v, "Siding squares");
+        return [`${l} × ${w} ft`, `${num(gross)} ft²`, `${num(gross * 1.1)} ft²`, num(sq, 1), num(Math.ceil(sq / 2))];
       }),
-      "Use 15% waste on homes with multiple gables and dormers."),
+      "Subtract roughly 20 ft² per door and 15 ft² per window, and use 15% waste on homes with several gables or dormers."),
   ],
   "asphalt-driveway-cost": c => [costBySize(c, "Asphalt driveway cost by size", [[10, 20], [12, 40], [12, 50], [20, 30], [20, 40], [24, 50]],
     "New residential hot-mix asphalt at $6–$9/ft² including compacted gravel base, before old-pavement removal.")],

@@ -56,6 +56,7 @@ const PROJ = [
     advanced: [
       n("boardWidth", "Actual board width", "in", 5.5),
       n("gap", "Gap between boards", "in", 0.25, { min: 0 }),
+      n("joistSpacing", "Joist spacing (on center)", "in", 16, { options: [[12, "12 in (diagonal decking)"], [16, "16 in (most decks)"], [24, "24 in (check board rating)"]] }),
       waste(10),
       price("Price per stock board", "$/board"),
     ],
@@ -69,8 +70,8 @@ const PROJ = [
     formula: "Rows = round up((deck width × 12 + gap) ÷ (board width + gap))<br>Boards per row = round up(deck length ÷ stock length)<br>Order = round up(rows × boards per row × (1 + waste % ÷ 100))",
     example: {
       title: "Example: a 16 × 12-foot deck",
-      values: { length: 16, width: 12, boardLength: 16, boardWidth: 5.5, gap: 0.25, waste: 10, price: 0 },
-      text: "A 192 ft² deck with 5.5-inch boards and ¼-inch gaps needs 26 rows across the 12-foot width. One 16-foot stock board spans each row, so 26 boards + 10% waste = 29 boards.",
+      values: { length: 16, width: 12, boardLength: 16, boardWidth: 5.5, gap: 0.25, joistSpacing: 16, waste: 10, price: 0 },
+      text: "A 192 ft² deck with 5.5-inch boards and ¼-inch gaps needs 26 rows across the 12-foot width. One 16-foot stock board spans each row, so 26 boards + 10% waste = 29 boards. With joists every 16 inches (13 joists over 16 feet), two screws per board at each joist comes to 676 deck screws.",
     },
     buy: "<p>Standard 5/4×6 wood and composite decking measures <strong>5.5 inches wide</strong>. Leave a ⅛- to ¼-inch gap for drainage and swelling (wet pressure-treated boards can be installed tight because they shrink as they dry).</p><p>Order joists, beams, ledger hardware, footing concrete, railings and screws separately—plan on roughly 350 deck screws per 100 ft² of surface.</p>",
     faq: [
@@ -84,24 +85,36 @@ const PROJ = [
   {
     slug: "siding-calculator", kind: "siding", h1: "Siding Calculator",
     title: "Siding Calculator – Sq Ft & Squares",
-    description: "Calculate siding square feet, siding squares (100 sq ft) and material cost from exterior wall area, deducting doors and windows.",
-    lede: "Find total siding square feet, squares and cost for exterior walls.",
+    description: "Calculate siding square feet, squares and boxes from your house perimeter, wall height and gables, subtracting doors and windows.",
+    lede: "Measure around the house, add the gables, and get siding squares and boxes.",
+    // 21 Nov 2026: the top results (inchcalculator, LS-USA) take wall width × height,
+    // gable height and door/window counts; asking for a finished wall area left the
+    // hard part to the visitor.
     fields: [
-      n("area", "Total exterior wall area", "ft²", undefined, { units: "area", hint: "Include all exterior walls and gables (not floor square footage)." }),
-      n("openings", "Doors and windows to subtract", "ft²", 0, { units: "area", min: 0 }),
+      n("perimeter", "House perimeter (all walls to side)", "ft", undefined, { units: "length", hint: "Walk around the house and add every wall length." }),
+      n("wallHeight", "Wall height (ground to eaves)", "ft", 9, { units: "length" }),
+      n("gables", "Gable ends to side", "", 2, { min: 0, max: 20, step: 1 }),
+      n("gableBase", "Gable width (at the eaves)", "ft", "", { units: "length", min: 0, optional: true }),
+      n("gableHeight", "Gable height (eaves to peak)", "ft", "", { units: "length", min: 0, optional: true }),
+      n("doors", "Exterior doors", "", 2, { min: 0, max: 50, step: 1 }),
+      n("windows", "Windows", "", 10, { min: 0, max: 200, step: 1 }),
     ],
-    advanced: [waste(10), price("Material price per sq ft", "$/ft²")],
+    advanced: [
+      n("doorArea", "Area per door", "ft²", 20, { min: 0 }),
+      n("windowArea", "Area per window", "ft²", 15, { min: 0 }),
+      waste(10), price("Material price per sq ft", "$/ft²"),
+    ],
     presets: [
-      ["1,600 ft² ranch", { area: 1600, openings: 200, waste: 10 }],
-      ["2,400 ft² two-story", { area: 2400, openings: 320, waste: 10 }],
+      ["40×30 ranch", { perimeter: 140, wallHeight: 9, gables: 2, gableBase: 30, gableHeight: 7.5, doors: 2, windows: 10, doorArea: 20, windowArea: 15, waste: 10 }],
+      ["Two-story 40×30", { perimeter: 140, wallHeight: 18, gables: 2, gableBase: 30, gableHeight: 7.5, doors: 2, windows: 16, doorArea: 20, windowArea: 15, waste: 10 }],
     ],
     methodTitle: "How to calculate siding",
-    method: "Measure each rectangular wall (width × height) and each triangular gable (½ × base × peak height). Sum every exterior face, subtract major doors and windows, add 10–15% for cuts, then divide by 100 for siding squares.",
-    formula: "Net area = wall area − openings<br>Order area = net area × (1 + waste % ÷ 100)<br>Siding squares = order area ÷ 100",
+    method: "Multiply the house perimeter by the wall height for the rectangular walls, then add each triangular gable (½ × width × height). Subtract the doors and windows, add 10–15% for cuts and overlaps, and divide by 100 to get siding squares. Vinyl usually comes 2 squares to a box.",
+    formula: "Walls = perimeter × wall height<br>Gables = gable ends × ½ × gable width × gable height<br>Net area = walls + gables − doors × area per door − windows × area per window<br>Order area = net area × (1 + waste % ÷ 100); squares = order area ÷ 100",
     example: {
-      title: "Example: 1,600 sq ft of exterior walls",
-      values: { area: 1600, openings: 200, waste: 10, price: 0 },
-      text: "1,600 ft² minus 200 ft² of doors and windows leaves 1,400 ft². Adding 10% waste gives 1,540 ft², or 15.4 siding squares (order 16 squares / 8 standard two-square boxes of vinyl).",
+      title: "Example: a 40 × 30-foot ranch",
+      values: { perimeter: 140, wallHeight: 9, gables: 2, gableBase: 30, gableHeight: 7.5, doors: 2, windows: 10, doorArea: 20, windowArea: 15, waste: 10, price: 0 },
+      text: "The walls are 140 ft × 9 ft = 1,260 ft². Two 30-ft gables 7.5 ft tall add 2 × ½ × 30 × 7.5 = 225 ft². Two doors (40 ft²) and ten windows (150 ft²) come off, leaving 1,295 ft². With 10% extra that is 1,424.5 ft², or 14.25 squares—order 15 squares, which is 8 two-square boxes of vinyl.",
     },
     buy: "<p>Check <strong>exposed coverage</strong> on lap siding: an 8¼-inch fiber-cement plank overlapped 1¼ inches only exposes 7 inches of wall. Box labels list actual exposed square footage.</p><p>Measure outside corners, inside corners, J-channel around windows, starter strip, fascia and soffit separately in linear feet.</p>",
     faq: [
@@ -140,7 +153,7 @@ const PROJ = [
     example: {
       title: "Example: a 12 × 10-foot room",
       values: { length: 12, width: 10, height: 8, ceiling: 1, sheetArea: 32, openings: 0, waste: 10, price: 0 },
-      text: "Walls equal 352 ft² and the ceiling adds 120 ft² (472 ft² total). With 10% waste, 519.2 ÷ 32 = 16.23, so order 17 sheets of 4×8 drywall.",
+      text: "Walls equal 352 ft² and the ceiling adds 120 ft² (472 ft² total). With 10% waste, 519.2 ÷ 32 = 16.23, so order 17 sheets of 4×8 drywall—plus about 595 screws, 5 gallons of joint compound and 640 ft of tape.",
     },
     buy: "<p>Use <strong>½-inch</strong> standard board on interior walls, <strong>⅝-inch Type X</strong> on garage walls/ceilings and fire-rated barriers, and moisture-resistant board in bathrooms.</p><p>Plan on roughly <strong>1 lb of drywall screws per 8–10 sheets</strong> (35 screws per 4×8 sheet), 1 gallon of pre-mixed joint compound per 100 ft² for a Level 4 finish, and 35–40 ft of tape per sheet.</p>",
     faq: [
@@ -320,6 +333,7 @@ const PROJ = [
     advanced: [
       n("buried", "Buried base courses", "", 1, { min: 0, max: 100, step: 1, hint: "Typically 1 buried course (6 in) for walls up to 4 ft." }),
       n("capLength", "Cap stone length", "in", 16),
+      n("blockDepth", "Block depth (front to back)", "in", 12, { min: 4, max: 36 }),
       waste(5),
       price("Price per wall block", "$/block"),
     ],
@@ -333,8 +347,8 @@ const PROJ = [
     formula: "Blocks per course = round up(length × 12 ÷ block length)<br>Courses = round up(exposed height × 12 ÷ block height) + buried courses<br>Total blocks = round up(blocks per course × courses × allowance)",
     example: {
       title: "Example: a 20-foot wall, 2 feet exposed",
-      values: { length: 20, height: 2, blockLength: 16, blockHeight: 6, buried: 1, capLength: 16, waste: 5, price: 0 },
-      text: "A 20-foot row takes 15 blocks (16 in long). Two feet exposed takes 4 courses plus 1 buried course = 5 courses = 75 blocks, or 79 blocks with 5% extra, plus 15 cap pieces.",
+      values: { length: 20, height: 2, blockLength: 16, blockHeight: 6, blockDepth: 12, buried: 1, capLength: 16, waste: 5, price: 0 },
+      text: "A 20-foot row takes 15 blocks (16 in long). Two feet exposed takes 4 courses plus 1 buried course = 5 courses = 75 blocks, or 79 blocks with 5% extra, plus 15 cap pieces. Under it goes a 24-inch-wide, 6-inch-deep stone pad (0.74 yd³), and behind it 12 inches of drainage stone up the full 2.5-foot block height (1.85 yd³)—about 3.5 tons of #57 stone in all.",
     },
     buy: "<p>Build over a <strong>6-inch compacted crushed-stone leveling pad</strong> and backfill at least 12 inches behind the wall with clean #57 drainage stone and a perforated drain pipe to relieve water pressure. Most municipalities require engineered drawings and geogrid for walls over <strong>3 to 4 feet tall</strong>.</p>",
     faq: [
