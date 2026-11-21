@@ -24,10 +24,15 @@
     probe.style.cssText = "display:inline-block;width:0;height:0;vertical-align:baseline;padding:0;margin:0;border:0";
     wrap.appendChild(probe); wrap.appendChild(document.createTextNode("​"));
     el.insertBefore(wrap, el.firstChild);
-    var y = probe.getBoundingClientRect().top + window.scrollY;
+    var y = probe.getBoundingClientRect().top - pageTop();
     el.removeChild(wrap);
     return y;
   }
+  // positions are taken against the page itself, not window.scrollY: on iPhones the
+  // address bar animating in and out moves scrollY out of step with the layout
+  function pageTop() { return document.documentElement.getBoundingClientRect().top; }
+  var lastKey = "";
+  function key() { return document.documentElement.clientWidth + "|" + document.body.offsetHeight; }
   function run() {
     if (busy) return; busy = true;
     var main = document.querySelector("main");
@@ -52,7 +57,7 @@
       var cs = getComputedStyle(el);
       if (cs.display === "none" || cs.position === "absolute" || cs.position === "fixed") continue;
       var isBox = el.matches(BOX + "," + EDGE);
-      var top = el.getBoundingClientRect().top + window.scrollY - nudgeOf(cs) + (isBox ? 0 : parseFloat(cs.borderTopWidth) + parseFloat(cs.paddingTop));
+      var top = el.getBoundingClientRect().top - pageTop() - nudgeOf(cs) + (isBox ? 0 : parseFloat(cs.borderTopWidth) + parseFloat(cs.paddingTop));
       var r = mod(top);
       if (r < 0.3 || G - r < 0.3) continue;
       if (isBox) el.style.marginTop = (parseFloat(cs.marginTop) + G - r) + "px";
@@ -73,11 +78,14 @@
       var lift = parseFloat(tcs.getPropertyValue("--lift")) || 0;
       t.style.top = (shift - lift).toFixed(2) + "px";
     }
+    lastKey = key();
     busy = false;
   }
   run();
   var queued = false;
-  function later() { if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; run(); }); } }
+  // re-run only when the width or the content height really changed (a result, an opened section),
+  // not when the address bar or a menu overlay changes the window height
+  function later() { if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; if (key() !== lastKey) run(); }); } }
   if (window.ResizeObserver) new ResizeObserver(later).observe(document.body);
   window.addEventListener("load", later);
   window.addEventListener("resize", later);
