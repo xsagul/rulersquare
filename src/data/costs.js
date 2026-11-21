@@ -331,6 +331,9 @@ const COSTS = items.map(c => {
         ? [n("quantity", c.quantityLabel, c.costUnit)]
         : [n("length", "Length", "ft"), n("width", c.widthLabel || "Width", "ft")]),
       ...rateSelect,
+      ...(c.addons || []).map(a => a.options
+        ? { name: a.name, label: a.label, value: a.options[0][0], options: a.options.map(([v, label]) => [v, label]) }
+        : n(a.name, a.label, a.unit, undefined, { min: 0, step: 1, optional: true, hint: a.hint })),
       n("low", "Low rate", "$/" + (c.costUnit || "ft²"), c.low, { min: 0, group: "rate" }),
       n("high", "High rate", "$/" + (c.costUnit || "ft²"), c.high, { min: 0, group: "rate" }),
     ],

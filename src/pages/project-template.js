@@ -324,6 +324,7 @@ function projectPage(c) {
       kind: c.kind,
       costUnit: c.costUnit,
       laborShare: c.laborShare,
+      addons: c.addons,
       example: c.example.values,
       unitBase: unitBase(c),
       presetMaps: c.presetMaps,

@@ -591,14 +591,32 @@
         const quantity = v.quantity || v.length * v.width;
         if (v.high < v.low) throw new Error("The high unit price must be at least the low unit price.");
         const extras = (v.delivery || 0) + (v.removal || 0) + (v.other || 0);
-        const workLow = quantity * v.low;
-        const workHigh = quantity * v.high;
+        // Priced add-ons: counted items (stairs) or a per-area option (texture).
+        const addonRows = [];
+        let addLow = 0, addHigh = 0;
+        (v.addons || []).forEach(a => {
+          let lo = 0, hi = 0, label = a.label;
+          if (a.options) {
+            const o = a.options.find(o => o[0] === v[a.name]);
+            if (!o || !o[3]) return;
+            lo = quantity * o[2]; hi = quantity * o[3]; label = o[4] || a.label;
+          } else {
+            const count = v[a.name] || 0;
+            if (!count) return;
+            lo = count * a.low; hi = count * a.high; label = a.label + " (" + count + " " + a.unit + ")";
+          }
+          addLow += lo; addHigh += hi;
+          addonRows.push(row(label, [lo, hi], "$", 0));
+        });
+        const workLow = quantity * v.low + addLow;
+        const workHigh = quantity * v.high + addHigh;
         const low = workLow + extras;
         const high = workHigh + extras;
         rows = [
           row("Planning range", [low * extra, high * extra], "$", 0),
           row("Measured quantity", quantity, v.costUnit || "ft²", 2),
           row("Unit rate applied", [v.low, v.high], "$/" + (v.costUnit || "ft²"), 2),
+          ...addonRows,
           row("Work before extras", [workLow, workHigh], "$", 0),
         ];
         const laborShare = v.costUnit === "yd³" ? 0 : (typeof v.laborShare === "number" ? v.laborShare : 0.5);
@@ -1176,6 +1194,7 @@
     convertUnits(values, cfg.unitBase);
     values.costUnit = cfg.costUnit;
     if (typeof cfg.laborShare === "number") values.laborShare = cfg.laborShare;
+    if (cfg.addons) values.addons = cfg.addons;
     try {
       const result = calculate(cfg.kind, values);
       error.hidden = true;

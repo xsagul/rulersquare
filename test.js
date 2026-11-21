@@ -68,6 +68,18 @@ for (const c of [...require("./src/data/projects").PROJ, ...require("./src/data/
   assert(result.rows.every(r => [].concat(r.value).every(Number.isFinite)), c.slug + ": all example outputs finite");
 }
 {
+  const {calculate} = require("./src/assets/project");
+  const {COSTS} = require("./src/data/costs");
+  const carpet = COSTS.find(c => c.slug === "carpet-installation-cost");
+  const stairs = calculate("cost", {...carpet.example.values, stairs: 12, addons: carpet.addons});
+  assert(stairs.rows[0].value[0] === 972 && stairs.rows[0].value[1] === 2760, "carpet cost: 12 steps add $432–$780");
+  const drywall = COSTS.find(c => c.slug === "drywall-installation-cost");
+  const tex = calculate("cost", {...drywall.example.values, texture: "light", addons: drywall.addons});
+  assert(tex.rows[0].value[0] === 2000 && tex.rows[0].value[1] === 4500, "drywall cost: light texture adds $0.50–$1/ft²");
+  const smooth = calculate("cost", {...drywall.example.values, texture: "none", addons: drywall.addons});
+  assert(smooth.rows[0].value[0] === 1500, "drywall cost: smooth finish adds nothing");
+}
+{
   const {calc:material} = require("./src/assets/material");
   const v = {areaFt2:108, depth:3, depthUnit:"in", density:2000, bagSize:3, material:"gravel", price:50, priceUnit:"ton"};
   const a = material("area",v), b = material("area",{...v,density:3000});
