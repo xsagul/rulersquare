@@ -175,7 +175,40 @@ function markMeasured(c) {
 
 /* Strip direct SERP calculator competitors from outbound citations; mark
  * third-party consumer cost aggregators nofollow so PageRank stays clean. */
-const SKIP_SOURCE = /(?:inchcalculator\.com|calculator\.net|calculatorsoup\.com|homedepot\.com|lowes\.com)/i;
+/* "Before you buy" said nothing about what the section holds; competitors name the
+ * same topics plainly (screws and mud, joint sand, ridge cap). Title = what the
+ * existing text covers; second item = short jump-link label. 21 Nov 2026. */
+const BUY_TITLES = {
+  "fence-calculator": ["Picket width, corners and post concrete", "Ordering"],
+  "deck-calculator": ["Board width, gaps and what else to order", "Ordering"],
+  "siding-calculator": ["Exposure, trim and accessories", "Trim"],
+  "drywall-calculator": ["Board type, screws and joint compound", "Screws & mud"],
+  "tile-calculator": ["Waste by layout and spare tiles", "Waste"],
+  "paver-calculator": ["Base width, joint sand and edging", "Base & sand"],
+  "paint-calculator": ["Coverage, primer and ceilings", "Primer"],
+  "roofing-calculator": ["Starter strip, ridge cap and underlayment", "Accessories"],
+  "retaining-wall-calculator": ["Base pad, drainage stone and engineering", "Drainage"],
+  "insulation-calculator": ["Batt width, compression and air sealing", "Installing"],
+  "board-and-batten-calculator": ["Batten sizes and taping out the layout", "Layout"],
+  "grout-calculator": ["Sanded or unsanded, and matching batches", "Grout type"],
+  "thinset-calculator": ["Choosing the mortar and getting full coverage", "Mortar type"],
+  "cubic-yard-calculator": ["Irregular areas and converting to tons", "Tips"],
+  "feet-and-inches-calculator": ["Converting inches to decimal feet", "Decimal feet"],
+  "cubic-feet-calculator": ["Cubic feet or cubic yards", "Units"],
+  "board-foot-calculator": ["Rough lumber thickness in quarters", "Quarters"],
+  "roof-pitch-calculator": ["Rafter length: overhang and ridge board", "Rafters"],
+  "stair-calculator": ["Measuring the total rise correctly", "Measuring"],
+  "brick-calculator": ["Bricks per square foot and mortar", "Mortar"],
+  "ramp-calculator": ["Landings and handrails", "Landings"],
+  "framing-calculator": ["Extra studs at doors and windows", "Openings"],
+  "rebar-calculator": ["Chairs, cover and lap splices", "Placement"],
+  "sod-calculator": ["Preparing the ground before delivery", "Prep"],
+  "markup-calculator": ["Markup and margin side by side", "Margin"],
+  "labor-cost-calculator": ["Finding your real burden rate", "Burden"],
+  "tank-volume-calculator": ["Inside dimensions and water weight", "Measuring"],
+};
+
+const SKIP_SOURCE =/(?:inchcalculator\.com|calculator\.net|calculatorsoup\.com|homedepot\.com|lowes\.com)/i;
 const NOFOLLOW_SOURCE = /(?:fixr\.com|homeguide\.com|thisoldhouse\.com|concretenetwork\.com|todayshomeowner\.com|tileshop\.com)/i;
 
 function renderSources(list) {
@@ -316,17 +349,17 @@ function projectPage(c) {
 ${c.context || ""}
 <noscript><p class="note">Turn on JavaScript to use the calculator. The formula, tables and worked example below work without it.</p></noscript>
 ${byline(UPDATED)}
-${embedSnippet(path, c.h1)}
-<nav class="jump-links" aria-label="On this page"><a href="#method">Formula</a><a href="#example">Example</a>${charts.map(t => `<a href="#${t.id}">${esc(t.jump)}</a>`).join("")}<a href="#before-you-buy">${esc(c.buyJump || "Buying guide")}</a><a href="#questions">FAQs</a></nav>
+<nav class="jump-links" aria-label="On this page"><a href="#method">Formula</a><a href="#example">Example</a>${charts.map(t => `<a href="#${t.id}">${esc(t.jump)}</a>`).join("")}<a href="#before-you-buy">${esc(c.buyJump || BUY_TITLES[c.slug]?.[1] || "Buying guide")}</a><a href="#questions">FAQs</a></nav>
 <div class="prose">
   <h2 id="method">${esc(c.methodTitle)}</h2><p>${c.method}</p><div class="formula">${c.formula}</div>
   <h2 id="example">${esc(c.example.title)}</h2><p>${c.example.text}</p>
   ${charts.map(chartHtml).join("")}
-  <h2 id="before-you-buy">${esc(c.buyTitle || "Before you buy")}</h2>${c.buy}
+  <h2 id="before-you-buy">${esc(c.buyTitle || BUY_TITLES[c.slug]?.[0] || "Before you buy")}</h2>${c.buy}
   ${c.extra || ""}${EXTRAS[c.slug] || ""}
   <h2 id="questions">Frequently asked questions</h2>${c.faq.map(([q, a]) => `<h3>${esc(q)}</h3><p>${a}</p>`).join("")}
   <h2>Related calculators</h2><ul class="related-links">${relatedLinks(c, path).map(([href, label]) => `<li><a href="${href}">${esc(label)}</a></li>`).join("")}</ul>
   ${sourcesHtml ? `<h2>References</h2><ul class="refs">${sourcesHtml}</ul>` : ""}<p class="note">${esc(c.sourceNote || "Formulas use standard US geometry and trade coverage rates. Verify product specs and local building codes before ordering.")} Updated ${UPDATED.text}.</p>
+${embedSnippet(path, c.h1)}
 </div>`,
   };
 }

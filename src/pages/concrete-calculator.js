@@ -41,10 +41,6 @@ const table = (head, rows) => `<div class="table-wrap"><table>
 </table></div>`;
 
 const faq = [
-  ["How many bags of concrete are in a cubic yard?",
-   "One cubic yard (27 cubic feet) takes 45 bags of 80 lb concrete (0.60 ft³ each), 60 bags of 60 lb (0.45 ft³), 72 bags of 50 lb (0.375 ft³), or 90 bags of 40 lb concrete (0.30 ft³)."],
-  ["How much extra concrete should I order?",
-   "Order 5% to 10% extra for spillage, uneven subgrade, and forms that flex under wet weight. Use 10% to 15% for excavated footings and trenches where actual width runs wider than planned—running short mid-pour creates a weak cold joint."],
   ["When should I order ready-mix instead of bags?",
    "Under 1 cubic yard (fewer than 45 eighty-pound bags), bagged mix is usually easier and avoids ready-mix short-load fees. Over 1 cubic yard, a ready-mix truck is faster, produces a uniform pour without cold joints, and costs less per yard."],
   ["How thick should a concrete slab be?",
@@ -198,7 +194,6 @@ module.exports = {
   </section>
 </form>
 ${byline(UPDATED)}
-${embedSnippet("/concrete-calculator/", "Concrete Calculator")}
 <nav class="jump-links" aria-label="On this page"><a href="#formula">Formula</a><a href="#bags">Bags per yard</a><a href="#slab-chart">Common slabs</a><a href="#cost">Cost</a><a href="#waste">Waste</a><a href="#questions">FAQs</a></nav>
 
 <div class="prose">
@@ -258,6 +253,7 @@ ${faq.map(([q, a]) => `<h3>${q}</h3>\n<p>${a}</p>`).join("\n")}
   <li><a href="https://www.concrete.org/" rel="noopener">American Concrete Institute (ACI) — residential flatwork standards</a></li>
 </ul>
 <p class="note">Standard geometry: 1 cubic yard = 27 cubic feet. Verify mix PSI, thickness, and reinforcement with local building codes. Updated ${UPDATED.text}.</p>
+${embedSnippet("/concrete-calculator/", "Concrete Calculator")}
 </div>
 `,
 };

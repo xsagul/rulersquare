@@ -4,12 +4,41 @@ const { slab, round, shapeSet } = require("../diagrams");
 const { EXTRAS } = require("../data/extras");
 const { byline, authorRef, UPDATED } = require("../author");
 
+const TRUCK_PAGES = new Set(["/gravel-calculator/", "/road-base-calculator/", "/fill-dirt-calculator/"]);
+
+/* Depth by use, taken from each page's own depth guidance (no new figures), so the
+ * answer competitors give as a table is a table here too. `note` keeps only the
+ * practical part of the old prose; the numbers live in the table. */
+const DEPTH_USES = {
+  "/gravel-calculator/": { rows: [["Refresh layer over a firm existing driveway", "3–4 in"], ["New driveway over bare soil (three compacted lifts)", "8–12 in total"]], note: "A new driveway is built in three lifts: #3 coarse stone at the bottom, #57 in the middle and crusher run on top." },
+  "/stone-calculator/": { rows: [["Paver or patio base over firm soil", "4 in"], ["Paver or patio base over clay or in freeze-thaw climates", "6 in"]], note: "Compact in 2-inch lifts with a plate compactor so the bottom layer locks solid." },
+  "/sand-calculator/": { rows: [["Paver bedding sand (screeded, loose)", "1 in"], ["Children's sandbox (washed play sand)", "6–12 in"], ["Structural backfill (each compacted lift)", "4–6 in"]], note: "Screed paver bedding sand loose—never plate-compact it before laying pavers." },
+  "/topsoil-calculator/": { rows: [["New grass seed or sod", "4–6 in"], ["Topdressing an established lawn", "¼–½ in at a time"]], note: "Topdress a little at a time so you do not smother the existing grass." },
+  "/mulch-calculator/": { rows: [["Established beds", "2–3 in"], ["Bare new beds (weed control)", "3–4 in"], ["Maximum anywhere", "4 in"]], note: "Never pile mulch against tree trunks—leave a 2–3 inch bare collar around the bark so stems stay dry." },
+  "/river-rock-calculator/": { rows: [["Decorative beds, ¾–1½ in stone", "2–3 in"], ["Dry creek beds and erosion swales", "4–6 in"], ["Driveways", "Not recommended"]], note: "Rule of thumb: the layer should be at least twice as deep as the rock is wide. Round stone shifts under tires, which is why it does not belong on a driveway." },
+  "/asphalt-calculator/": { rows: [["Residential driveway (over 6–8 in compacted road base)", "2–3 in"], ["Commercial lot with delivery trucks", "3–4 in"], ["Overlay on sound existing asphalt", "1.5–2 in"]] },
+  "/road-base-calculator/": { rows: [["Gravel or asphalt driveway", "6–8 in compacted"], ["Driveway over clay or in frost-heave zones", "10–12 in compacted"], ["Under a paver patio", "4–6 in"]], note: "Compact in 2- to 4-inch lifts—a plate compactor only densifies the top few inches." },
+  "/pea-gravel-calculator/": { rows: [["Walking paths and patios", "2 in"], ["Maximum before it feels loose underfoot", "3 in"]], note: "Deeper than 3 inches feels like walking in dry beach sand. Install edging around every pea gravel area so the pebbles stay contained." },
+  "/decomposed-granite-calculator/": { rows: [["Patios and light driveways (over 3–4 in compacted road base)", "2-in lifts"], ["Garden paths over firm native soil", "2–3 in"]], note: "Water each lift lightly and compact it with a vibratory plate compactor." },
+  "/compost-calculator/": { rows: [["Topdressing an established lawn (after core aeration)", "¼–½ in"], ["Vegetable beds (worked into the top 6–8 in of soil)", "2–3 in"]] },
+};
+
+function depthSection(cfg) {
+  const d = DEPTH_USES[cfg.path];
+  if (!d) {
+    // Fill dirt: the guidance is about measuring uneven ground, not depth by use.
+    return `<h2 id="depth">Measuring and compacting ${cfg.noun}</h2><p>${cfg.depthProse}</p>`;
+  }
+  return `<h2 id="depth">How deep should ${cfg.noun} be?</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Use</th><th scope="col">Depth</th></tr></thead><tbody>${d.rows.map(([u, v]) => `<tr><th scope="row">${u}</th><td>${v}</td></tr>`).join("")}</tbody></table></div>${d.note ? `<p>${d.note}</p>` : ""}`;
+}
+
 function weightTables(cfg, options) {
   const name = cfg.materialName || cfg.h1.replace(/ Calculator$/, "");
   const depths = [2, 3, 4, 6];
   return `<h2 id="tons-per-yard">How many tons in a yard of ${cfg.noun}?</h2>
-<p>One cubic yard of ${cfg.noun} typically weighs <strong>${cfg.lowTons.toFixed(1)} to ${cfg.highTons.toFixed(1)} US tons</strong> (${cfg.lbPerYd3.toLocaleString("en-US")} lb/yd³ starting density), depending on moisture and aggregate size.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Material</th><th scope="col">Tons per yd³</th><th scope="col">Cubic yards per ton</th></tr></thead><tbody>${options.map(m => `<tr><th scope="row">${esc(m.name)}</th><td>${m.lowTons.toFixed(1)}–${m.highTons.toFixed(1)}</td><td>${(1 / m.highTons).toFixed(2)}–${(1 / m.lowTons).toFixed(2)}</td></tr>`).join("")}</tbody></table></div>
+<p>One cubic yard of ${cfg.noun} typically weighs <strong>${cfg.lowTons.toFixed(1)} to ${cfg.highTons.toFixed(1)} US tons</strong> (${cfg.lbPerYd3.toLocaleString("en-US")} lb/yd³ starting density), depending on moisture and aggregate size${options.length > 1 ? "." : `—so one US ton is about ${(1 / cfg.highTons).toFixed(2)} to ${(1 / cfg.lowTons).toFixed(2)} cubic yards.`}</p>
+${options.length > 1 ? `<div class="table-wrap"><table><thead><tr><th scope="col">Material</th><th scope="col">Tons per yd³</th><th scope="col">Cubic yards per ton</th></tr></thead><tbody>${options.map(m => `<tr><th scope="row">${esc(m.name)}</th><td>${m.lowTons.toFixed(1)}–${m.highTons.toFixed(1)}</td><td>${(1 / m.highTons).toFixed(2)}–${(1 / m.lowTons).toFixed(2)}</td></tr>`).join("")}</tbody></table></div>` : ""}
 <h2 id="by-area">${esc(name)} needed by area and depth</h2>
 <p>${cfg.lbPerYd3 < 1500 ? "Cubic yards" : "US tons"} needed at ${cfg.lbPerYd3.toLocaleString("en-US")} lb/yd³, before compaction or waste allowance.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Area</th>${depths.map(d => `<th scope="col">${d} in deep</th>`).join("")}</tr></thead><tbody>${[100, 200, 300, 500, 1000].map(a => `<tr><th scope="row">${a.toLocaleString("en-US")} ft²</th>${depths.map(d => cfg.lbPerYd3 < 1500 ? `<td>${(a * d / 324).toFixed(2)} yd³</td>` : `<td>${(a * d / 324 * cfg.lbPerYd3 / 2000).toFixed(1)} t</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
@@ -65,8 +94,11 @@ function materialPage(cfg) {
     ["500 ft² bed", { shape: "area", areaFt2: 500, depth: cfg.defaultDepth || 3 }],
   ];
 
-  const truckTable = cfg.showTrucks
-    ? `<h2 id="trucks">How much ${cfg.noun} fits in a pickup or dump truck?</h2><p>Weight—not bed volume—sets the limit for bulk stone and soil. A half-ton pickup usually hits payload around 0.7 to 1 cubic yard of rock or soil.</p><div class="table-wrap"><table><thead><tr><th scope="col">Vehicle</th><th scope="col">Typical load</th><th scope="col">Notes</th></tr></thead><tbody>${TRUCKS.map(r => `<tr><th scope="row">${r[0]}</th><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</tbody></table></div>`
+  // 21 Nov 2026 competitor read: truckload tables appear only where buyers haul or
+  // order by the truckload (gravel, road base, fill dirt); elsewhere it was the
+  // same boilerplate repeated on eight pages, so it stays off.
+  const truckTable = TRUCK_PAGES.has(cfg.path)
+    ?`<h2 id="trucks">How much ${cfg.noun} fits in a pickup or dump truck?</h2><p>Weight—not bed volume—sets the limit for bulk stone and soil. A half-ton pickup usually hits payload around 0.7 to 1 cubic yard of rock or soil.</p><div class="table-wrap"><table><thead><tr><th scope="col">Vehicle</th><th scope="col">Typical load</th><th scope="col">Notes</th></tr></thead><tbody>${TRUCKS.map(r => `<tr><th scope="row">${r[0]}</th><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</tbody></table></div>`
     : "";
 
   return {
@@ -153,17 +185,18 @@ function materialPage(cfg) {
 </form>
 <noscript><p class="note">Enable JavaScript to calculate, or use the formula and tables below.</p></noscript>
 ${byline(UPDATED)}
-${embedSnippet(cfg.path, cfg.h1)}
-<nav class="jump-links" aria-label="On this page"><a href="#method">Formula</a><a href="#example">Example</a><a href="#tons-per-yard">Tons per yard</a><a href="#by-area">By area</a>${cfg.showTrucks ? '<a href="#trucks">Truckloads</a>' : ""}<a href="#questions">FAQs</a></nav>
+<nav class="jump-links" aria-label="On this page"><a href="#method">Formula</a><a href="#example">Example</a><a href="#tons-per-yard">Tons per yard</a><a href="#by-area">By area</a><a href="#depth">Depth</a>${TRUCK_PAGES.has(cfg.path) ? '<a href="#trucks">Truckloads</a>' : ""}<a href="#questions">FAQs</a></nav>
 <div class="prose">
 <h2 id="method">How much ${cfg.noun} do you need?</h2><p>${cfg.intro}</p>
 <div class="formula">Cubic yards = area (ft²) × depth (in) ÷ 324<br>US tons = cubic yards × density (${cfg.lbPerYd3.toLocaleString("en-US")} lb/yd³ ≈ ${tons} t/yd³) ÷ 2,000</div>
 <h2 id="example">Example: ${cfg.example.label}</h2><p>${cfg.example.text}</p>
 ${weightTables(cfg, options)}${EXTRAS[cfg.path.replace(/\//g, "")] || ""}${truckTable}
-<h2>Depth, ordering &amp; delivery tips</h2><p>${cfg.depthProse}</p>${cfg.orderingProse ? `<p>${cfg.orderingProse}</p>` : ""}
+${depthSection(cfg)}
+${cfg.orderingProse ? `<h2 id="buying">What ${cfg.noun} costs and how it is sold</h2><p>${cfg.orderingProse}</p>` : ""}
 <h2 id="questions">Frequently asked questions</h2>${faq.map(([q, a]) => `<h3>${q}</h3><p>${a}</p>`).join("")}
 <h2>Related calculators</h2><ul class="related-links">${relatedList(cfg).map(([href, label]) => `<li><a href="${href}">${esc(label)}</a></li>`).join("")}</ul>
 <h2>References</h2><ul class="refs">${cfg.sources.map(([url, label]) => `<li><a href="${url}" rel="noopener">${label}</a></li>`).join("")}</ul><p class="note">One cubic yard covers 324 ft² at 1 in, 162 ft² at 2 in, 108 ft² at 3 in, or 81 ft² at 4 in. Confirm exact moisture-adjusted weight and delivery minimums with your local supplier. Updated ${UPDATED.text}.</p>
+${embedSnippet(cfg.path, cfg.h1)}
 </div>`,
   };
 }

@@ -8,8 +8,6 @@ const table = (head, rows) => `<div class="table-wrap"><table>
 </table></div>`;
 
 const faq = [
-  ["How do I calculate square footage?",
-   "Multiply length by width with both measurements in feet (for example, a 12 × 14 ft room equals 168 square feet). For irregular rooms, break the floor into rectangles, triangles, or circles and add each section together."],
   ["How do I find the square footage of an L-shaped room?",
    "Split the L into two non-overlapping rectangles, multiply length × width for each rectangle, and add the two areas. Click '+ Add another section' above to sum multiple rectangles automatically."],
   ["How many square feet are in a square yard?",
@@ -138,7 +136,6 @@ module.exports = {
   </section>
 </form>
 ${byline(UPDATED)}
-${embedSnippet("/square-footage-calculator/", "Square Footage Calculator")}
 <nav class="jump-links" aria-label="On this page"><a href="#formula">Formulas</a><a href="#conversions">Conversions</a><a href="#waste">Waste guide</a><a href="#questions">FAQs</a></nav>
 
 <div class="prose">
@@ -188,6 +185,7 @@ ${faq.map(([q, a]) => `<h3>${q}</h3>\n<p>${a}</p>`).join("\n")}
   <li><a href="https://www.nist.gov/pml/owm" rel="noopener">NIST Office of Weights and Measures — exact area conversions</a></li>
 </ul>
 <p class="note">Exact definitions: 1 yd² = 9 ft², 1 acre = 43,560 ft², 1 m² = 10.7639 ft². Updated ${UPDATED.text}.</p>
+${embedSnippet("/square-footage-calculator/", "Square Footage Calculator")}
 </div>
 `,
 };
