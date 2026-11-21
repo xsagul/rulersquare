@@ -79,8 +79,11 @@ induce în eroare.
   linie; orice linie desenată (riglă, separator, chenar) cade pe o linie a grilei; cutiile încep pe o linie și au
   24n+1 px, cu chenarul desenat înăuntru; în calculator: margini de 1 unitate, câmpuri și butoane de 2, rânduri de 2;
   spațiile sunt unități întregi, desenele sunt exceptate. `src/assets/grid.js` rotunjește cutiile și pune pe linie ce
-  urmează după conținut de orice înălțime. `node scripts/grid-check.js` (text și margini de cutii, desktop și telefon)
-  trebuie să dea 100% înainte de orice push care atinge CSS-ul.
+  urmează după conținut de orice înălțime și măsoară fontul din browserul vizitatorului ca să pună baza literelor
+  pe linie (fonturile diferă pe Windows, Mac și iPhone). Scara de text: 42/48 (38/48 pe telefon), 22/24, 20/24,
+  18/24, 17/24, 15/24, 13–14/24. Conținutul are lățimea în pătrate întregi, liniile verticale pornesc de la marginea
+  lui. `node scripts/grid-check.js` și `node scripts/grid-check.js --fonts` (alte fonturi) trebuie să dea 100%
+  înainte de orice push care atinge CSS-ul.
 - Prima pagină are căutarea și cele 10 grupe, fără calculator în ea (proprietarul, 22 noiembrie 2026: nu aduce nimic
   față de pagina dedicată și împinge grupele în jos). Feet & inches se găsește în grupa Measure și în căutare.
 - Paginile de proiect au cel mult trei trimiteri alese manual la pașii următori.

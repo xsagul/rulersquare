@@ -65,6 +65,12 @@ async function check(page) {
   let total = 0, bad = 0;
   for (const [label, ctx] of [["desktop", { viewport: { width: 1440, height: 900 } }], ["phone", { ...devices["iPhone 13"] }]]) {
     const page = await b.newPage(ctx);
+    // --fonts: swap in fonts with different metrics (as on a Mac or an iPhone) to prove
+    // the alignment is measured, not tuned to this machine's fonts
+    if (process.argv.includes("--fonts")) await page.route("**/style.css*", async route => {
+      const res = await route.fetch(); const body = await res.text();
+      route.fulfill({ response: res, body: body + ":root{--sans:Verdana,sans-serif;--serif:'Times New Roman',serif}" });
+    });
     for (const path of PAGES) {
       await page.goto(base + path, { waitUntil: "load" });
       await page.waitForTimeout(300); // let grid.js re-run after the calculator scripts change heights
