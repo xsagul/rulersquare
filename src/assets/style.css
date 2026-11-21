@@ -438,7 +438,7 @@ main { padding-bottom: 8px; }
  * One unit = one 24 px square of the grid. Checked by scripts/grid-check.js.
  * 1. Grid: lines every 24 px from the top of the page; the vertical lines start at
  *    the left edge of the content, and the content is a whole number of squares wide.
- * 2. Type scale (size / line): display 42/48 (38/48 on phones), heading 22/24,
+ * 2. Type scale (size / line): display 42/48 (26/24 on phones, at most 2 lines), heading 22/24,
  *    group name 20/24, subheading and lede 18/24, body 17/24, small 15/24,
  *    label 13–14/24. Every baseline sits on a grid line: assets/grid.js measures the
  *    font the visitor actually has and nudges each line onto the grid; the CSS nudges
@@ -566,7 +566,7 @@ input[type="number"], select, .combo input, .combo select, .select select { heig
   .calc-results { border-top: 0; box-shadow: inset 0 1.5px var(--ink); }
 }
 @media (max-width: 640px) {
-  h1 { font-size: 38px; }
+  h1 { font-size: 26px; line-height: 24px; top: var(--on-line-serif); }
   .lede { font-size: 17px; }
   .g-row > summary { grid-template-columns: 96px 1fr 24px; }
   .g-row .g-draw { width: 96px; height: 64px; margin-top: 28px; }
