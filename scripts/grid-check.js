@@ -64,7 +64,12 @@ async function check(page) {
 (async () => {
   const b = await chromium.launch({ executablePath: EXE });
   let total = 0, bad = 0;
-  for (const [label, ctx] of [["desktop", { viewport: { width: 1440, height: 900 } }], ["phone", { ...devices["iPhone 13"] }]]) {
+  // --all-sizes adds a small phone, tablets portrait/landscape and a narrow laptop
+  const sizes = [["desktop", { viewport: { width: 1440, height: 900 } }], ["phone", { ...devices["iPhone 13"] }]];
+  if (process.argv.includes("--all-sizes")) sizes.push(
+    ["phone-se", { ...devices["iPhone SE"] }], ["tablet", { viewport: { width: 768, height: 1024 }, deviceScaleFactor: 2 }],
+    ["tablet-land", { viewport: { width: 1024, height: 768 }, deviceScaleFactor: 2 }], ["laptop", { viewport: { width: 1280, height: 720 } }]);
+  for (const [label, ctx] of sizes) {
     const page = await b.newPage(ctx);
     // --fonts: swap in fonts with different metrics (as on a Mac or an iPhone) to prove
     // the alignment is measured, not tuned to this machine's fonts
@@ -78,7 +83,7 @@ async function check(page) {
       const rows = await check(page);
       const off = rows.filter(r => Math.abs(r.d) > 2 || !r.lhOk);
       total += rows.length; bad += off.length;
-      console.log(`${label.padEnd(7)} ${path.padEnd(34)} ${String(rows.length).padStart(3)} lines, ${String(off.length).padStart(3)} off`);
+      console.log(`${label.padEnd(11)} ${path.padEnd(34)} ${String(rows.length).padStart(3)} lines, ${String(off.length).padStart(3)} off`);
       if (verbose) off.slice(0, 12).forEach(r => console.log(`        ${r.tag.padEnd(22)} ${r.edge || "d=" + String(r.d).padStart(5) + " lh=" + String(r.lh).padEnd(7)} ${r.text}`));
     }
     await page.close();

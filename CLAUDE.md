@@ -82,7 +82,7 @@ induce în eroare.
   urmează după conținut de orice înălțime și măsoară fontul din browserul vizitatorului ca să pună baza literelor
   pe linie (fonturile diferă pe Windows, Mac și iPhone). Scara de text: 42/48 (26/24 pe telefon: proprietarul vrea titlul pe maxim 2 rânduri, fără aer de SaaS). Ierarhia se face prin grosime, în trepte mici, nu prin transparență: titlul paginii 700, titlurile de secțiune 600, grupele și întrebările 600 la mărime mai mică. Titlurile folosesc Newsreader (variabil, găzduit pe site, `src/assets/newsreader.woff2`, 132 KB, descărcat de la Google Fonts; ales de proprietar pe 22 noiembrie 2026 dintre Georgia, Source Serif 4, Literata, Fraunces, Bitter, IBM Plex Serif și Geist); Georgia are doar 400 și 700; sub titlul de secțiune de pe prima pagină stă o linie subțire de cerneală care se întrerupe în jurul cozilor literelor, nu le taie, 22/24, 20/24,
   18/24, 17/24, 15/24, 13–14/24. Conținutul are lățimea în pătrate întregi, liniile verticale pornesc de la marginea
-  lui. `node scripts/grid-check.js` și `node scripts/grid-check.js --fonts` (alte fonturi) trebuie să dea 100%
+  lui. `node scripts/grid-check.js`, `--fonts` (alte fonturi) și `--all-sizes` (telefon mic, tabletă, laptop) trebuie să dea 100%
   înainte de orice push care atinge CSS-ul.
 - Prima pagină are căutarea și cele 10 grupe, fără calculator în ea (proprietarul, 22 noiembrie 2026: nu aduce nimic
   față de pagina dedicată și împinge grupele în jos). Feet & inches se găsește în grupa Measure și în căutare.
