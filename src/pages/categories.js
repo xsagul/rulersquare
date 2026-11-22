@@ -58,16 +58,19 @@ const CATEGORIES = [
   },
 ];
 
-const IMG = g => `<img class="g-draw" src="/assets/g-${g.img}.webp?v=VERSION" alt="${g.alt}" width="180" height="120" loading="lazy" decoding="async">`;
+/* The drawings in the first screen load at once and are decoded before the page is painted, so a
+ * reload does not show the page without them and then blink them in; the rest stay lazy. */
+const imgLoad = i => i < 2 ? `loading="eager" decoding="sync"${i === 0 ? ' fetchpriority="high"' : ""}` : 'loading="lazy" decoding="async"';
+const IMG = (g, i = 9) => `<img class="g-draw" src="/assets/g-${g.img}.webp?v=VERSION" alt="${g.alt}" width="180" height="120" ${imgLoad(i)}>`;
 
 /* One project group: drawing, name, then quantities and costs as two short lists. */
-function groupSection(sec) {
+function groupSection(sec, i) {
   const qty = sec.items.filter(([href]) => !COST_HREFS.has(href));
   const cost = sec.items.filter(([href]) => COST_HREFS.has(href));
   const list = items => `<ul class="g-list">${items.map(([href, title]) =>
     `<li><a href="${href}">${title}</a></li>`).join("")}</ul>`;
   return `<section class="g-sec" id="${sec.group.id}">
-  <div class="g-head">${IMG(sec.group)}<div><h2>${sec.name}</h2><p>${sec.group.blurb}</p></div></div>
+  <div class="g-head">${IMG(sec.group, i)}<div><h2>${sec.name}</h2><p>${sec.group.blurb}</p></div></div>
   ${qty.length ? `${cost.length ? '<h3 class="g-sub">Materials &amp; layout</h3>' : ""}${list(qty)}` : ""}
   ${cost.length ? `<h3 class="g-sub">Installed costs</h3>${list(cost)}` : ""}
 </section>`;
@@ -107,7 +110,7 @@ function categoryPage(cat) {
 <h1>${cat.h1}</h1>
 <p class="lede">${cat.lede}</p>
 
-<div class="g-index">${cat.groups.map(sec => groupSection(sec)).join("")}</div>
+<div class="g-index">${cat.groups.map((sec, i) => groupSection(sec, i)).join("")}</div>
 
 <div class="prose">
 <h2>About these ${uniqueItems} calculators</h2>

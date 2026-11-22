@@ -50,13 +50,13 @@ const home = {
 <div id="browse">
 <section class="home-groups" aria-labelledby="pg-title">
   <h2 id="pg-title">Project calculators</h2>
-  ${GROUPS.map(g => {
+  ${GROUPS.map((g, gi) => {
     const items = g.items.map(s => BY_HREF.get(`/${s}/`)).filter(Boolean);
     const qty = items.filter(([h]) => !COST_HREFS.has(h));
     const cost = items.filter(([h]) => COST_HREFS.has(h));
     const ul = list => `<ul class="g-list">${list.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul>`;
     return `<details class="g-row" id="g-${g.id}">
-    <summary><img class="g-draw" src="/assets/g-${g.img}.webp?v=VERSION" alt="" width="180" height="120" loading="lazy" decoding="async"><span class="g-name">${g.name}<small>${items.length} calculators</small></span><span class="g-chev" aria-hidden="true"></span></summary>
+    <summary><img class="g-draw" src="/assets/g-${g.img}.webp?v=VERSION" alt="" width="180" height="120" ${gi < 4 ? `loading="eager" decoding="sync"${gi === 0 ? ' fetchpriority="high"' : ""}` : 'loading="lazy" decoding="async"'}><span class="g-name">${g.name}<small>${items.length} calculators</small></span><span class="g-chev" aria-hidden="true"></span></summary>
     <div class="g-body">
       ${qty.length ? `${cost.length ? '<h3 class="g-sub">Materials &amp; layout</h3>' : ""}${ul(qty)}` : ""}
       ${cost.length ? `<h3 class="g-sub">Installed costs</h3>${ul(cost)}` : ""}
