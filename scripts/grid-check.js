@@ -36,7 +36,7 @@ async function check(page) {
       el.insertBefore(wrap, first);
       const y = probe.getBoundingClientRect().top + scrollY;
       wrap.remove();
-      const lift = parseFloat(getComputedStyle(el).getPropertyValue("--lift")) || 0; // deliberate, see style.css
+      const lift = parseFloat(getComputedStyle(el).getPropertyValue("--lift")) || parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sit")) || 0; // writing sits on the line (--sit), titles above their underline (--lift); see style.css
       let d = ((y + lift - offs) % G + G) % G; if (d > G / 2) d -= G;
       const lh = getComputedStyle(el).lineHeight;
       const lhn = parseFloat(lh);

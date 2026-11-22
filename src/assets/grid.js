@@ -84,6 +84,7 @@
       if (Math.abs(wantP - addP) >= TOL) { el.style.paddingTop = px(parseFloat(cs.paddingTop) - addP + wantP) + "px"; el.setAttribute("data-gp", String(wantP)); }
     }
     // 3. baselines onto the lines, measured; only nudge text that is off its line
+    var sit = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sit")) || 0;
     var texts = document.querySelectorAll(NUDGE);
     for (var k = 0; k < texts.length; k++) {
       var t = texts[k];
@@ -91,8 +92,10 @@
       if (t.offsetParent === null || !t.textContent.trim()) continue;
       var tcs = getComputedStyle(t);
       if (tcs.position !== "relative" && tcs.position !== "static") continue;
-      // --lift: a title that sits a few px above its underline, on purpose
-      var lift = parseFloat(tcs.getPropertyValue("--lift")) || 0;
+      // writing sits on the line, not in it: the baseline goes --sit (1 px, the line's
+      // thickness) above the line's top edge; --lift: a title that sits a few px
+      // above its underline, on purpose
+      var lift = parseFloat(tcs.getPropertyValue("--lift")) || sit;
       var d = mod(baseline(t) + lift);                 // how far the baseline sits below a line
       if (d < TOL || G - d < TOL) continue;
       var move = d > G / 2 ? G - d : -d;               // smallest move onto a line

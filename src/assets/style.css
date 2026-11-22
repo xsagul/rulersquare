@@ -466,7 +466,7 @@ main { padding-bottom: 8px; }
  * 5. Widths and spacing in whole units; drawings sit in whole squares.
  * grid.js also rounds boxes up to whole units and puts each block back on a line
  * after content of any height (a result, a drawing). */
-:root { --u: 24px; --grid-x: 0px; --on-line: calc(12px - .414em); --on-line-serif: calc(12px - .35em); --on-line-serif2: calc(24px - .35em); }
+:root { --u: 24px; --grid-x: 0px; --sit: 1px; --on-line: calc(12px - .414em - var(--sit)); --on-line-serif: calc(12px - .35em - var(--sit)); --on-line-serif2: calc(24px - .35em - var(--sit)); }
 body { font: 17px/24px var(--sans); background-position: var(--grid-x) 0; }
 .embed-page { background: transparent; }
 main { padding-bottom: 0; }
