@@ -82,7 +82,7 @@ function layout(page) {
 <meta name="theme-color" content="#f6f1e6">
 <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/favicon.png">
-<link rel="preload" href="/assets/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/newsreader.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/style.css?v=${page.version}">
 ${page.robots ? `<meta name="robots" content="${page.robots}">` : ""}
 ${schema}
@@ -154,7 +154,7 @@ function embedLayout(page) {
 <title>${esc(h1)} | ${SITE.name} Widget</title>
 <meta name="robots" content="noindex, follow">
 <link rel="canonical" href="${canonical}">
-<link rel="preload" href="/assets/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/newsreader.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/style.css?v=${page.version}">
 </head>
 <body class="embed-page">
