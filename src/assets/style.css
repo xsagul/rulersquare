@@ -54,6 +54,46 @@
   .g-draw, .nav-drawer-links img { filter: invert(1) hue-rotate(180deg) brightness(1.05); }
 }
 
+/* ---------- Colours in OKLCH (22 Nov 2026) ----------
+ * The same colours as the hex values above, written in OKLCH: perceived lightness %, chroma, hue in
+ * degrees, so a change of one number is a change the eye sees in that one direction. Each value
+ * converts back to exactly the hex shown next to it (sRGB); browsers without OKLCH keep the hex. */
+@supports (color: oklch(0% 0 0)) {
+  :root {
+    --paper: oklch(95.9% 0.0155 86.4);        /* #f6f1e6 */
+    --surface: oklch(98.0% 0.0098 87.5);      /* #fbf8f1 */
+    --surface-2: oklch(92.6% 0.0255 86.9);    /* #eee6d4 */
+    --ink: oklch(34.7% 0.0731 256.7);         /* #1f3a5f */
+    --text: oklch(34.7% 0.0731 256.7);        /* #1f3a5f */
+    --body: oklch(31.2% 0.0286 250.8);        /* #26323f */
+    --muted: oklch(50.3% 0.0329 256.6);       /* #586577 */
+    --line: oklch(82.5% 0.0345 88.1);         /* #cfc5ad */
+    --grid: oklch(91.4% 0.0161 82.8);         /* #e8e2d7 */
+    --accent: oklch(58.7% 0.1646 41.8);       /* #c9521a */
+    --accent-ink: oklch(100.0% 0.0000 89.9);  /* #ffffff */
+    --accent-soft: oklch(92.8% 0.0307 61.1);  /* #f7e3d3 */
+    --ok: oklch(47.5% 0.0904 154.7);          /* #2b6b45 */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: oklch(25.4% 0.0494 256.4);       /* #12233a */
+      --surface: oklch(28.6% 0.0568 255.4);     /* #162b46 */
+      --surface-2: oklch(32.6% 0.0652 255.4);   /* #1c3555 */
+      --ink: oklch(94.4% 0.0126 255.5);         /* #e7edf5 */
+      --text: oklch(94.4% 0.0126 255.5);        /* #e7edf5 */
+      --body: oklch(89.8% 0.0174 256.3);        /* #d6dee9 */
+      --muted: oklch(77.0% 0.0307 253.0);       /* #a7b6c8 */
+      --line: oklch(41.1% 0.0702 254.5);        /* #2f4c70 */
+      --grid: oklch(94.4% 0.0126 255.5 / .05);  /* rgba(231, 237, 245, .05) */
+      --accent: oklch(73.2% 0.1465 50.4);       /* #f08a4b */
+      --accent-ink: oklch(25.4% 0.0494 256.4);  /* #12233a */
+      --accent-soft: oklch(30.1% 0.0278 47.8);  /* #3a2a22 */
+      --ok: oklch(78.1% 0.1226 156.5);          /* #6fcf97 */
+    }
+  }
+  @media (max-width: 960px) { .nav-backdrop { background: oklch(19.0% 0.0341 258.3 / .45); } }   /* rgb(10 20 35 / .45) */
+}
+
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 input, select, button { min-width: 0; }

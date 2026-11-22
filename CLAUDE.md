@@ -78,6 +78,9 @@ induce în eroare.
   Munken Premium Cream din fișa 2020 (62 / 80; fișa 2025 dă 66 / 83 și nu publică nuanța). Varianta adusă exact în
   specificație, `#f7f2e7`, a fost pusă și comparată una lângă alta; proprietarul a ales-o pe cea veche. Pozele de produs
   ale caietelor (Rhodia, Midori, Leuchtturm) nu dau culoarea reală. Nu se repropune.
+- **Culorile sunt scrise în OKLCH** (proprietarul, 22 noiembrie 2026), în blocul `@supports (color: oklch(...))` din
+  `style.css`, cu hex-ul vechi în `:root` ca rezervă și în comentariu lângă fiecare valoare. Fiecare OKLCH se convertește
+  înapoi exact în hex-ul lui (verificat pe pixeli, 25/25). O culoare nouă se schimbă în ambele locuri.
 - **Liniile caietului sunt `#e8e2d7`** (proprietarul, 22 noiembrie 2026): gri cald, cu 6,2% mai închis decât foaia, raportul
   măsurat pe pozele de aproape ale caietului Moleskine Squared (Rhodia No.16 are linii violet de ~30%, prea apăsate pentru
   un fundal de site). Grosimea rămâne 1 px dintr-un pătrat de 24 (≈0,21 mm la 5 mm, ca Rhodia ~0,19 mm).
