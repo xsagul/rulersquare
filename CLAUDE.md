@@ -74,6 +74,7 @@ induce în eroare.
 - Cele șase calculatoare de salarii și hub-ul lor sunt retrase, conform cererii din conversația Claude.
 - Catalog: 69 de calculatoare, în trei hub-uri (Construction, Landscaping, Costs); 79 de pagini HTML.
 - Au fost integrate cele 16 pagini de cost și 6 calculatoare începute de Claude.
+- **Logoul rămâne echerul de acum** (proprietarul, 22 noiembrie 2026): 20 de variante generate în ChatGPT Image (ștampilă de cherestea, echer pe caiet, pătrat cu gradații, unghi drept, echer cu creion; fișa în `research/logo-chatgpt-image.md`) au fost respinse fiindcă nu erau cu mult mai bune. Nu repropune un logo nou fără o idee cu adevărat diferită.
 - **Culoarea foii e `#f6f1e6`** (proprietarul, 22 noiembrie 2026): albeață CIE 61,4, strălucire ~80, practic hârtia cream
   Munken Premium Cream din fișa 2020 (62 / 80; fișa 2025 dă 66 / 83 și nu publică nuanța). Varianta adusă exact în
   specificație, `#f7f2e7`, a fost pusă și comparată una lângă alta; proprietarul a ales-o pe cea veche. Pozele de produs
