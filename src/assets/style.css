@@ -449,7 +449,7 @@ main { padding-bottom: 8px; }
  * One unit = one 24 px square of the grid. Checked by scripts/grid-check.js.
  * 1. Grid: lines every 24 px from the top of the page; the vertical lines start at
  *    the left edge of the content, and the content is a whole number of squares wide.
- * 2. Type scale (size / line): display 42/48 weight 700 (26/24 on phones, at most 2 lines), heading 22/24 weight 600,
+ * 2. Type scale (size / line): display 38/44 weight 700 (the one exception; 26/24 on phones, at most 2 lines), heading 22/24 weight 600,
  *    group name 20/24, subheading and lede 18/24, body 17/24, small 15/24,
  *    label 13–14/24. Every baseline sits on a grid line: assets/grid.js measures the
  *    font the visitor actually has and nudges each line onto the grid; the CSS nudges
@@ -482,7 +482,10 @@ main { padding-bottom: 0; }
 
 /* Type scale */
 .crumbs { font-size: 14px; line-height: 24px; margin: 24px 0 0; }
-h1 { font-size: 42px; line-height: 48px; margin: 24px 0 0; }
+/* the one exception to the notebook, chosen by the owner on 22 Nov 2026: the desktop page title is
+ * 38/44, the size and spacing that look best on their own; its first line sits on a grid line, a
+ * second line sits 4 px above the next one, and grid.js puts whatever follows back on a line */
+h1 { font-size: 38px; line-height: 44px; margin: 24px 0 0; }
 /* hierarchy by weight in small steps: page title 700, section headings 600, groups and questions 600 at a smaller size */
 h1 { font-weight: 700; }
 h2 { font-size: 22px; line-height: 24px; margin: 48px 0 0; font-weight: 600; }

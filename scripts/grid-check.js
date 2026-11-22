@@ -40,7 +40,8 @@ async function check(page) {
       let d = ((y + lift - offs) % G + G) % G; if (d > G / 2) d -= G;
       const lh = getComputedStyle(el).lineHeight;
       const lhn = parseFloat(lh);
-      const lhOk = !isNaN(lhn) && Math.abs(lhn / G - Math.round(lhn / G)) < 0.01;
+      // the desktop page title is 38/44 on purpose (style.css): only its first line has to be on a line
+      const lhOk = (!isNaN(lhn) && Math.abs(lhn / G - Math.round(lhn / G)) < 0.01) || (el.matches("main h1") && lhn === 44);
       const text = first.textContent.trim().slice(0, 40);
       out.push({ tag: el.tagName.toLowerCase() + (el.className ? "." + String(el.className).split(" ")[0] : ""), d: Math.round(d * 10) / 10, lh, lhOk, text });
     }
