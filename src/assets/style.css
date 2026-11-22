@@ -562,6 +562,8 @@ input[type="number"], select, .combo input, .combo select, .select select { heig
 .g-chev { margin-top: 54px; }
 .g-body { padding: 0 0 24px 168px; }
 .g-body > :first-child { margin-top: 0; }
+/* an open group's list starts one line under its count (the closed row is 5 squares so the chevron sits in the middle) */
+.g-row[open] > .g-body { margin-top: -24px; }
 .g-sub { font-size: 13px; line-height: 24px; margin: 24px 0 0; }
 .g-list a, .related-links a { line-height: 24px; padding: 0; border-bottom: 0; }
 .related-links a { align-items: flex-start; }
