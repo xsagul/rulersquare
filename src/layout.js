@@ -79,7 +79,7 @@ function layout(page) {
 <meta name="twitter:description" content="${esc(page.description)}">
 <meta name="twitter:image" content="${ogImg}">
 <meta name="twitter:image:alt" content="${esc(page.title)}">
-<meta name="theme-color" content="#f7f2e7">
+<meta name="theme-color" content="#f6f1e6">
 <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/favicon.png">
 <link rel="preload" href="/assets/newsreader.woff2" as="font" type="font/woff2" crossorigin>

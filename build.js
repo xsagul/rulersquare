@@ -102,7 +102,7 @@ for (const p of pages) {
 // favicon
 fs.writeFileSync(path.join(OUT, "favicon.svg"),
   LOGO.replace('aria-hidden="true" focusable="false"', 'xmlns="http://www.w3.org/2000/svg"')
-      .replace(/var\(--ink\)/g, "#1f3a5f").replace(/var\(--paper\)/g, "#f7f2e7"));
+      .replace(/var\(--ink\)/g, "#1f3a5f").replace(/var\(--paper\)/g, "#f6f1e6"));
 
 // Files served as-is from the site root: the IndexNow key, llms.txt.
 for (const f of fs.readdirSync(path.join(__dirname, "src/public"))) {

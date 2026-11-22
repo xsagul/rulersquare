@@ -74,11 +74,11 @@ induce în eroare.
 - Cele șase calculatoare de salarii și hub-ul lor sunt retrase, conform cererii din conversația Claude.
 - Catalog: 69 de calculatoare, în trei hub-uri (Construction, Landscaping, Costs); 79 de pagini HTML.
 - Au fost integrate cele 16 pagini de cost și 6 calculatoare începute de Claude.
-- **Culoarea foii e `#f7f2e7`** (proprietarul, 22 noiembrie 2026): aceeași nuanță ca vechiul `#f6f1e6`, adusă în
-  specificația unei hârtii cream premium măsurate, Munken Premium Cream (albeață CIE 62–66, strălucire 80–83): a noastră
-  are albeață 62,3 și strălucire ~81 (calculate D65; strălucirea aproximată din componenta albastră). Pozele de produs ale
-  caietelor (Rhodia, Midori, Leuchtturm) nu dau culoarea reală și au pierdut comparația. Nu se repropune.
-- **Liniile caietului sunt `#e8e3d8`** (proprietarul, 22 noiembrie 2026): gri cald, cu 6,2% mai închis decât foaia, raportul
+- **Culoarea foii e `#f6f1e6`** (proprietarul, 22 noiembrie 2026): albeață CIE 61,4, strălucire ~80, practic hârtia cream
+  Munken Premium Cream din fișa 2020 (62 / 80; fișa 2025 dă 66 / 83 și nu publică nuanța). Varianta adusă exact în
+  specificație, `#f7f2e7`, a fost pusă și comparată una lângă alta; proprietarul a ales-o pe cea veche. Pozele de produs
+  ale caietelor (Rhodia, Midori, Leuchtturm) nu dau culoarea reală. Nu se repropune.
+- **Liniile caietului sunt `#e8e2d7`** (proprietarul, 22 noiembrie 2026): gri cald, cu 6,2% mai închis decât foaia, raportul
   măsurat pe pozele de aproape ale caietului Moleskine Squared (Rhodia No.16 are linii violet de ~30%, prea apăsate pentru
   un fundal de site). Grosimea rămâne 1 px dintr-un pătrat de 24 (≈0,21 mm la 5 mm, ca Rhodia ~0,19 mm).
 - **Sistemul „caiet”** (proprietarul, 22 noiembrie 2026), regulile în `src/assets/style.css`, secțiunea „Notebook

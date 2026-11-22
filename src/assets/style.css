@@ -11,7 +11,7 @@
   font-weight: 200 800; font-style: normal; font-display: swap;
 }
 :root {
-  --paper: #f7f2e7;   /* cream: CIE whiteness 62.3, brightness ~81 — inside Munken Premium Cream (62–66 / 80–83) */
+  --paper: #f6f1e6;   /* cream, chosen by the owner by eye over the Munken-matched #f7f2e7 (whiteness 61.4, brightness ~80) */
   --bg: var(--paper);
   --surface: #fbf8f1;
   --surface-2: #eee6d4;
@@ -20,7 +20,7 @@
   --body: #26323f;
   --muted: #586577;
   --line: #cfc5ad;
-  --grid: #e8e3d8;   /* warm grey, 6.2% darker than the paper: the contrast measured on Moleskine squared notebooks */
+  --grid: #e8e2d7;   /* warm grey, 6.2% darker than the paper: the contrast measured on Moleskine squared notebooks */
   --accent: #c9521a;          /* safety orange, darkened to 4.6:1 on white for button text */
   --accent-ink: #ffffff;
   --accent-soft: #f7e3d3;
