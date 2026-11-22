@@ -558,6 +558,8 @@ input[type="number"], select, .combo input, .combo select, .select select { heig
 /* the section title sits 4 px above a thin ink line, like underlined writing (--lift, read by grid.js); the line breaks around the letters' tails (paper-coloured halo) instead of cutting through them */
 .g-row:first-of-type { border-top: 0; box-shadow: 0 1px 0 var(--line), inset 0 1px var(--ink); }
 .home-groups > h2 { --lift: 4px; z-index: 1; text-shadow: 0 2px var(--paper), 0 -2px var(--paper), 2px 0 var(--paper), -2px 0 var(--paper), 2px 2px var(--paper), -2px 2px var(--paper), 2px -2px var(--paper), -2px -2px var(--paper); }
+/* a group row is a button, not text: no blinking text cursor (caret browsing, F7) or text selection when it is clicked */
+.g-row > summary { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 .g-row > summary { grid-template-columns: 144px 1fr 24px; gap: 24px; align-items: start; padding: 0; min-height: 120px; }
 .g-row .g-draw { width: 144px; height: 96px; margin-top: 12px; }
 .g-row .g-name { padding: 24px 0; line-height: 24px; font-size: 20px; }
