@@ -74,9 +74,10 @@ induce în eroare.
 - Cele șase calculatoare de salarii și hub-ul lor sunt retrase, conform cererii din conversația Claude.
 - Catalog: 69 de calculatoare, în trei hub-uri (Construction, Landscaping, Costs); 79 de pagini HTML.
 - Au fost integrate cele 16 pagini de cost și 6 calculatoare începute de Claude.
-- **Culoarea foii rămâne `#f6f1e6`** (proprietarul, 22 noiembrie 2026): comparată cu hârtia măsurată din pozele de produs
-  ale caietelor premium (Rhodia Goalbook ~`#fef7e6`, Midori MD ~`#fefae7`, Leuchtturm1917 ~`#fcfbee`), a noastră a
-  rămas cea mai frumoasă; pozele de studio nu dau culoarea reală a hârtiei. Nu se repropune.
+- **Culoarea foii e `#f7f2e7`** (proprietarul, 22 noiembrie 2026): aceeași nuanță ca vechiul `#f6f1e6`, adusă în
+  specificația unei hârtii cream premium măsurate, Munken Premium Cream (albeață CIE 62–66, strălucire 80–83): a noastră
+  are albeață 62,3 și strălucire ~81 (calculate D65; strălucirea aproximată din componenta albastră). Pozele de produs ale
+  caietelor (Rhodia, Midori, Leuchtturm) nu dau culoarea reală și au pierdut comparația. Nu se repropune.
 - **Sistemul „caiet”** (proprietarul, 22 noiembrie 2026), regulile în `src/assets/style.css`, secțiunea „Notebook
   system”: unitatea e pătratul de 24 px; rândurile de text au 1 unitate (titlurile mari 2) și stau cu baza literelor pe
   linie; orice linie desenată (riglă, separator, chenar) cade pe o linie a grilei; cutiile încep pe o linie și au
