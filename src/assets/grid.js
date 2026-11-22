@@ -88,5 +88,7 @@
   function later() { if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; if (key() !== lastKey) run(); }); } }
   if (window.ResizeObserver) new ResizeObserver(later).observe(document.body);
   window.addEventListener("load", later);
+  // the heading font arrives after the first paint: measure the baselines again on it
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { run(); });
   window.addEventListener("resize", later);
 })();

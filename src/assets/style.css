@@ -2,6 +2,13 @@
  * Warm paper with a faint grid, navy ink for lines and text, one safety-orange
  * accent for actions and dimension labels, square corners, no drop shadows.
  * Group drawings are ChatGPT Image line art (assets/g-*.webp), checked by hand. */
+/* Headings: Source Serif 4 (Adobe, SIL OFL), self-hosted, latin subset, variable
+ * weight 200–900 and optical size, so heading weights can differ by small steps. */
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("source-serif-4.woff2") format("woff2");
+  font-weight: 200 900; font-style: normal; font-display: swap;
+}
 :root {
   --paper: #f6f1e6;
   --bg: var(--paper);
@@ -20,7 +27,7 @@
   --radius: 2px;
   --shadow: none;
   --max: 1080px;
-  --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Noto Serif", serif;
+  --serif: "Source Serif 4", Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Noto Serif", serif;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color-scheme: light;
@@ -438,7 +445,7 @@ main { padding-bottom: 8px; }
  * One unit = one 24 px square of the grid. Checked by scripts/grid-check.js.
  * 1. Grid: lines every 24 px from the top of the page; the vertical lines start at
  *    the left edge of the content, and the content is a whole number of squares wide.
- * 2. Type scale (size / line): display 42/48 bold (26/24 on phones, at most 2 lines), heading 22/24 regular,
+ * 2. Type scale (size / line): display 42/48 weight 700 (26/24 on phones, at most 2 lines), heading 22/24 weight 600,
  *    group name 20/24, subheading and lede 18/24, body 17/24, small 15/24,
  *    label 13–14/24. Every baseline sits on a grid line: assets/grid.js measures the
  *    font the visitor actually has and nudges each line onto the grid; the CSS nudges
@@ -472,9 +479,10 @@ main { padding-bottom: 0; }
 /* Type scale */
 .crumbs { font-size: 14px; line-height: 24px; margin: 24px 0 0; }
 h1 { font-size: 42px; line-height: 48px; margin: 24px 0 0; }
-/* hierarchy by weight, not size: page title bold, section headings regular, the things you tap (groups, questions) bold */
-h2 { font-size: 22px; line-height: 24px; margin: 48px 0 0; font-weight: 400; }
-.g-head h2 { font-weight: 700; }
+/* hierarchy by weight in small steps: page title 700, section headings 600, groups and questions 600 at a smaller size */
+h1 { font-weight: 700; }
+h2 { font-size: 22px; line-height: 24px; margin: 48px 0 0; font-weight: 600; }
+h3, .g-name, .calc-step { font-weight: 600; }
 h3 { font-size: 18px; line-height: 24px; margin: 24px 0 0; }
 li, main li, .refs li { line-height: 24px; margin: 0; }
 .lede { font-size: 18px; line-height: 24px; margin: 24px 0 0; }
