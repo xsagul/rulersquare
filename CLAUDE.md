@@ -78,6 +78,9 @@ induce în eroare.
   Munken Premium Cream din fișa 2020 (62 / 80; fișa 2025 dă 66 / 83 și nu publică nuanța). Varianta adusă exact în
   specificație, `#f7f2e7`, a fost pusă și comparată una lângă alta; proprietarul a ales-o pe cea veche. Pozele de produs
   ale caietelor (Rhodia, Midori, Leuchtturm) nu dau culoarea reală. Nu se repropune.
+- **Un singur design, fără mod întunecat** (proprietarul, 22 noiembrie 2026): site-ul arată la fel în mod de noapte,
+  incognito sau cu „auto-dark” din Chrome (`color-scheme: only light` și `<meta name="color-scheme" content="only light">`).
+  Nu se reintroduce o temă întunecată.
 - **Culorile sunt scrise în OKLCH** (proprietarul, 22 noiembrie 2026), în blocul `@supports (color: oklch(...))` din
   `style.css`, cu hex-ul vechi în `:root` ca rezervă și în comentariu lângă fiecare valoare. Fiecare OKLCH se convertește
   înapoi exact în hex-ul lui (verificat pe pixeli, 25/25). O culoare nouă se schimbă în ambele locuri.
