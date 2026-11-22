@@ -1,7 +1,8 @@
 /* Notebook system, the part CSS cannot do (rules in style.css, "Notebook system").
  * 1. The vertical grid lines start at the left edge of the content.
  * 2. Boxes whose content has any height (calculator, details, formula, embed box)
- *    are rounded up to 24n+1 px, so their bottom stroke lies on a grid line.
+ *    are rounded up to 24n+1 px with padding at the bottom, so their bottom stroke
+ *    lies on a grid line.
  * 3. Every block of text and every box starts on a grid line: text blocks get
  *    padding above them, boxes get margin (padding would move their stroke).
  * 4. Each line of text is nudged so its baseline sits on a grid line, measured on
@@ -58,18 +59,23 @@
       var gx = px(mod(main.getBoundingClientRect().left)) + "px";
       if (document.documentElement.style.getPropertyValue("--grid-x") !== gx) document.documentElement.style.setProperty("--grid-x", gx);
     }
-    // 1. round boxes up to 24n+1, innermost first (measured without our min-height, same task, no paint)
+    // 1. round boxes up to 24n+1, innermost first, with extra padding at the bottom.
+    // Not min-height: a min-height kept an options box at its open height after it was
+    // closed (the page height did not change, so nothing re-ran) and the box stayed
+    // tall and empty. Padding shrinks with the content, the page height changes, and
+    // the box is rounded again.
     var boxes = document.querySelectorAll(BOX);
     for (var i = boxes.length - 1; i >= 0; i--) {
       var b = boxes[i];
       if (b.offsetParent === null) continue;
-      var had = b.style.minHeight;
-      b.style.minHeight = "";
-      var h = b.getBoundingClientRect().height;
+      if (b.style.minHeight) b.style.minHeight = "";
+      var addB = parseFloat(b.getAttribute("data-gb") || "0");
+      var h = b.getBoundingClientRect().height - addB;   // height without our padding
       var want = Math.ceil((h - 1) / G - 0.02) * G + 1;
-      var next = Math.abs(want - h) > 0.3 ? want + "px" : "";
-      b.style.minHeight = next === "" ? "" : next;
-      if (had === next) b.style.minHeight = had;
+      var extra = want - h > 0.3 ? px(want - h) : 0;
+      if (Math.abs(extra - addB) < 0.3) continue;
+      b.style.paddingBottom = px(parseFloat(getComputedStyle(b).paddingBottom) - addB + extra) + "px";
+      b.setAttribute("data-gb", String(extra));
     }
     // 2. every top-level block on a line, top to bottom; only change what is off.
     // A block that lands 1–3 px past a line (content a hair taller than whole squares,

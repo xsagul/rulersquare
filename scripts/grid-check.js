@@ -88,6 +88,22 @@ async function check(page) {
       total += rows.length; bad += off.length;
       console.log(`${label.padEnd(11)} ${path.padEnd(34)} ${String(rows.length).padStart(3)} lines, ${String(off.length).padStart(3)} off`);
       if (verbose) off.slice(0, 400).forEach(r => console.log(`        ${r.tag.padEnd(22)} ${r.edge || "d=" + String(r.d).padStart(5) + " lh=" + String(r.lh).padEnd(7)} ${r.text}`));
+      // a box opened and closed again must return to its closed height, on the grid
+      // (a min-height once kept the options box tall and empty after closing)
+      const opts = page.locator("main .calc details > summary").first();
+      if (await opts.count()) {
+        const closedH = () => page.evaluate(() => document.querySelector("main .calc details").getBoundingClientRect().height);
+        const was = await page.evaluate(() => document.querySelector("main .calc details").open);
+        const h0 = was ? null : await closedH();
+        await opts.click(); await page.waitForTimeout(150); await opts.click(); await page.waitForTimeout(150);
+        if (was) { await opts.click(); await page.waitForTimeout(150); }
+        const h1 = await closedH(); const again = await check(page);
+        const off2 = again.filter(r => Math.abs(r.d) > TOL || !r.lhOk);
+        const stuck = h0 !== null && Math.abs(h1 - h0) > 0.5 ? 1 : 0;
+        total += again.length + 1; bad += off2.length + stuck;
+        console.log(`${label.padEnd(11)} ${(path + " (options toggled)").padEnd(34)} ${String(again.length + 1).padStart(3)} lines, ${String(off2.length + stuck).padStart(3)} off${stuck ? `  options box ${h0} px closed, ${h1} px after open+close` : ""}`);
+        if (verbose) off2.slice(0, 400).forEach(r => console.log(`        ${r.tag.padEnd(22)} ${r.edge || "d=" + String(r.d).padStart(5) + " lh=" + String(r.lh).padEnd(7)} ${r.text}`));
+      }
     }
     await page.close();
   }
