@@ -78,6 +78,9 @@ induce în eroare.
   specificația unei hârtii cream premium măsurate, Munken Premium Cream (albeață CIE 62–66, strălucire 80–83): a noastră
   are albeață 62,3 și strălucire ~81 (calculate D65; strălucirea aproximată din componenta albastră). Pozele de produs ale
   caietelor (Rhodia, Midori, Leuchtturm) nu dau culoarea reală și au pierdut comparația. Nu se repropune.
+- **Liniile caietului sunt `#e8e3d8`** (proprietarul, 22 noiembrie 2026): gri cald, cu 6,2% mai închis decât foaia, raportul
+  măsurat pe pozele de aproape ale caietului Moleskine Squared (Rhodia No.16 are linii violet de ~30%, prea apăsate pentru
+  un fundal de site). Grosimea rămâne 1 px dintr-un pătrat de 24 (≈0,21 mm la 5 mm, ca Rhodia ~0,19 mm).
 - **Sistemul „caiet”** (proprietarul, 22 noiembrie 2026), regulile în `src/assets/style.css`, secțiunea „Notebook
   system”: unitatea e pătratul de 24 px; rândurile de text au 1 unitate (titlurile mari 2) și stau cu baza literelor pe
   linie; orice linie desenată (riglă, separator, chenar) cade pe o linie a grilei; cutiile încep pe o linie și au

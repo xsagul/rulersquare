@@ -20,7 +20,7 @@
   --body: #26323f;
   --muted: #586577;
   --line: #cfc5ad;
-  --grid: rgba(31, 58, 95, .055);
+  --grid: #e8e3d8;   /* warm grey, 6.2% darker than the paper: the contrast measured on Moleskine squared notebooks */
   --accent: #c9521a;          /* safety orange, darkened to 4.6:1 on white for button text */
   --accent-ink: #ffffff;
   --accent-soft: #f7e3d3;
