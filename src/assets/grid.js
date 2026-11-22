@@ -59,7 +59,11 @@
       b.style.minHeight = next === "" ? "" : next;
       if (had === next) b.style.minHeight = had;
     }
-    // 2. every top-level block on a line, top to bottom; only change what is off
+    // 2. every top-level block on a line, top to bottom; only change what is off.
+    // A block that lands 1–3 px past a line (content a hair taller than whole squares,
+    // as WebKit's column lists are) is pulled back up onto that line with margin;
+    // anything further is pushed down to the next line (padding for text, margin for
+    // boxes, whose stroke padding would move).
     var all = document.querySelectorAll(BOX + "," + TEXT + "," + EDGE);
     for (var j = 0; j < all.length; j++) {
       var el = all[j];
@@ -67,14 +71,17 @@
       var cs = getComputedStyle(el);
       if (cs.display === "none" || cs.position === "absolute" || cs.position === "fixed") continue;
       var isBox = el.matches(BOX + "," + EDGE);
-      var added = parseFloat(el.getAttribute("data-g") || "0");
+      var addP = parseFloat(el.getAttribute("data-gp") || "0"), addM = parseFloat(el.getAttribute("data-gm") || "0");
       var top = el.getBoundingClientRect().top - pageTop() - nudgeOf(cs) + (isBox ? 0 : parseFloat(cs.borderTopWidth) + parseFloat(cs.paddingTop));
-      var natural = top - added;                       // where it would start without our space
-      var need = onLine(natural) ? 0 : px(G - mod(natural));
-      if (Math.abs(need - added) < TOL) continue;
-      if (isBox) el.style.marginTop = px(parseFloat(cs.marginTop) - added + need) + "px";
-      else el.style.paddingTop = px(parseFloat(cs.paddingTop) - added + need) + "px";
-      el.setAttribute("data-g", String(need));
+      var natural = top - addP - addM;                 // where it would start without our adjustments
+      var r = mod(natural), wantP = 0, wantM = 0;
+      if (r < TOL || G - r < TOL) { /* on a line */ }
+      else if (r <= 3) wantM = px(-r);
+      else if (isBox) wantM = px(G - r);
+      else wantP = px(G - r);
+      if (Math.abs(wantP - addP) < TOL && Math.abs(wantM - addM) < TOL) continue;
+      if (Math.abs(wantM - addM) >= TOL) { el.style.marginTop = px(parseFloat(cs.marginTop) - addM + wantM) + "px"; el.setAttribute("data-gm", String(wantM)); }
+      if (Math.abs(wantP - addP) >= TOL) { el.style.paddingTop = px(parseFloat(cs.paddingTop) - addP + wantP) + "px"; el.setAttribute("data-gp", String(wantP)); }
     }
     // 3. baselines onto the lines, measured; only nudge text that is off its line
     var texts = document.querySelectorAll(NUDGE);
