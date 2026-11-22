@@ -189,7 +189,7 @@
       var radio = form.querySelector('input[name="shape"][value="slab"]');
       if (radio) { radio.checked = true; }
       showShape("slab");
-      form.elements.length.value = "10";
+      form.elements.namedItem("length").value = "10";   // not form.elements.length: that is the number of fields
       form.elements.width.value = "12";
       form.elements.thickness.value = "4";
       form.elements.waste.value = "10";

@@ -1220,7 +1220,7 @@
       }
       if (window.RSInitResultTools) window.RSInitResultTools(form);
       if (report && window.matchMedia("(max-width: 800px)").matches) {
-        document.getElementById("project-result").focus({ preventScroll: false });
+        document.getElementById("project-result").focus({ preventScroll: true });   // RSRevealResult does the scrolling, gently
       }
     } catch (e) {
       output.hidden = true;

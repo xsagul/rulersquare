@@ -4,16 +4,46 @@
 (function () {
   "use strict";
 
+  /* After Calculate, bring the answer into view with a calm, even scroll (the browser's own
+   * smooth scroll is fast and differs between browsers) and land it one grid square below the
+   * sticky header, not under it. Phones: the results panel, which sits under the form.
+   * Wider screens: the whole calculator, only if it is not already in view. */
+  var scrolling = null;
+  function stopScroll() { if (scrolling) { cancelAnimationFrame(scrolling); scrolling = null; } }
+  function glideTo(y) {
+    stopScroll();
+    var start = window.pageYOffset, dist = y - start;
+    if (Math.abs(dist) < 2) { return; }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { window.scrollTo(0, y); return; }
+    var ms = Math.min(900, 560 + Math.abs(dist) * 0.25), t0 = null;
+    var ease = function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+    function step(now) {
+      if (t0 === null) { t0 = now; }
+      var t = Math.min(1, (now - t0) / ms);
+      window.scrollTo(0, Math.round(start + dist * ease(t)));
+      scrolling = t < 1 ? requestAnimationFrame(step) : null;
+    }
+    scrolling = requestAnimationFrame(step);
+  }
+  // the reader takes over: a wheel, touch or key stops the glide at once
+  ["wheel", "touchstart", "keydown", "mousedown"].forEach(function (ev) { window.addEventListener(ev, stopScroll, { passive: true }); });
+
   window.RSRevealResult = function (form) {
     if (!form || typeof form.querySelector !== "function") { return; }
     var results = form.querySelector(".calc-results");
-    if (!results || typeof results.scrollIntoView !== "function") { return; }
-    var box = results.getBoundingClientRect();
-    var height = window.innerHeight || document.documentElement.clientHeight;
-    if (box.top >= 0 && box.bottom <= height) { return; }
-    var stacked = window.matchMedia("(max-width: 800px)").matches;
-    var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    (stacked ? results : form).scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+    if (!results) { return; }
+    // one frame later: the result panel has its final height (grid.js rounds it before paint)
+    requestAnimationFrame(function () {
+      var header = document.querySelector(".site-header");
+      var top = (header ? header.getBoundingClientRect().bottom : 0) + 24;   // one square under the header
+      var height = window.innerHeight || document.documentElement.clientHeight;
+      var stacked = window.matchMedia("(max-width: 800px)").matches;
+      var target = stacked ? results : form;
+      var box = target.getBoundingClientRect();
+      if (box.top >= top - 1 && box.bottom <= height) { return; }   // already fully in view
+      if (!stacked && box.top >= top - 1 && box.top < height * 0.25) { return; }   // calculator already at the top
+      glideTo(window.pageYOffset + box.top - top);
+    });
   };
 
   window.RSShowDiagram = function (shape) {
