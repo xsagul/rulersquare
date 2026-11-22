@@ -112,6 +112,7 @@ const about = {
 <h2>Changelog &amp; corrections</h2>
 <p>Spotted an error or want a new calculator? Email <a href="mailto:${SITE.email}">${SITE.email}</a>.</p>
 ${table(["Date", "Update"], [
+  ["November 22, 2026", "Reorganized every calculator into 10 project groups. Siding now works from wall and gable sizes with doors and windows; drywall adds screws, joint compound and tape; deck adds joist spacing, screws and hidden clips; retaining wall adds leveling-pad and drainage stone; fence adds post length, hole depth and concrete; tile counts the grout joint; board and batten lists every batten mark. New tables: soil weight and swell, fill dirt vs topsoil, mulch types, laminate AC ratings, cubic-yard coverage, carpet stairs and pad, drywall finish levels, slab cost by project, driveway surfaces compared. Fixed the concrete calculator's example button."],
   ["November 19, 2026", `Expanded catalog to ${ALL.length} calculators with a new Home Systems hub (BTU, firewood, generator, water heater, dehumidifier, bath fan) plus 22 construction, concrete, carpentry and yard tools. Added live auto-calculation, interactive material/state cost selectors, shareable links, print views and free embeddable widgets.`],
   ["November 15, 2026", "Focused the site on home construction, landscaping and project budgets; added 16 cost calculators and 6 room/finish tools."],
   ["September 21, 2026", "Initial launch of Ruler Square with automated unit tests and methodology documentation."],

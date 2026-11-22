@@ -31,7 +31,7 @@ const personSchema = {
   sameAs: AUTHOR.sameAs,
 };
 
-const UPDATED = { iso: "2026-11-19", text: "November 19, 2026" };
+const UPDATED = { iso: "2026-11-22", text: "November 22, 2026" };
 
 const byline = (updated = UPDATED) =>
   `<p class="byline">Updated <time datetime="${updated.iso}">${updated.text}</time> · <a href="/methodology/">Formulas &amp; methodology</a></p>`;
