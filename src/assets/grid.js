@@ -16,7 +16,7 @@
   var TEXT = "main h1, main h2, main h3, main p, main ul, main ol, main .crumbs, main .jump-links";
   var EDGE = "main .table-wrap, main .search, .site-footer";
   var INSIDE = ".calc, details, table, .formula, .embed-box, .live-visual, .search-hits, .g-row, .g-head, li";
-  var NUDGE = "main h1, main h2, main h3, main p, main li, main .crumbs, main .jump-links, main .g-name, .site-footer .wrap > *";
+  var NUDGE = "main h1, main h2, main h3, main p, main li, main .crumbs, main .jump-links, main .g-name, main .g-name small, .site-footer .wrap > *";
   var NO_NUDGE = ".calc, details:not(.g-row), table, .formula, .embed-box, .search-hits, .results-list";
   var TOL = 0.5;
   var busy = false;
@@ -27,14 +27,26 @@
   // positions are taken against the page itself, not window.scrollY: on iPhones the
   // address bar animating in and out moves scrollY out of step with the layout
   function pageTop() { return document.documentElement.getBoundingClientRect().top; }
+  // the first piece of text the element shows: a list item's text sits in its link,
+  // whose font size can differ from the item's (16 px links in 17 px items measured 1 px off)
+  function firstText(el) {
+    var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), n;
+    while ((n = w.nextNode())) if (n.textContent.trim()) return n;
+    return null;
+  }
+  function ownText(el) {
+    for (var n = el.firstChild; n; n = n.nextSibling) if (n.nodeType === 3 && n.textContent.trim()) return true;
+    return false;
+  }
   function baseline(el) {
     // an inline wrapper keeps the probe on the text's first line, even in flex containers
+    var at = firstText(el) || el.firstChild, host = at ? at.parentNode : el;
     var wrap = document.createElement("span"), probe = document.createElement("span");
     probe.style.cssText = "display:inline-block;width:0;height:0;vertical-align:baseline;padding:0;margin:0;border:0";
     wrap.appendChild(probe); wrap.appendChild(document.createTextNode("​"));
-    el.insertBefore(wrap, el.firstChild);
+    host.insertBefore(wrap, at);
     var y = probe.getBoundingClientRect().top - pageTop();
-    el.removeChild(wrap);
+    host.removeChild(wrap);
     return y;
   }
   var lastKey = "";
@@ -88,7 +100,9 @@
     var texts = document.querySelectorAll(NUDGE);
     for (var k = 0; k < texts.length; k++) {
       var t = texts[k];
-      if (t.closest(NO_NUDGE) || (t.parentElement && t.parentElement.closest(NUDGE))) continue;
+      // a line inside text that is already placed is placed on its own only when it holds
+      // text of its own in another size (the "13 calculators" under a group's name)
+      if (t.closest(NO_NUDGE) || (t.parentElement && t.parentElement.closest(NUDGE) && !ownText(t))) continue;
       if (t.offsetParent === null || !t.textContent.trim()) continue;
       var tcs = getComputedStyle(t);
       if (tcs.position !== "relative" && tcs.position !== "static") continue;

@@ -7,6 +7,8 @@ const EXE = process.env.BROWSER || "C:/Program Files (x86)/Microsoft/Edge/Applic
 const { chromium, devices } = require(PW);
 const base = process.argv.find(a => a.startsWith("http")) || "http://127.0.0.1:8787";
 const verbose = process.argv.includes("--verbose");
+// how far a baseline or an edge may be from its line: half a pixel, i.e. rounding only
+const TOL = 0.5;
 const PAGES = ["/", "/mulch-calculator/", "/concrete-calculator/", "/fence-calculator/", "/carpet-installation-cost/",
   "/construction-calculators/", "/feet-and-inches-calculator/", "/square-footage-calculator/", "/about/", "/methodology/"];
 
@@ -82,10 +84,10 @@ async function check(page) {
       await page.goto(base + path, { waitUntil: "load" });
       await page.waitForTimeout(300); // let grid.js re-run after the calculator scripts change heights
       const rows = await check(page);
-      const off = rows.filter(r => Math.abs(r.d) > 2 || !r.lhOk);
+      const off = rows.filter(r => Math.abs(r.d) > TOL || !r.lhOk);
       total += rows.length; bad += off.length;
       console.log(`${label.padEnd(11)} ${path.padEnd(34)} ${String(rows.length).padStart(3)} lines, ${String(off.length).padStart(3)} off`);
-      if (verbose) off.slice(0, 12).forEach(r => console.log(`        ${r.tag.padEnd(22)} ${r.edge || "d=" + String(r.d).padStart(5) + " lh=" + String(r.lh).padEnd(7)} ${r.text}`));
+      if (verbose) off.slice(0, 400).forEach(r => console.log(`        ${r.tag.padEnd(22)} ${r.edge || "d=" + String(r.d).padStart(5) + " lh=" + String(r.lh).padEnd(7)} ${r.text}`));
     }
     await page.close();
   }
