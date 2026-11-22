@@ -100,7 +100,12 @@
   // re-run only when the width or the content height really changed (a result, an opened section),
   // not when the address bar or a menu overlay changes the window height
   function later() { if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; if (key() !== lastKey) run(); }); } }
-  if (window.ResizeObserver) new ResizeObserver(later).observe(document.body);
+  // A ResizeObserver callback runs after layout but before paint, so fixing the page
+  // inside it means the off-by-a-hair frame is never drawn. (Deferring to the next
+  // animation frame painted one frame with the sections below a pixel above their
+  // lines, then dropped them onto the lines.) run() changes nothing once aligned,
+  // so the callback does not loop.
+  if (window.ResizeObserver) new ResizeObserver(function () { if (key() !== lastKey) run(); }).observe(document.body);
   window.addEventListener("load", later);
   // the heading font arrives after the first paint: measure the baselines again on it
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { run(); });
